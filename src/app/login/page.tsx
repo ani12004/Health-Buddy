@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Loader2, ArrowRight, Stethoscope, User } from 'lucide-react';
+import Image from 'next/image';
 
 type UserRole = 'patient' | 'doctor';
 
@@ -34,11 +35,6 @@ export default function LoginPage() {
                             role: role,
                         }
                     },
-                    // Note: For actual mobile signup, you'd typically use valid phone number format (+1...)
-                    // and supabase.auth.signUp({ phone: ... }) if input is phone.
-                    // For this MVP, we are keeping the identifier as 'email' field for simplicity unless 
-                    // strict phone auth is enabled on backend. 
-                    // If user enters a phone, Supabase might treat it as email if not validated.
                 });
                 if (error) throw error;
                 setError('Check your email/SMS for the confirmation link.');
@@ -70,11 +66,17 @@ export default function LoginPage() {
                         <motion.div
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
-                            className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl"
+                            className="relative w-48 h-16 mx-auto mb-6"
                         >
-                            🩺
+                            <Image
+                                src="/logo.png"
+                                alt="Health Buddy Logo"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
                         </motion.div>
-                        <h1 className="text-3xl font-bold text-foreground tracking-tight">Health Buddy</h1>
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight sr-only">Health Buddy</h1>
                         <p className="text-muted-foreground mt-2">Your AI-Powered Medical Companion</p>
                     </div>
 
@@ -140,8 +142,8 @@ export default function LoginPage() {
                                     type="button"
                                     onClick={() => setRole('patient')}
                                     className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${role === 'patient'
-                                        ? 'bg-white shadow-sm text-primary'
-                                        : 'text-muted-foreground hover:bg-white/50'
+                                            ? 'bg-white shadow-sm text-primary'
+                                            : 'text-muted-foreground hover:bg-white/50'
                                         }`}
                                 >
                                     <User className="w-4 h-4" />
@@ -151,8 +153,8 @@ export default function LoginPage() {
                                     type="button"
                                     onClick={() => setRole('doctor')}
                                     className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${role === 'doctor'
-                                        ? 'bg-white shadow-sm text-primary'
-                                        : 'text-muted-foreground hover:bg-white/50'
+                                            ? 'bg-white shadow-sm text-primary'
+                                            : 'text-muted-foreground hover:bg-white/50'
                                         }`}
                                 >
                                     <Stethoscope className="w-4 h-4" />
@@ -164,8 +166,8 @@ export default function LoginPage() {
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
                                     <input
-                                        type="text"
-                                        placeholder="Email or Mobile Number"
+                                        type="email"
+                                        placeholder="Email address"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="w-full bg-white/50 border border-border rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
@@ -205,7 +207,7 @@ export default function LoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setIsSignUp(false)}
-                                    className="w-full py-3 hover:bg-secondary/50 text-muted-foreground hover:text-foreground font-medium rounded-xl transition-all"
+                                    className="w-full hover:bg-secondary/50 text-muted-foreground hover:text-foreground font-medium rounded-xl transition-all py-3"
                                 >
                                     Back to Login
                                 </button>

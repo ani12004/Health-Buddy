@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, MessageSquare, User, Bell } from 'lucide-react';
+import Image from 'next/image';
 
 export function DynamicIsland() {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -29,9 +30,13 @@ export function DynamicIsland() {
                 onHoverEnd={() => setIsExpanded(false)}
             >
                 {!isExpanded ? (
-                    <div className="flex items-center gap-2 px-4 cursor-pointer">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-xs font-medium">Health AI</span>
+                    <div className="relative w-24 h-6 mx-auto cursor-pointer">
+                        <Image
+                            src="/logo.png"
+                            alt="Health Buddy"
+                            fill
+                            className="object-contain brightness-0 invert"
+                        />
                     </div>
                 ) : (
                     <div className="flex items-center justify-around w-full px-4 h-full">
