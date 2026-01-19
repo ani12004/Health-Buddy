@@ -1,13 +1,31 @@
+'use client';
+
 import Link from 'next/link';
 import { UserMenu } from '@/components/dashboard/user-menu';
 import { Sparkles, MessageSquare } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useEffect, useState } from 'react';
 
 export default function DoctorDashboard() {
+    const [name, setName] = useState('Dr. Smith');
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function fetchName() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+                if (data?.full_name) setName(data.full_name);
+            }
+        }
+        fetchName();
+    }, []);
+
     return (
         <div className="p-8 space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Dr. Smith</h1>
+                    <h1 className="text-3xl font-bold text-foreground">{name}</h1>
                     <p className="text-muted-foreground">You have 3 pending reviews</p>
                 </div>
                 <UserMenu role="doctor" />

@@ -1,6 +1,5 @@
-'use client';
-
-import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useEffect, useState } from 'react';
 import { AIInsightCard } from '@/components/dashboard/ai-insight-card';
 import { MedicalReportCard } from '@/components/dashboard/medical-report-card';
 import { HealthCheckupModal } from '@/components/dashboard/checkup-modal';
@@ -9,6 +8,19 @@ import { Bell } from 'lucide-react';
 
 export default function PatientDashboard() {
     const [isCheckupOpen, setIsCheckupOpen] = useState(false);
+    const [name, setName] = useState('Patient');
+    const supabase = createClient();
+
+    useEffect(() => {
+        async function fetchName() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+                if (data?.full_name) setName(data.full_name.split(' ')[0]);
+            }
+        }
+        fetchName();
+    }, []);
 
     return (
         <div className="p-8 space-y-8 pb-32">
@@ -16,7 +28,7 @@ export default function PatientDashboard() {
 
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Good Morning, Alex</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Good Morning, {name}</h1>
                     <p className="text-muted-foreground">Here is your daily health summary</p>
                 </div>
                 <UserMenu role="patient" />
