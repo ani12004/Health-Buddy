@@ -18,7 +18,7 @@ export function DynamicIsland() {
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
             <motion.div
                 layout
-                className="bg-black text-white rounded-[2rem] shadow-2xl flex items-center justify-center overflow-hidden"
+                className="bg-foreground text-background rounded-[2rem] shadow-2xl flex items-center justify-center overflow-hidden"
                 initial={{ width: 120, height: 36 }}
                 animate={{
                     width: isExpanded ? 300 : 120,

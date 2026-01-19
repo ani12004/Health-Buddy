@@ -55,13 +55,17 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-secondary/30 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+            {/* Simple ambient background blobs */}
+            <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-secondary/30 rounded-full blur-[100px] -z-10" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -z-10" />
+
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-md"
             >
-                <div className="glass rounded-3xl p-8 shadow-2xl border-white/40">
+                <div className="glass-card rounded-3xl p-8 shadow-sm">
                     <div className="text-center mb-8">
                         <motion.div
                             initial={{ scale: 0.8 }}
@@ -142,8 +146,8 @@ export default function LoginPage() {
                                     type="button"
                                     onClick={() => setRole('patient')}
                                     className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${role === 'patient'
-                                            ? 'bg-white shadow-sm text-primary'
-                                            : 'text-muted-foreground hover:bg-white/50'
+                                        ? 'bg-white shadow-sm text-primary'
+                                        : 'text-muted-foreground hover:bg-white/50'
                                         }`}
                                 >
                                     <User className="w-4 h-4" />
@@ -153,8 +157,8 @@ export default function LoginPage() {
                                     type="button"
                                     onClick={() => setRole('doctor')}
                                     className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${role === 'doctor'
-                                            ? 'bg-white shadow-sm text-primary'
-                                            : 'text-muted-foreground hover:bg-white/50'
+                                        ? 'bg-white shadow-sm text-primary'
+                                        : 'text-muted-foreground hover:bg-white/50'
                                         }`}
                                 >
                                     <Stethoscope className="w-4 h-4" />
