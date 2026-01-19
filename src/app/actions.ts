@@ -39,18 +39,46 @@ export async function chatWithAI(history: { role: string; content: string }[], m
   return await generateHealthInsight(prompt);
 }
 
-export async function generateMedicalReportContent() {
+export async function generateMedicalReportContent(patientName: string) {
   const prompt = `
-    Generate a professional medical report summary for a patient named Alex based on general health data (mock data: mild stress, good hydration, regular sleep).
+    Generate a PROFESSIONAL HOSPITAL-GRADE MEDICAL REPORT API RESPONSE for a patient named "${patientName}".
+    
+    RETURN ONLY RAW JSON. DO NOT USE MARKDOWN BLOCK.
     
     Structure:
-    1. Patient Summary
-    2. Vital Signs Overview (Mock BP: 120/80, HR: 72)
-    3. AI Risk Analysis (Low Risk)
-    4. Lifestyle Recommendations
-    
-    Tone: Formal, Hospital-grade, Reassuring. 
-    Format: Plain Text with clear section headers.
+    {
+      "patientDetails": {
+        "age": "number (approx 30-50)",
+        "gender": "string (Male/Female)",
+        "id": "string (e.g. HB-78291)",
+        "referringDoctor": "Dr. Sarah Smith, MD"
+      },
+      "clinicalSummary": "Professional medical summary of general health status. Mention mild stress but good physical trends. Use hospital-grade phrasing.",
+      "vitals": [
+        { "parameter": "Blood Pressure", "value": "120/80 mmHg", "referenceRange": "90/60 - 120/80", "interpretation": "Normal" },
+        { "parameter": "Heart Rate", "value": "72 bpm", "referenceRange": "60-100 bpm", "interpretation": "Normal" },
+        { "parameter": "Oxygen Saturation", "value": "98%", "referenceRange": "95-100%", "interpretation": "Optimal" },
+        { "parameter": "BMI", "value": "24.5", "referenceRange": "18.5-24.9", "interpretation": "Healthy Weight" }
+      ],
+      "riskAssessment": {
+        "level": "LOW",
+        "details": "Overall cardiovascular and metabolic risk is low. Stress levels indicate need for mindfulness."
+      },
+      "recommendations": {
+        "stressManagement": ["Daily mindfulness meditation (10 mins)", "Breathing exercises"],
+        "sleep": ["Maintain 7-8 hours sleep schedule", "Avoid blue light before bed"],
+        "activity": ["30 mins moderate cardio 4x/week", "Hourly stretching"],
+        "habits": ["Increase water intake to 3L/day", "Reduce caffeine intake"]
+      }
+    }
   `;
-  return await generateHealthInsight(prompt);
+  const response = await generateHealthInsight(prompt);
+  try {
+    // Clean up if the AI wraps in markdown code blocks
+    const cleanJson = response.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanJson);
+  } catch (e) {
+    console.error("Failed to parse AI JSON", e);
+    return null;
+  }
 }

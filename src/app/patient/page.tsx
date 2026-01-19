@@ -76,7 +76,7 @@ export default function PatientDashboard() {
                 <AIInsightCard />
 
                 {/* Medical Report Card */}
-                <MedicalReportCard />
+                <MedicalReportCard patientName={name} />
             </div>
         </div>
     );
