@@ -17,8 +17,15 @@ export default function PatientDashboard() {
         async function fetchName() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-                if (data?.full_name) setName(data.full_name.split(' ')[0]);
+                // Fetch from role-specific table first
+                const { data } = await supabase.from('patients').select('name').eq('id', user.id).single();
+                if (data?.name) {
+                    setName(data.name.split(' ')[0]);
+                } else {
+                    // Fallback to profile
+                    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+                    if (profile?.full_name) setName(profile.full_name.split(' ')[0]);
+                }
             }
         }
         fetchName();

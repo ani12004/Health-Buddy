@@ -30,7 +30,7 @@ export default function PatientProfilePage() {
                     setData(res);
                     setFormData({
                         ...res.roleData,
-                        full_name: res.profile.full_name,
+                        full_name: res.roleData.name || res.profile.full_name,
                         email: res.profile.email,
                         phone: res.roleData.phone || '', // New field
                         preferred_language: res.roleData.preferred_language || 'English', // New field

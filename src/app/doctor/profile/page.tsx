@@ -22,7 +22,7 @@ export default function DoctorProfilePage() {
                     setData(res);
                     setFormData({
                         ...res.roleData,
-                        full_name: res.profile.full_name,
+                        full_name: res.roleData.name || res.profile.full_name,
                         // Initialize new fields
                         bio: res.roleData.bio || '',
                         languages_spoken: res.roleData.languages_spoken || []

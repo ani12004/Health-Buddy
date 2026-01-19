@@ -14,8 +14,15 @@ export default function DoctorDashboard() {
         async function fetchName() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-                if (data?.full_name) setName(data.full_name);
+                // Fetch role-specific name
+                const { data } = await supabase.from('doctors').select('name').eq('id', user.id).single();
+                if (data?.name) {
+                    setName(data.name);
+                } else {
+                    // Fallback
+                    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+                    if (profile?.full_name) setName(profile.full_name);
+                }
             }
         }
         fetchName();
