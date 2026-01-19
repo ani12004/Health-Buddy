@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1e1b4b; /* dark indigo */
+  
+  /* Lavender Theme */
+  --primary: #8b5cf6; /* violet-500 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #ede9fe; /* violet-100 */
+  --secondary-foreground: #5b21b6; /* violet-800 */
+  
+  --accent: #f5f3ff; /* violet-50 */
+  --accent-foreground: #4c1d95; /* violet-900 */
+  
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  
+  --card: #ffffff;
+  --card-foreground: #1e1b4b;
+  
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  
+  --radius: 1rem;
+}
+
+/* Dark Mode (optional future proofing, but focus on light/lavender first) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    
+    --primary: #a78bfa; /* violet-400 */
+    --primary-foreground: #0f172a;
+    
+    --secondary: #1e1b4b; /* violet-950 */
+    --secondary-foreground: #ddd6fe; /* violet-200 */
+    
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    
+    --border: #334155;
+    --input: #334155;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+  .glass-dark {
+    @apply bg-black/70 backdrop-blur-lg border border-white/10 shadow-xl;
+  }
+}
