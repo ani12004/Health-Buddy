@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AIInsightCard } from '@/components/dashboard/ai-insight-card';
 import { MedicalReportCard } from '@/components/dashboard/medical-report-card';
 import { HealthCheckupModal } from '@/components/dashboard/checkup-modal';
+import { UserMenu } from '@/components/dashboard/user-menu';
 import { Bell } from 'lucide-react';
 
 export default function PatientDashboard() {
@@ -18,9 +19,7 @@ export default function PatientDashboard() {
                     <h1 className="text-3xl font-bold text-foreground">Good Morning, Alex</h1>
                     <p className="text-muted-foreground">Here is your daily health summary</p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl">
-                    👤
-                </div>
+                <UserMenu role="patient" />
             </div>
 
             {/* Doctor Updates Section */}

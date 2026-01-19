@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { UserMenu } from '@/components/dashboard/user-menu';
 import { Sparkles, MessageSquare } from 'lucide-react';
 
 export default function DoctorDashboard() {
@@ -9,9 +10,7 @@ export default function DoctorDashboard() {
                     <h1 className="text-3xl font-bold text-foreground">Dr. Smith</h1>
                     <p className="text-muted-foreground">You have 3 pending reviews</p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl">
-                    👨‍⚕️
-                </div>
+                <UserMenu role="doctor" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
