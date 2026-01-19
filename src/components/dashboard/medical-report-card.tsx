@@ -51,10 +51,10 @@ export function MedicalReportCard() {
 
     return (
         <div className="glass p-6 rounded-3xl space-y-4">
-            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center text-violet-600">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                 <FileText />
             </div>
-            <h2 className="text-xl font-semibold">Medical Report</h2>
+            <h2 className="text-xl font-semibold text-foreground">Medical Report</h2>
             <p className="text-sm text-muted-foreground">
                 Download a hospital-grade summary of your health data.
             </p>

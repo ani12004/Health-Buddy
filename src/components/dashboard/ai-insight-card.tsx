@@ -35,7 +35,7 @@ export function AIInsightCard() {
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     🧠
                 </div>
-                <h2 className="text-xl font-semibold">Gemini Insight</h2>
+                <h2 className="text-xl font-semibold text-foreground">Gemini Insight</h2>
             </div>
 
             <div className="min-h-[60px]">

@@ -44,18 +44,18 @@ export function HealthCheckupModal({ isOpen, onClose }: { isOpen: boolean; onClo
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl p-6 z-50 border border-white/20"
+                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-card rounded-3xl shadow-xl p-6 z-50 border border-border"
                     >
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                     <Activity />
                                 </div>
-                                <h2 className="text-xl font-bold">AI Health Checkup</h2>
+                                <h2 className="text-xl font-bold text-foreground">AI Health Checkup</h2>
                             </div>
                             <button
                                 onClick={reset}
-                                className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                                className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -70,7 +70,7 @@ export function HealthCheckupModal({ isOpen, onClose }: { isOpen: boolean; onClo
                                     value={symptoms}
                                     onChange={(e) => setSymptoms(e.target.value)}
                                     placeholder="E.g., I have a mild headache and feel tired..."
-                                    className="w-full h-32 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-none focus:ring-2 focus:ring-primary/50 resize-none outline-none"
+                                    className="w-full h-32 p-4 rounded-xl bg-muted/30 border border-input focus:ring-2 focus:ring-primary/20 resize-none outline-none text-foreground placeholder:text-muted-foreground/70"
                                 />
                                 <button
                                     onClick={handleAnalyze}
@@ -83,12 +83,12 @@ export function HealthCheckupModal({ isOpen, onClose }: { isOpen: boolean; onClo
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-sm leading-relaxed whitespace-pre-wrap max-h-[60vh] overflow-y-auto">
+                                <div className="p-4 bg-muted/50 rounded-xl text-sm leading-relaxed whitespace-pre-wrap max-h-[60vh] overflow-y-auto text-foreground border border-border/50">
                                     {result}
                                 </div>
                                 <button
                                     onClick={reset}
-                                    className="w-full py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-foreground rounded-xl font-medium transition-colors"
+                                    className="w-full py-3 bg-muted hover:bg-muted/80 text-foreground rounded-xl font-medium transition-colors"
                                 >
                                     Close
                                 </button>
