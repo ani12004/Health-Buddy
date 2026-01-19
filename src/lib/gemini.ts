@@ -9,7 +9,7 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey || 'missing-key');
 
 export const geminiModel = genAI.getGenerativeModel({
-    model: 'gemini-pro',
+    model: 'gemini-1.5-flash',
 });
 
 export async function generateHealthInsight(prompt: string) {
