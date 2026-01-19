@@ -125,7 +125,7 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             // --- PAGE 2: CLINICAL SUMMARY ---
             doc.addPage();
             addHeader(logoBase64);
-            currentY = 45;
+            currentY = 55;
 
             doc.setFontSize(16);
             doc.setTextColor(0);
@@ -142,7 +142,7 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             // --- PAGE 3: VITALS ---
             doc.addPage();
             addHeader(logoBase64);
-            currentY = 45;
+            currentY = 55;
 
             doc.setFontSize(16);
             doc.setTextColor(0);
@@ -186,7 +186,7 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             // --- PAGE 4: RISK ---
             doc.addPage();
             addHeader(logoBase64);
-            currentY = 45;
+            currentY = 55;
 
             doc.setFontSize(16);
             doc.setTextColor(0);
@@ -221,7 +221,7 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             // --- PAGE 5: RECOMMENDATIONS ---
             doc.addPage();
             addHeader(logoBase64);
-            currentY = 45;
+            currentY = 55;
 
             doc.setFontSize(16);
             doc.setTextColor(0);
@@ -255,7 +255,7 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             // --- PAGE 6: SIGNATURE ---
             doc.addPage();
             addHeader(logoBase64);
-            currentY = 45;
+            currentY = 55;
 
             doc.setFontSize(16);
             doc.setTextColor(0);

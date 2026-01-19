@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navigation */}
       <nav className="p-6 flex items-center justify-between max-w-7xl mx-auto w-full z-10">
-        <div className="relative w-32 h-10">
+        <div className="relative w-48 h-14">
           <Image
             src="/logo.png"
             alt="Health Buddy"
