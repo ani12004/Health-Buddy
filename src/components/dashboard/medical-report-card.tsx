@@ -56,20 +56,24 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
             let currentY = margin;
 
             // Helper: Header
+            // Helper: Header
             const addHeader = (logo: string) => {
                 if (logo) {
-                    doc.addImage(logo, 'PNG', margin, 10, 15, 15 * (488 / 443) || 15); // Adjust ratio if needed, roughly square usually
+                    // Increased logo size from 15 to 30
+                    doc.addImage(logo, 'PNG', margin, 10, 30, 30 * (488 / 443) || 30);
                 }
                 doc.setFontSize(22);
                 doc.setTextColor(139, 92, 246); // Primary Color
-                doc.text("Health Buddy", logo ? margin + 20 : margin, 20);
+                // Increased text offset to accommodate bigger logo (margin + 35)
+                doc.text("Health Buddy", logo ? margin + 35 : margin, 25);
 
                 doc.setFontSize(10);
                 doc.setTextColor(100);
-                doc.text("AI-Assisted Health Assessment Report", logo ? margin + 20 : margin, 26);
+                doc.text("AI-Assisted Health Assessment Report", logo ? margin + 35 : margin, 31);
 
                 doc.setDrawColor(200);
-                doc.line(margin, 32, pageWidth - margin, 32);
+                // Moved separation line down to 45
+                doc.line(margin, 45, pageWidth - margin, 45);
             };
 
             // Helper: Footer
