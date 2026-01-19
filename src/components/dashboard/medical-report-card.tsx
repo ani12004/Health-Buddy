@@ -175,139 +175,135 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
                 tableY += 12;
             });
 
-            // Light border line
-            doc.setDrawColor(240);
-            doc.line(margin, tableY + 12, pageWidth - margin, tableY + 12);
-            tableY += 12;
-        });
 
-        addFooter(3);
 
-        // --- PAGE 4: RISK ---
-        doc.addPage();
-        addHeader(logoBase64);
-        currentY = 45;
+            addFooter(3);
 
-        doc.setFontSize(16);
-        doc.setTextColor(0);
-        doc.text("AI-Generated Risk Assessment", margin, currentY);
-        currentY += 20;
+            // --- PAGE 4: RISK ---
+            doc.addPage();
+            addHeader(logoBase64);
+            currentY = 45;
 
-        const riskLevel = data.riskAssessment?.level || "UNKNOWN";
-        const riskColor = riskLevel === 'HIGH' ? [220, 38, 38] : riskLevel === 'MODERATE' ? [234, 179, 8] : [22, 163, 74];
+            doc.setFontSize(16);
+            doc.setTextColor(0);
+            doc.text("AI-Generated Risk Assessment", margin, currentY);
+            currentY += 20;
 
-        doc.setFontSize(14);
-        doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
-        doc.text(`Risk Level: ${riskLevel}`, margin, currentY);
-        currentY += 15;
+            const riskLevel = data.riskAssessment?.level || "UNKNOWN";
+            const riskColor = riskLevel === 'HIGH' ? [220, 38, 38] : riskLevel === 'MODERATE' ? [234, 179, 8] : [22, 163, 74];
 
-        doc.setFontSize(11);
-        doc.setTextColor(60);
-        const riskLines = doc.splitTextToSize(data.riskAssessment?.details || "No details.", pageWidth - (margin * 2));
-        doc.text(riskLines, margin, currentY);
-        currentY += (riskLines.length * 6) + 20;
+            doc.setFontSize(14);
+            doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
+            doc.text(`Risk Level: ${riskLevel}`, margin, currentY);
+            currentY += 15;
 
-        // AI Note Box
-        doc.setDrawColor(255, 200, 0);
-        doc.setFillColor(255, 252, 230);
-        doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 2, 2, 'FD');
-        doc.setFontSize(9);
-        doc.setTextColor(150, 100, 0);
-        doc.text("IMPORTANT: This assessment is generated using artificial intelligence and does not", margin + 5, currentY + 10);
-        doc.text("constitute a medical diagnosis. Always consult a certified medical professional.", margin + 5, currentY + 16);
-
-        addFooter(4);
-
-        // --- PAGE 5: RECOMMENDATIONS ---
-        doc.addPage();
-        addHeader(logoBase64);
-        currentY = 45;
-
-        doc.setFontSize(16);
-        doc.setTextColor(0);
-        doc.text("Preventive & Lifestyle Recommendations", margin, currentY);
-        currentY += 15;
-
-        const printRecs = (title: string, items: string[]) => {
-            if (!items || items.length === 0) return;
-            doc.setFontSize(12);
-            doc.setTextColor(30);
-            doc.setFont("helvetica", "bold");
-            doc.text(title, margin, currentY);
-            currentY += 8;
-            doc.setFont("helvetica", "normal");
             doc.setFontSize(11);
             doc.setTextColor(60);
-            items.forEach(item => {
-                doc.text(`• ${item}`, margin + 5, currentY);
-                currentY += 7;
-            });
-            currentY += 5;
-        };
+            const riskLines = doc.splitTextToSize(data.riskAssessment?.details || "No details.", pageWidth - (margin * 2));
+            doc.text(riskLines, margin, currentY);
+            currentY += (riskLines.length * 6) + 20;
 
-        printRecs("Stress Management", data.recommendations?.stressManagement);
-        printRecs("Sleep & Recovery", data.recommendations?.sleep);
-        printRecs("Physical Activity", data.recommendations?.activity);
-        printRecs("Daily Habits", data.recommendations?.habits);
+            // AI Note Box
+            doc.setDrawColor(255, 200, 0);
+            doc.setFillColor(255, 252, 230);
+            doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 2, 2, 'FD');
+            doc.setFontSize(9);
+            doc.setTextColor(150, 100, 0);
+            doc.text("IMPORTANT: This assessment is generated using artificial intelligence and does not", margin + 5, currentY + 10);
+            doc.text("constitute a medical diagnosis. Always consult a certified medical professional.", margin + 5, currentY + 16);
 
-        addFooter(5);
+            addFooter(4);
 
-        // --- PAGE 6: SIGNATURE ---
-        doc.addPage();
-        addHeader(logoBase64);
-        currentY = 45;
+            // --- PAGE 5: RECOMMENDATIONS ---
+            doc.addPage();
+            addHeader(logoBase64);
+            currentY = 45;
 
-        doc.setFontSize(16);
-        doc.setTextColor(0);
-        doc.text("Doctor Review & Validation", margin, currentY);
-        currentY += 40;
+            doc.setFontSize(16);
+            doc.setTextColor(0);
+            doc.text("Preventive & Lifestyle Recommendations", margin, currentY);
+            currentY += 15;
 
-        doc.line(margin, currentY, margin + 80, currentY);
-        doc.setFontSize(10);
-        doc.text("Doctor's Signature", margin, currentY + 5);
+            const printRecs = (title: string, items: string[]) => {
+                if (!items || items.length === 0) return;
+                doc.setFontSize(12);
+                doc.setTextColor(30);
+                doc.setFont("helvetica", "bold");
+                doc.text(title, margin, currentY);
+                currentY += 8;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(11);
+                doc.setTextColor(60);
+                items.forEach(item => {
+                    doc.text(`• ${item}`, margin + 5, currentY);
+                    currentY += 7;
+                });
+                currentY += 5;
+            };
 
-        doc.line(margin + 100, currentY, margin + 180, currentY);
-        doc.text("Date", margin + 100, currentY + 5);
+            printRecs("Stress Management", data.recommendations?.stressManagement);
+            printRecs("Sleep & Recovery", data.recommendations?.sleep);
+            printRecs("Physical Activity", data.recommendations?.activity);
+            printRecs("Daily Habits", data.recommendations?.habits);
 
-        currentY += 50;
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text("DISCLAIMER: This report is a preliminary assessment tool and must be verified by a licensed physician.", margin, currentY);
-        doc.text("Health Buddy AI (Gemini) is not liable for actions taken based on this automated report.", margin, currentY + 5);
+            addFooter(5);
 
-        addFooter(6);
+            // --- PAGE 6: SIGNATURE ---
+            doc.addPage();
+            addHeader(logoBase64);
+            currentY = 45;
 
-        doc.save("health-buddy-report.pdf");
+            doc.setFontSize(16);
+            doc.setTextColor(0);
+            doc.text("Doctor Review & Validation", margin, currentY);
+            currentY += 40;
 
-    } catch (error) {
-        console.error("Failed to generate report", error);
-        alert("Could not generate report. Please try again.");
-    } finally {
-        setLoading(false);
-    }
-};
+            doc.line(margin, currentY, margin + 80, currentY);
+            doc.setFontSize(10);
+            doc.text("Doctor's Signature", margin, currentY + 5);
 
-return (
-    <div className="glass p-6 rounded-3xl space-y-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-            <FileText />
+            doc.line(margin + 100, currentY, margin + 180, currentY);
+            doc.text("Date", margin + 100, currentY + 5);
+
+            currentY += 50;
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text("DISCLAIMER: This report is a preliminary assessment tool and must be verified by a licensed physician.", margin, currentY);
+            doc.text("Health Buddy AI (Gemini) is not liable for actions taken based on this automated report.", margin, currentY + 5);
+
+            addFooter(6);
+
+            doc.save("health-buddy-report.pdf");
+
+        } catch (error) {
+            console.error("Failed to generate report", error);
+            alert("Could not generate report. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="glass p-6 rounded-3xl space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <FileText />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground">Medical Report</h2>
+            <p className="text-sm text-muted-foreground">
+                Download a hospital-grade summary of your health data.
+            </p>
+            <button
+                onClick={handleDownload}
+                disabled={loading}
+                className="w-full py-3 bg-white border border-border text-foreground hover:bg-secondary/50 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+            >
+                {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                    <Download className="w-4 h-4" />
+                )}
+                Download PDF
+            </button>
         </div>
-        <h2 className="text-xl font-semibold text-foreground">Medical Report</h2>
-        <p className="text-sm text-muted-foreground">
-            Download a hospital-grade summary of your health data.
-        </p>
-        <button
-            onClick={handleDownload}
-            disabled={loading}
-            className="w-full py-3 bg-white border border-border text-foreground hover:bg-secondary/50 rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
-        >
-            {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-                <Download className="w-4 h-4" />
-            )}
-            Download PDF
-        </button>
-    </div>
-);
+    );
 }
