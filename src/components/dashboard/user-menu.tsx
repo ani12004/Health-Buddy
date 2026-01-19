@@ -56,13 +56,14 @@ export function UserMenu({ role }: UserMenuProps) {
                                     <User className="w-4 h-4 text-primary" />
                                     Profile
                                 </Link>
-                                <button
+                                <Link
+                                    href={`/${role}/settings`}
                                     className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-muted text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
-                                    onClick={() => alert("Settings coming soon!")}
+                                    onClick={() => setIsOpen(false)}
                                 >
                                     <Settings className="w-4 h-4" />
                                     Settings
-                                </button>
+                                </Link>
                                 <div className="h-px bg-border my-1" />
                                 <button
                                     onClick={handleLogout}
