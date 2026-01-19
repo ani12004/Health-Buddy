@@ -30,8 +30,14 @@ export function DynamicIsland() {
                 onHoverEnd={() => setIsExpanded(false)}
             >
                 {!isExpanded ? (
-                    <div className="flex items-center justify-center w-full h-full cursor-pointer text-background">
-                        <Activity className="w-6 h-6" />
+                    <div className="relative w-24 h-8 mx-auto cursor-pointer">
+                        <Image
+                            src="/logo.png"
+                            alt="Health Buddy"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
                     </div>
                 ) : (
                     <div className="flex items-center justify-around w-full px-4 h-full">
