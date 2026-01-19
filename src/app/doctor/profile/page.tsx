@@ -111,7 +111,8 @@ export default function DoctorProfilePage() {
                     <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider ml-4 mb-3">About</h3>
                     <GlassGroup>
                         {isEditing ? (
-                            <div className="p-4">
+                            <div className="p-4 space-y-3">
+                                <EditCell label="Full Name" value={formData.full_name} onChange={(v) => setFormData({ ...formData, full_name: v })} placeholder="Dr. Name" />
                                 <textarea
                                     value={formData.bio}
                                     onChange={e => setFormData({ ...formData, bio: e.target.value })}

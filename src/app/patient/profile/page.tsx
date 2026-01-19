@@ -168,6 +168,7 @@ export default function PatientProfilePage() {
                     <GlassGroup>
                         {isEditing ? (
                             <>
+                                <EditCell label="Full Name" value={formData.full_name} onChange={(v) => setFormData({ ...formData, full_name: v })} placeholder="Your Name" />
                                 <EditCell label="Phone" value={formData.phone} onChange={(v) => setFormData({ ...formData, phone: v })} type="tel" placeholder="+1 234 567 8900" />
                                 <EditCell label="Language" value={formData.preferred_language} onChange={(v) => setFormData({ ...formData, preferred_language: v })} type="select" options={['English', 'Spanish', 'French', 'German']} />
                                 <EditCell label="Emergency Contact" value={formData.emergency_contact_name} onChange={(v) => setFormData({ ...formData, emergency_contact_name: v })} placeholder="Name" />

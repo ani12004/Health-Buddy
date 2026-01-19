@@ -45,13 +45,24 @@ export async function getFullUserProfile() {
 /**
  * Updates patient profile fields.
  */
+/**
+ * Updates patient profile fields.
+ */
 export async function updatePatientProfile(formData: any) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { error } = await supabase.from('patients').update(formData).eq('id', user.id);
-    if (error) throw error;
+    // Separate profile (global) and patient (specific) data
+    const { full_name, ...patientData } = formData;
+
+    const { error: patientError } = await supabase.from('patients').update({ ...patientData, name: full_name }).eq('id', user.id);
+    if (patientError) throw patientError;
+
+    if (full_name) {
+        const { error: profileError } = await supabase.from('profiles').update({ full_name }).eq('id', user.id);
+        if (profileError) throw profileError;
+    }
 
     revalidatePath('/patient/profile');
     return { success: true };
@@ -65,8 +76,15 @@ export async function updateDoctorProfile(formData: any) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { error } = await supabase.from('doctors').update(formData).eq('id', user.id);
-    if (error) throw error;
+    const { full_name, ...doctorData } = formData;
+
+    const { error: doctorError } = await supabase.from('doctors').update({ ...doctorData, name: full_name }).eq('id', user.id);
+    if (doctorError) throw doctorError;
+
+    if (full_name) {
+        const { error: profileError } = await supabase.from('profiles').update({ full_name }).eq('id', user.id);
+        if (profileError) throw profileError;
+    }
 
     revalidatePath('/doctor/profile');
     return { success: true };

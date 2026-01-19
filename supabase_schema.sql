@@ -142,6 +142,7 @@ grant all on all sequences in schema public to postgres, anon, authenticated, se
 
 -- A. Update Patients Table
 alter table public.patients 
+add column if not exists name text, -- Explicit role-specific name
 add column if not exists phone text,
 add column if not exists emergency_contact jsonb, -- { name, relation, phone }
 add column if not exists preferred_language text,
@@ -149,6 +150,7 @@ add column if not exists conditions text[];
 
 -- B. Update Doctors Table
 alter table public.doctors
+add column if not exists name text, -- Explicit role-specific name
 add column if not exists bio text,
 add column if not exists languages_spoken text[],
 add column if not exists verified_at timestamp with time zone;

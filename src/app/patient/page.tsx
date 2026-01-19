@@ -1,3 +1,5 @@
+'use client';
+
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 import { AIInsightCard } from '@/components/dashboard/ai-insight-card';
