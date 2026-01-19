@@ -74,27 +74,7 @@
 }
 
 /* Dark Mode (optional future proofing) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1C1C1E;
-    --foreground: #F7F5FF;
-
-    --primary: #B7A9FF;
-    --primary-foreground: #1C1C1E;
-
-    --secondary: #2D2D35;
-    --secondary-foreground: #E9E4FF;
-
-    --accent: #7C6CF2;
-    --accent-foreground: #FFFFFF;
-
-    --card: #2C2C2E;
-    --card-foreground: #F7F5FF;
-
-    --border: #3A3A3C;
-    --input: #3A3A3C;
-  }
-}
+/* Dark Mode removed to enforce Lavender Light Theme as requested */
 
 body {
   color: var(--foreground);
