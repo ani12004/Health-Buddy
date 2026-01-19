@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, MessageSquare, User, Bell, Activity } from 'lucide-react';
+import { Home, MessageSquare, User, Bell, Activity, LayoutGrid } from 'lucide-react';
 import Image from 'next/image';
 
 export function DynamicIsland() {
@@ -49,15 +49,9 @@ export function DynamicIsland() {
                         </Link>
                         <div className="w-px h-6 bg-white/20 mx-1" />
 
-                        {/* Theme Toggle (Mock for now, normally uses next-themes) */}
-                        <button
-                            onClick={() => document.documentElement.classList.toggle('dark')}
-                            className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
-                        >
-                            <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
-                                <div className="w-2 h-2 rounded-full bg-current" />
-                            </div>
-                        </button>
+                        <Link href="/dashboard" className="p-2 hover:bg-white/20 rounded-full transition-colors">
+                            <LayoutGrid className="w-4 h-4" />
+                        </Link>
 
                         <Link href="/profile" className="p-2 hover:bg-white/20 rounded-full transition-colors">
                             <User className="w-4 h-4" />
