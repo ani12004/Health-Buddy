@@ -136,67 +136,69 @@ grant all on all sequences in schema public to postgres, anon, authenticated, se
 
 
 -- =============================================================================
--- 6. Profile & Settings 2.0 Updates
---    Added on: 2026-01-19
+-- 7. Name Schema Refactor (First/Last Name)
+--    Added on: 2026-01-20
 -- =============================================================================
 
--- A. Update Patients Table
-alter table public.patients 
-add column if not exists name text, -- Explicit role-specific name
-add column if not exists phone text,
-add column if not exists emergency_contact jsonb, -- { name, relation, phone }
-add column if not exists preferred_language text,
-add column if not exists conditions text[];
+-- A. Update Profiles Table
+alter table public.profiles
+add column if not exists first_name text,
+add column if not exists last_name text;
 
--- B. Update Doctors Table
+-- B. Update Patients Table
+alter table public.patients
+add column if not exists first_name text,
+add column if not exists last_name text;
+
+-- C. Update Doctors Table
 alter table public.doctors
-add column if not exists name text, -- Explicit role-specific name
-add column if not exists bio text,
-add column if not exists languages_spoken text[],
-add column if not exists verified_at timestamp with time zone;
+add column if not exists first_name text,
+add column if not exists last_name text;
 
--- C. Create User Settings Table
-create table if not exists public.user_settings (
-  id uuid not null references public.profiles(id) on delete cascade,
-  ai_enabled boolean default true,
-  ai_detail_level text check (ai_detail_level in ('concise', 'detailed')) default 'concise',
-  notifications_email boolean default true,
-  notifications_push boolean default true,
-  theme_preference text default 'system',
-  primary key (id)
-);
-
--- RLS for User Settings
-alter table public.user_settings enable row level security;
-
-drop policy if exists "Users manage own settings" on public.user_settings;
-create policy "Users manage own settings" 
-  on public.user_settings for all 
-  using ( auth.uid() = id );
-
--- D. Update Trigger to Initialize Settings
+-- D. Update Trigger to handle Name Splitting
 create or replace function public.handle_new_user()
 returns trigger as $$
 declare
   user_role text;
+  full_name_raw text;
+  f_name text;
+  l_name text;
+  space_pos int;
 begin
   -- 1. Determine Role (default to patient if missing)
   user_role := coalesce(new.raw_user_meta_data->>'role', 'patient');
+  full_name_raw := new.raw_user_meta_data->>'full_name';
+  
+  -- Simple name splitting logic
+  if full_name_raw is not null then
+      space_pos := position(' ' in full_name_raw);
+      if space_pos > 0 then
+          f_name := substring(full_name_raw from 1 for space_pos - 1);
+          l_name := substring(full_name_raw from space_pos + 1);
+      else
+          f_name := full_name_raw;
+          l_name := '';
+      end if;
+  end if;
 
   -- 2. Insert into Base Profiles
-  insert into public.profiles (id, email, role, full_name)
+  insert into public.profiles (id, email, role, full_name, first_name, last_name)
   values (
     new.id,
     new.email,
     user_role,
-    new.raw_user_meta_data->>'full_name'
+    full_name_raw,
+    f_name,
+    l_name
   );
 
   -- 3. Insert into Specific Table based on Role
   if user_role = 'patient' then
-    insert into public.patients (id) values (new.id);
+    insert into public.patients (id, first_name, last_name, name) 
+    values (new.id, f_name, l_name, full_name_raw);
   elsif user_role = 'doctor' then
-    insert into public.doctors (id) values (new.id);
+    insert into public.doctors (id, first_name, last_name, name) 
+    values (new.id, f_name, l_name, full_name_raw);
   end if;
 
   -- 4. Initialize User Settings

@@ -54,13 +54,26 @@ export async function updatePatientProfile(formData: any) {
     if (!user) throw new Error('Not authenticated');
 
     // Separate profile (global) and patient (specific) data
-    const { full_name, ...patientData } = formData;
+    const { first_name, last_name, ...patientData } = formData;
+    const full_name = `${first_name} ${last_name}`.trim();
 
-    const { error: patientError } = await supabase.from('patients').update({ ...patientData, name: full_name }).eq('id', user.id);
+    // Update Patient Table
+    const { error: patientError } = await supabase.from('patients').update({
+        ...patientData,
+        first_name,
+        last_name,
+        name: full_name // Keep for backward compat
+    }).eq('id', user.id);
+
     if (patientError) throw patientError;
 
-    if (full_name) {
-        const { error: profileError } = await supabase.from('profiles').update({ full_name }).eq('id', user.id);
+    // Update Global Profile Table
+    if (first_name || last_name) {
+        const { error: profileError } = await supabase.from('profiles').update({
+            first_name,
+            last_name,
+            full_name
+        }).eq('id', user.id);
         if (profileError) throw profileError;
     }
 
@@ -76,13 +89,26 @@ export async function updateDoctorProfile(formData: any) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    const { full_name, ...doctorData } = formData;
+    const { first_name, last_name, ...doctorData } = formData;
+    const full_name = `${first_name} ${last_name}`.trim();
 
-    const { error: doctorError } = await supabase.from('doctors').update({ ...doctorData, name: full_name }).eq('id', user.id);
+    // Update Doctor Table
+    const { error: doctorError } = await supabase.from('doctors').update({
+        ...doctorData,
+        first_name,
+        last_name,
+        name: full_name
+    }).eq('id', user.id);
+
     if (doctorError) throw doctorError;
 
-    if (full_name) {
-        const { error: profileError } = await supabase.from('profiles').update({ full_name }).eq('id', user.id);
+    // Update Global Profile Table
+    if (first_name || last_name) {
+        const { error: profileError } = await supabase.from('profiles').update({
+            first_name,
+            last_name,
+            full_name
+        }).eq('id', user.id);
         if (profileError) throw profileError;
     }
 

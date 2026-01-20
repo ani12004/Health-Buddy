@@ -20,9 +20,23 @@ export default function DoctorProfilePage() {
                 const res = await getFullUserProfile();
                 if (res) {
                     setData(res);
+                    // Smart init: Use explicit first/last if available, else split full_name
+                    const existingFirst = res.roleData.first_name || res.profile.first_name;
+                    const existingLast = res.roleData.last_name || res.profile.last_name;
+
+                    let initFirst = existingFirst || '';
+                    let initLast = existingLast || '';
+
+                    if (!initFirst && !initLast && res.profile.full_name) {
+                        const parts = res.profile.full_name.split(' ');
+                        initFirst = parts[0];
+                        initLast = parts.slice(1).join(' ');
+                    }
+
                     setFormData({
                         ...res.roleData,
-                        full_name: res.roleData.name || res.profile.full_name,
+                        first_name: initFirst,
+                        last_name: initLast,
                         // Initialize new fields
                         bio: res.roleData.bio || '',
                         languages_spoken: res.roleData.languages_spoken || []
@@ -41,6 +55,8 @@ export default function DoctorProfilePage() {
         setSaving(true);
         try {
             const doctorUpdate = {
+                first_name: formData.first_name,
+                last_name: formData.last_name,
                 specialization: formData.specialization,
                 license_number: formData.license_number,
                 hospital_affiliation: formData.hospital_affiliation,
@@ -55,7 +71,7 @@ export default function DoctorProfilePage() {
             setData((prev: any) => ({
                 ...prev,
                 roleData: { ...prev.roleData, ...doctorUpdate },
-                profile: { ...prev.profile, full_name: formData.full_name } // Ideally update full profile too if name changed
+                profile: { ...prev.profile, full_name: `${formData.first_name} ${formData.last_name}` }
             }));
         } catch (e) {
             console.error(e);
@@ -112,7 +128,10 @@ export default function DoctorProfilePage() {
                     <GlassGroup>
                         {isEditing ? (
                             <div className="p-4 space-y-3">
-                                <EditCell label="Full Name" value={formData.full_name} onChange={(v) => setFormData({ ...formData, full_name: v })} placeholder="Dr. Name" />
+                                <div className="flex gap-3">
+                                    <EditCell label="First Name" value={formData.first_name} onChange={(v) => setFormData({ ...formData, first_name: v })} placeholder="First Name" />
+                                    <EditCell label="Last Name" value={formData.last_name} onChange={(v) => setFormData({ ...formData, last_name: v })} placeholder="Last Name" />
+                                </div>
                                 <textarea
                                     value={formData.bio}
                                     onChange={e => setFormData({ ...formData, bio: e.target.value })}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Loader2, Calendar, FileText, Activity, AlertCircle } from 'lucide-react';
+import { Loader2, Calendar, FileText, Activity, AlertCircle, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function PatientForm({ userId, initialData }: { userId: string, initialData?: any }) {
@@ -11,6 +11,8 @@ export function PatientForm({ userId, initialData }: { userId: string, initialDa
     const supabase = createClient();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
+        first_name: initialData?.first_name || '',
+        last_name: initialData?.last_name || '',
         date_of_birth: initialData?.date_of_birth || '',
         blood_type: initialData?.blood_type || '',
         height_cm: initialData?.height_cm || '',
@@ -25,20 +27,36 @@ export function PatientForm({ userId, initialData }: { userId: string, initialDa
         setLoading(true);
 
         try {
-            const { error } = await supabase
+            // 1. Update Patients Table
+            const { error: patientError } = await supabase
                 .from('patients')
                 .upsert({
                     id: userId,
+                    first_name: formData.first_name,
+                    last_name: formData.last_name,
                     date_of_birth: formData.date_of_birth,
                     blood_type: formData.blood_type,
                     height_cm: formData.height_cm ? parseFloat(formData.height_cm) : null,
                     weight_kg: formData.weight_kg ? parseFloat(formData.weight_kg) : null,
                     medical_history: formData.medical_history,
                     allergies: formData.allergies ? formData.allergies.split(',').map((s: string) => s.trim()) : [],
-                    current_medications: formData.current_medications ? formData.current_medications.split(',').map((s: string) => s.trim()) : []
+                    current_medications: formData.current_medications ? formData.current_medications.split(',').map((s: string) => s.trim()) : [],
+                    name: `${formData.first_name} ${formData.last_name}`.trim() // Legacy support
                 });
 
-            if (error) throw error;
+            if (patientError) throw patientError;
+
+            // 2. Update Profiles Table (Sync name)
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    first_name: formData.first_name,
+                    last_name: formData.last_name,
+                    full_name: `${formData.first_name} ${formData.last_name}`.trim()
+                })
+                .eq('id', userId);
+
+            if (profileError) throw profileError;
 
             router.refresh();
             router.push('/patient');
@@ -52,6 +70,35 @@ export function PatientForm({ userId, initialData }: { userId: string, initialDa
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                        <User className="w-4 h-4 text-primary" /> First Name
+                    </label>
+                    <input
+                        type="text"
+                        required
+                        placeholder="John"
+                        className="w-full p-3 rounded-xl bg-muted/30 border border-input focus:ring-2 focus:ring-primary/20 outline-none"
+                        value={formData.first_name}
+                        onChange={e => setFormData({ ...formData, first_name: e.target.value })}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                        Last Name
+                    </label>
+                    <input
+                        type="text"
+                        required
+                        placeholder="Doe"
+                        className="w-full p-3 rounded-xl bg-muted/30 border border-input focus:ring-2 focus:ring-primary/20 outline-none"
+                        value={formData.last_name}
+                        onChange={e => setFormData({ ...formData, last_name: e.target.value })}
+                    />
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium flex items-center gap-2">
