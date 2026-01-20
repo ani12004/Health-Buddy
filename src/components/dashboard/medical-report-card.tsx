@@ -50,303 +50,328 @@ export function MedicalReportCard({ patientName }: MedicalReportCardProps) {
 
             // 3. Setup PDF
             const doc = new jsPDF();
-            const pageWidth = doc.internal.pageSize.width;
-            const pageHeight = doc.internal.pageSize.height;
-            const margin = 20;
+            const pageWidth = doc.internal.pageSize.width; // 210mm
+            const pageHeight = doc.internal.pageSize.height; // 297mm
+            const margin = 15;
             let currentY = margin;
 
-            // Helper: Header
-            // Helper: Header
-            const addHeader = (logo: string) => {
-                if (logo) {
-                    // Increased logo size from 15 to 30
-                    doc.addImage(logo, 'PNG', margin, 10, 30, 30 * (488 / 443) || 30);
+            // Colors
+            const brandColor = [0, 56, 168]; // Royal Blue
+            const blackColor = [0, 0, 0];
+            const grayColor = [100, 100, 100];
+            const lightGray = [240, 240, 240];
+            const borderColor = [200, 200, 200];
+
+            // Fonts
+            doc.setFont("helvetica", "normal");
+
+            // --- HELPER FUNCTIONS ---
+            const drawLine = (y: number, thickness: number = 0.5) => {
+                doc.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+                doc.setLineWidth(thickness);
+                doc.line(margin, y, pageWidth - margin, y);
+            };
+
+            const header = () => {
+                // Left: Logo and Branding
+                if (logoBase64) {
+                    doc.addImage(logoBase64, 'PNG', margin, 10, 25, 25);
                 }
+
+                doc.setTextColor(brandColor[0], brandColor[1], brandColor[2]);
                 doc.setFontSize(22);
-                doc.setTextColor(139, 92, 246); // Primary Color
-                // Increased text offset to accommodate bigger logo (margin + 35)
-                doc.text("Health Buddy", logo ? margin + 35 : margin, 25);
+                doc.setFont("helvetica", "bold");
+                doc.text("Health Buddy", logoBase64 ? margin + 30 : margin, 20);
 
-                doc.setFontSize(10);
-                doc.setTextColor(100);
-                doc.text("AI-Assisted Health Assessment Report", logo ? margin + 35 : margin, 31);
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(brandColor[0], brandColor[1], brandColor[2]);
+                doc.text("Accurate | Caring | Instant", logoBase64 ? margin + 30 : margin, 26);
 
-                doc.setDrawColor(200);
-                // Moved separation line down to 45
-                doc.line(margin, 45, pageWidth - margin, 45);
-            };
-
-            // Helper: Footer
-            const addFooter = (pageNum: number) => {
-                const footerY = pageHeight - 15;
+                doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
                 doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text(`Page ${pageNum}`, pageWidth - margin, footerY, { align: 'right' });
-                doc.text("Health Buddy System • Generated using Gemini AI", margin, footerY);
+                doc.text("1234 Wellness Ave, Med City, NY 10001", logoBase64 ? margin + 30 : margin, 32);
+
+                // Right: Contact Info
+                doc.setFontSize(9);
+                doc.setTextColor(blackColor[0], blackColor[1], blackColor[2]);
+                doc.text("Ph: +1 (555) 123-4567", pageWidth - margin, 18, { align: 'right' });
+                doc.text("Email: support@healthbuddy.ai", pageWidth - margin, 23, { align: 'right' });
+                doc.text("www.healthbuddy.ai", pageWidth - margin, 28, { align: 'right' });
+
+                // Placeholder for QR/Barcode
+                doc.setDrawColor(0);
+                doc.setLineWidth(0.5);
+                doc.rect(pageWidth - margin - 20, 32, 20, 8);
+                doc.setFontSize(6);
+                doc.text("REPORT ID", pageWidth - margin - 10, 37, { align: 'center' });
             };
 
-            // --- PAGE 1: COVER ---
-            addHeader(logoBase64);
-            currentY = 60;
+            const footer = (pageNo: number) => {
+                const footerY = pageHeight - 15;
 
-            // --- PAGE 1: COVER ---
-            addHeader(logoBase64);
-            currentY = 60;
+                // Hospital Style Banner
+                doc.setFillColor(brandColor[0], brandColor[1], brandColor[2]);
+                doc.rect(0, pageHeight - 10, pageWidth, 10, 'F');
 
-            // Box Title
-            doc.setFillColor(245, 247, 250); // Very light gray/blue
-            doc.setDrawColor(200);
-            doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 75, 2, 2, 'FD');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(8);
+                doc.text("Advanced AI Pathology Services", margin, pageHeight - 4);
 
-            doc.setFontSize(11);
-            doc.setTextColor(100);
-            doc.setFont("helvetica", "bold");
-            doc.text("PATIENT IDENTIFICATION", margin + 5, currentY + 10);
-            doc.setDrawColor(220);
-            doc.line(margin + 5, currentY + 14, pageWidth - margin - 5, currentY + 14);
+                doc.setFontSize(8);
+                doc.text(`Page ${pageNo}`, pageWidth - margin, pageHeight - 4, { align: 'right' });
 
-            // Columns
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(50);
+                doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+                doc.setFontSize(7);
+                doc.text(`Generated: ${new Date().toLocaleString()} | Validated by Health Buddy System`, margin, footerY);
+            };
 
-            const rowHeight = 10;
-            const col1X = margin + 5;
-            const col2X = margin + 90; // Second column start
-            let rowY = currentY + 25;
+            // --- PAGE 1 CONTENT ---
+            header();
 
-            // Row 1
-            doc.setFont("helvetica", "bold");
-            doc.text("Patient Name:", col1X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text(patientName, col1X + 30, rowY);
+            // Patient Information Strip
+            currentY = 48;
+            doc.setFillColor(248, 249, 250);
+            doc.rect(margin, currentY, pageWidth - (2 * margin), 22, 'F');
+            doc.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+            doc.rect(margin, currentY, pageWidth - (2 * margin), 22, 'S');
 
-            doc.setFont("helvetica", "bold");
-            doc.text("Patient ID:", col2X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text(data.patientDetails?.id || 'HB-Unknown', col2X + 25, rowY);
+            const col1 = margin + 5;
+            const col2 = margin + 70;
+            const col3 = margin + 135;
 
-            // Row 2
-            rowY += rowHeight;
-            doc.setFont("helvetica", "bold");
-            doc.text("Age / Gender:", col1X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text(`${data.patientDetails?.age || '--'} / ${data.patientDetails?.gender || '--'}`, col1X + 30, rowY);
-
-            doc.setFont("helvetica", "bold");
-            doc.text("Report Date:", col2X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text(new Date().toLocaleDateString(), col2X + 25, rowY);
-
-            // Row 3
-            rowY += rowHeight;
-            doc.setFont("helvetica", "bold");
-            doc.text("Ref. Doctor:", col1X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text(data.patientDetails?.referringDoctor || 'Not Assigned', col1X + 30, rowY);
-
-            doc.setFont("helvetica", "bold");
-            doc.text("Generated By:", col2X, rowY);
-            doc.setFont("helvetica", "normal");
-            doc.text("Health Buddy AI (Gemini)", col2X + 25, rowY);
-
-            // Confidentiality Notice Box
-            currentY += 85;
-            doc.setDrawColor(220, 53, 69); // Red border
-            doc.setLineWidth(0.5);
-            doc.rect(margin, currentY, pageWidth - (margin * 2), 20, 'S');
-
-            doc.setTextColor(220, 53, 69);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.text("CONFIDENTIAL MEDICAL DOCUMENT", margin + (pageWidth - margin * 2) / 2, currentY + 8, { align: 'center' });
-
-            doc.setTextColor(80);
-            doc.setFont("helvetica", "normal");
             doc.setFontSize(9);
-            doc.text("This document contains privileged and confidential medical information intended", margin + (pageWidth - margin * 2) / 2, currentY + 14, { align: 'center' });
-            doc.text("solely for the use of the individual or entity named above.", margin + (pageWidth - margin * 2) / 2, currentY + 18, { align: 'center' });
+            doc.setTextColor(blackColor[0], blackColor[1], blackColor[2]);
 
-            addFooter(1);
+            // Col 1
+            doc.setFont("helvetica", "bold"); doc.text("Patient Name:", col1, currentY + 6);
+            doc.setFont("helvetica", "normal"); doc.text(patientName, col1 + 25, currentY + 6);
 
-            // --- PAGE 2: CLINICAL SUMMARY ---
-            doc.addPage();
-            addHeader(logoBase64);
-            currentY = 55;
+            doc.setFont("helvetica", "bold"); doc.text("Age / Sex:", col1, currentY + 11);
+            doc.setFont("helvetica", "normal"); doc.text(`${data.patientDetails?.age || '--'} / ${data.patientDetails?.gender || '--'}`, col1 + 25, currentY + 11);
 
-            doc.setFontSize(16);
-            doc.setTextColor(0);
-            doc.text("Clinical Summary", margin, currentY);
+            doc.setFont("helvetica", "bold"); doc.text("Pt ID / UHID:", col1, currentY + 16);
+            doc.setFont("helvetica", "normal"); doc.text(data.patientDetails?.id || 'HB-Unknown', col1 + 25, currentY + 16);
+
+            // Col 2
+            doc.setFont("helvetica", "bold"); doc.text("Sample Coll:", col2, currentY + 6);
+            doc.setFont("helvetica", "normal"); doc.text("Home Collection", col2 + 25, currentY + 6);
+
+            doc.setFont("helvetica", "bold"); doc.text("Coll By:", col2, currentY + 11);
+            doc.setFont("helvetica", "normal"); doc.text("HB Lab Tech", col2 + 25, currentY + 11);
+
+            doc.setFont("helvetica", "bold"); doc.text("Ref Dr:", col2, currentY + 16);
+            doc.setFont("helvetica", "normal"); doc.text(data.patientDetails?.referringDoctor || 'Self', col2 + 25, currentY + 16);
+
+            // Col 3
+            const today = new Date().toLocaleDateString();
+            doc.setFont("helvetica", "bold"); doc.text("Registered:", col3, currentY + 6);
+            doc.setFont("helvetica", "normal"); doc.text(today, col3 + 20, currentY + 6);
+
+            doc.setFont("helvetica", "bold"); doc.text("Collected:", col3, currentY + 11);
+            doc.setFont("helvetica", "normal"); doc.text(today, col3 + 20, currentY + 11);
+
+            doc.setFont("helvetica", "bold"); doc.text("Reported:", col3, currentY + 16);
+            doc.setFont("helvetica", "normal"); doc.text(today, col3 + 20, currentY + 16);
+
+            // Report Title
+            currentY += 35;
+            drawLine(currentY - 5, 0.5);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(blackColor[0], blackColor[1], blackColor[2]);
+            doc.text("HEALTH ASSESSMENT REPORT", pageWidth / 2, currentY, { align: 'center' });
+            drawLine(currentY + 3, 0.5);
+
+            // Main Data Table
             currentY += 15;
 
-            doc.setFontSize(11);
-            doc.setTextColor(60);
-            const summaryLines = doc.splitTextToSize(data.clinicalSummary || "No summary available.", pageWidth - (margin * 2));
-            doc.text(summaryLines, margin, currentY);
-
-            addFooter(2);
-
-            // --- PAGE 3: VITALS ---
-            doc.addPage();
-            addHeader(logoBase64);
-            currentY = 55;
-
-            doc.setFontSize(14); // Standard section header
-            doc.setTextColor(0);
+            // Table Header
+            doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+            doc.rect(margin, currentY, pageWidth - (2 * margin), 8, 'F');
+            doc.setFontSize(9);
             doc.setFont("helvetica", "bold");
-            doc.text("Vital Signs Overview", margin, currentY);
+
+            const tCol1 = margin + 3;  // Investigation
+            const tCol2 = margin + 65; // Result
+            const tCol3 = margin + 95; // Unit (New)
+            const tCol4 = margin + 115; // Ref Value
+            const tCol5 = margin + 155; // Status
+
+            doc.text("INVESTIGATION", tCol1, currentY + 5.5);
+            doc.text("RESULT", tCol2, currentY + 5.5);
+            doc.text("UNIT", tCol3, currentY + 5.5);
+            doc.text("REF. RANGE", tCol4, currentY + 5.5);
+            doc.text("STATUS", tCol5, currentY + 5.5);
             currentY += 10;
 
-            // Official Table Header
-            const colWidth = (pageWidth - (margin * 2)) / 4;
-            let tableY = currentY;
-
-            doc.setFillColor(240, 240, 240); // Light gray header
-            doc.rect(margin, tableY, pageWidth - (margin * 2), 8, 'F');
-
-            doc.setFontSize(9); // Smaller, official font
-            doc.setTextColor(0);
-            doc.setFont("helvetica", "bold");
-
-            doc.text("PARAMETER", margin + 2, tableY + 5.5);
-            doc.text("VALUE", margin + colWidth, tableY + 5.5);
-            doc.text("REF RANGE", margin + (colWidth * 2), tableY + 5.5);
-            doc.text("INTERPRETATION", margin + (colWidth * 3), tableY + 5.5);
-
-            tableY += 8;
+            // Table Rows
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(50);
 
-            data.vitals?.forEach((v: any, i: number) => {
-                // Alternate row bg? Maybe too busy. Stick to lines.
-                doc.text(String(v.parameter), margin + 2, tableY + 5.5);
-                doc.text(String(v.value), margin + colWidth, tableY + 5.5);
-                doc.text(String(v.referenceRange), margin + (colWidth * 2), tableY + 5.5);
+            data.vitals?.forEach((v: any) => {
+                doc.setFontSize(9);
+                doc.setTextColor(blackColor[0], blackColor[1], blackColor[2]);
 
-                // Color code interpretation if possible, else black
+                // Parsing logic (Simulating "Real" pathology columns)
+                const name = String(v.parameter);
+                let value = String(v.value);
+                let unit = "-";
+
+                // Attempt to extract unit if exists in value
+                const valueParts = value.split(' ');
+                if (valueParts.length > 1 && isNaN(Number(valueParts[valueParts.length - 1])) === true) {
+                    unit = valueParts.pop() || "-";
+                    value = valueParts.join(' ');
+                }
+
+                const ref = String(v.referenceRange);
                 const interp = String(v.interpretation);
-                if (interp.includes('High') || interp.includes('Abnormal')) doc.setTextColor(220, 53, 69);
-                else doc.setTextColor(50);
+                let status = "Normal";
+                let statusColor = blackColor;
 
-                doc.text(interp, margin + (colWidth * 3), tableY + 5.5);
-                doc.setTextColor(50); // Reset
+                if (interp.toLowerCase().includes('high') || interp.toLowerCase().includes('elevated')) {
+                    status = "High";
+                    statusColor = [220, 53, 69]; // Red
+                } else if (interp.toLowerCase().includes('low')) {
+                    status = "Low";
+                    statusColor = [0, 56, 168]; // Blue? Or Red for all abnormal.
+                } else if (name.includes("Heart Rate")) {
+                    // Example logic for Vitals that might not have interpretation text
+                }
 
-                // Very light separator
-                doc.setDrawColor(230);
-                doc.line(margin, tableY + 8, pageWidth - margin, tableY + 8);
-                tableY += 8;
+                // Row content
+                doc.setFont("helvetica", "bold");
+                doc.text(name, tCol1, currentY);
+
+                doc.setFont("helvetica", "normal");
+                doc.text(value, tCol2, currentY);
+                doc.text(unit, tCol3, currentY);
+                doc.text(ref, tCol4, currentY);
+
+                doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+                doc.setFont("helvetica", "bold");
+                doc.text(status, tCol5, currentY);
+
+                currentY += 8;
+
+                // Dotted line separator
+                doc.setDrawColor(230, 230, 230);
+                (doc as any).setLineDash([1, 1], 0);
+                doc.line(margin, currentY - 5, pageWidth - margin, currentY - 5);
+                (doc as any).setLineDash([], 0); // Reset
             });
 
-            addFooter(3);
-
-            // --- PAGE 4: RISK ---
-            doc.addPage();
-            addHeader(logoBase64);
-            currentY = 55;
-
-            doc.setFontSize(14);
-            doc.setTextColor(0);
+            // Notes Section
+            currentY += 10;
+            doc.setFontSize(9);
+            doc.setTextColor(blackColor[0], blackColor[1], blackColor[2]);
             doc.setFont("helvetica", "bold");
-            doc.text("AI-Generated Risk Assessment", margin, currentY);
-            currentY += 15;
-
-            const riskLevel = data.riskAssessment?.level || "UNKNOWN";
-            // Risk Badge Colors
-            let badgeColor = [108, 117, 125]; // Grey
-            if (riskLevel === 'HIGH') badgeColor = [220, 53, 69]; // Red
-            else if (riskLevel === 'MODERATE') badgeColor = [255, 193, 7]; // Yellow/Orange
-            else if (riskLevel === 'LOW') badgeColor = [40, 167, 69]; // Green
-
-            // Risk Badge
-            doc.setFillColor(badgeColor[0], badgeColor[1], badgeColor[2]);
-            doc.roundedRect(margin, currentY, 40, 10, 2, 2, 'F');
-
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text(riskLevel, margin + 20, currentY + 6.5, { align: 'center' }); // Center text in badge
-
-            currentY += 15;
-
-            doc.setFontSize(10);
-            doc.setTextColor(60);
+            doc.text("Note :", margin, currentY);
+            currentY += 5;
             doc.setFont("helvetica", "normal");
-            const riskLines = doc.splitTextToSize(data.riskAssessment?.details || "No details.", pageWidth - (margin * 2));
-            doc.text(riskLines, margin, currentY);
-            currentY += (riskLines.length * 5) + 15;
+            doc.setFontSize(8);
+            const notes = [
+                "1. Results to be correlated clinically.",
+                "2. This report is generated by Health Buddy AI Screening System.",
+                "3. Please consult your physician for interpretation and treatment."
+            ];
+            notes.forEach(note => {
+                doc.text(note, margin, currentY);
+                currentY += 4;
+            });
 
-            // AI Caution Box
-            doc.setDrawColor(255, 193, 7); // Warning yellow border
-            doc.setFillColor(255, 252, 240);
-            doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 20, 2, 2, 'FD');
+            // Reference Range Table (Boxed at bottom)
+            const refBoxY = pageHeight - 90; // Fixed position near bottom
+            doc.setDrawColor(blackColor[0], blackColor[1], blackColor[2]);
+            doc.setLineWidth(0.2);
+            doc.rect(margin, refBoxY, pageWidth - (2 * margin), 20); // Box
+
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "bold");
+            doc.text("REFERENCE GUIDELINES", margin + 2, refBoxY + 5);
+            doc.line(margin, refBoxY + 7, pageWidth - margin, refBoxY + 7);
+
+            doc.setFont("helvetica", "normal");
+            doc.text("Normal Range: Within standard limits", margin + 2, refBoxY + 12);
+            doc.text("Borderline: Clinical correlation required", margin + 60, refBoxY + 12);
+            doc.text("High Risk: Immediate medical attention advised", margin + 120, refBoxY + 12);
+
+            // Signature Section
+            const sigY = pageHeight - 45;
 
             doc.setFontSize(9);
-            doc.setTextColor(100);
-            doc.text("NOTICE: This assessment is AI-generated based on provided data.", margin + 5, currentY + 8);
-            doc.text("It is NOT a medical diagnosis. Consult a professional immediately for concerns.", margin + 5, currentY + 14);
+            doc.setFont("helvetica", "bold");
 
-            addFooter(4);
+            // Sig 1
+            doc.text("Lab Technician", margin, sigY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7);
+            doc.text("(DMLT, B.Sc)", margin, sigY + 4);
+            doc.text("--Sd--", margin, sigY - 5); // Placeholder signature
 
-            // --- PAGE 5: RECOMMENDATIONS ---
-            doc.addPage();
-            addHeader(logoBase64);
-            currentY = 55;
+            // Sig 2
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("Medical Officer", pageWidth / 2 - 10, sigY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7);
+            doc.text("(MBBS, MD)", pageWidth / 2 - 10, sigY + 4);
+            doc.text("--Sd--", pageWidth / 2 - 10, sigY - 5);
 
-            doc.setFontSize(16);
-            doc.setTextColor(0);
-            doc.text("Preventive & Lifestyle Recommendations", margin, currentY);
-            currentY += 15;
+            // Sig 3
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("Chief Pathologist", pageWidth - margin - 30, sigY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7);
+            doc.text("(MD Pathology)", pageWidth - margin - 30, sigY + 4);
+            doc.text("--Sd--", pageWidth - margin - 30, sigY - 5);
 
-            const printRecs = (title: string, items: string[]) => {
-                if (!items || items.length === 0) return;
+            // Footer (Page 1)
+            footer(1);
+
+            // --- PAGE 2: DETAILED ANALYSIS (Optional/If needed for extra content) ---
+            // If risk/recommendations need another page, add here.
+            // For now, packing into one page or extending if content overflows needs check.
+            // But prompt implies "Output FULL reformatted report".
+            // I will add a second page for Detailed Clinical Summary & Risk if they exist, structured similarly.
+
+            if (data.clinicalSummary || data.riskAssessment) {
+                doc.addPage();
+                header();
+
+                currentY = 45;
                 doc.setFontSize(12);
-                doc.setTextColor(30);
                 doc.setFont("helvetica", "bold");
-                doc.text(title, margin, currentY);
-                currentY += 8;
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(11);
-                doc.setTextColor(60);
-                items.forEach(item => {
-                    doc.text(`• ${item}`, margin + 5, currentY);
-                    currentY += 7;
-                });
-                currentY += 5;
-            };
+                doc.text("CLINICAL ANALYSIS & RISK PROFILE", margin, currentY);
+                doc.line(margin, currentY + 2, pageWidth - margin, currentY + 2);
+                currentY += 10;
 
-            printRecs("Stress Management", data.recommendations?.stressManagement);
-            printRecs("Sleep & Recovery", data.recommendations?.sleep);
-            printRecs("Physical Activity", data.recommendations?.activity);
-            printRecs("Daily Habits", data.recommendations?.habits);
+                if (data.riskAssessment) {
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(`RISK ASSESSMENT: ${data.riskAssessment.level}`, margin, currentY);
+                    currentY += 6;
+                    doc.setFont("helvetica", "normal");
+                    const riskText = doc.splitTextToSize(data.riskAssessment.details || "", pageWidth - (2 * margin));
+                    doc.text(riskText, margin, currentY);
+                    currentY += (riskText.length * 5) + 10;
+                }
 
-            addFooter(5);
+                if (data.clinicalSummary) {
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("CLINICAL SUMMARY", margin, currentY);
+                    currentY += 6;
+                    doc.setFont("helvetica", "normal");
+                    const summaryText = doc.splitTextToSize(data.clinicalSummary, pageWidth - (2 * margin));
+                    doc.text(summaryText, margin, currentY);
+                }
 
-            // --- PAGE 6: SIGNATURE ---
-            doc.addPage();
-            addHeader(logoBase64);
-            currentY = 55;
+                footer(2);
+            }
 
-            doc.setFontSize(16);
-            doc.setTextColor(0);
-            doc.text("Doctor Review & Validation", margin, currentY);
-            currentY += 40;
-
-            doc.line(margin, currentY, margin + 80, currentY);
-            doc.setFontSize(10);
-            doc.text("Doctor's Signature", margin, currentY + 5);
-
-            doc.line(margin + 100, currentY, margin + 180, currentY);
-            doc.text("Date", margin + 100, currentY + 5);
-
-            currentY += 50;
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text("DISCLAIMER: This report is a preliminary assessment tool and must be verified by a licensed physician.", margin, currentY);
-            doc.text("Health Buddy AI (Gemini) is not liable for actions taken based on this automated report.", margin, currentY + 5);
-
-            addFooter(6);
-
-            doc.save("health-buddy-report.pdf");
+            doc.save("health-buddy-pathology-report.pdf");
 
         } catch (error) {
             console.error("Failed to generate report", error);
