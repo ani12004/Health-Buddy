@@ -42,7 +42,18 @@ export default function LoginPage() {
 
             const role = profile?.role || 'patient' // Default to patient if not found (shouldn't happen)
 
+            // Sync user metadata if needed (middleware relies on this)
+            if (data.user?.user_metadata?.role !== role) {
+                await supabase.auth.updateUser({
+                    data: { role: role }
+                })
+            }
+
             toast.success('Welcome back!')
+
+            // Refresh router to ensure middleware sees the new session
+            router.refresh()
+
             if (role === 'doctor') {
                 router.push('/doctor/dashboard')
             } else {
