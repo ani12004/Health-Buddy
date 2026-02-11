@@ -1,0 +1,2451 @@
+<!-- Health Buddy Landing Page -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Health Buddy - AI Health Companion</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "primary-light": "#a352f1", 
+                        "primary-dark": "#6a1cb5",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "3xl": "2.5rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(140, 43, 238, 0.15)',
+                        'glow': '0 0 60px -15px rgba(140, 43, 238, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Utilities for Glassmorphism & Gradients */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-panel {
+            background: rgba(25, 16, 34, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .hero-gradient-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(140, 43, 238, 0.15) 0%, rgba(247, 246, 248, 0) 70%);
+        }
+        .dark .hero-gradient-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(140, 43, 238, 0.25) 0%, rgba(25, 16, 34, 0) 70%);
+        }
+
+        .blob-1 {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            top: -100px;
+            left: -100px;
+            background: #8c2bee;
+            filter: blur(180px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+        .blob-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            bottom: 0;
+            right: -100px;
+            background: #a352f1;
+            filter: blur(160px);
+            opacity: 0.12;
+            z-index: 0;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden selection:bg-primary/30 selection:text-primary">
+<!-- Navigation -->
+<nav class="fixed w-full z-50 transition-all duration-300 glass-panel border-b border-white/50 dark:border-white/5">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-20">
+<!-- Logo -->
+<div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-icons text-lg">health_and_safety</span>
+</div>
+<span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Health Buddy</span>
+</div>
+<!-- Desktop Menu -->
+<div class="hidden md:flex items-center space-x-10">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors" href="#">Features</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors" href="#">How it Works</a>
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors" href="#">Pricing</a>
+</div>
+<!-- CTA -->
+<div class="hidden md:flex items-center space-x-4">
+<a class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary transition-colors" href="#">Log in</a>
+<a class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40" href="#">
+                        Get Started
+                    </a>
+</div>
+<!-- Mobile menu button -->
+<div class="md:hidden flex items-center">
+<button class="text-slate-600 dark:text-slate-200 hover:text-primary p-2">
+<span class="material-icons">menu</span>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+<!-- Background Decor -->
+<div class="hero-gradient-bg absolute inset-0 z-0 pointer-events-none"></div>
+<div class="blob-1 pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center">
+<!-- Hero Content -->
+<div class="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider mb-6">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        New AI Features Live
+                    </div>
+<h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-6">
+                        Your AI health <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">companion.</span>
+</h1>
+<p class="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0">
+                        Instant symptom analysis and personalized health insights powered by advanced medical AI. Always available, always accurate.
+                    </p>
+<div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+<a class="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300 text-center flex items-center justify-center gap-2" href="#">
+                            Try Symptom Checker
+                            <span class="material-icons text-sm">arrow_forward</span>
+</a>
+<a class="w-full sm:w-auto px-8 py-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white rounded-full font-semibold hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 text-center flex items-center justify-center gap-2 group" href="#">
+<span class="material-icons text-primary group-hover:scale-110 transition-transform">play_circle_outline</span>
+                            Watch Demo
+                        </a>
+</div>
+<div class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-slate-500 dark:text-slate-400">
+<div class="flex -space-x-2">
+<img alt="" class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark object-cover" data-alt="User avatar smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg6gHZlFme61lzy8tWNQESbdoTonZgk__2CYDLafiHRFhwfkTrDk-AxS9tJTQJaa2kYQbO8Z0BLf2Ud-_gQc7-Ac6-9g55FfeasWvaHqf3oKVij2AfLn7ZYhgmwvRo2yKh2s-Jr7kvpMiRXeMVNGNJlSOi_obOUAIJaoR42kwsoU5u7SkEMGveS-EurCtVm09z8V1AADx1WlHeHZZthbkRBqfZgU-BAWVP6eoe8RrKEIRlvl2pVvPSxY5HfK3AXbOqTtgHVenzRA"/>
+<img alt="" class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark object-cover" data-alt="User avatar man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMDhvMUsPvKYKYT4klFMYBWhiV93UgoggNSsMhRNgVZYdI-krOD_3Bms9eFOMY2698iK-dh0RqnsqAjeFFjLbEVCRCIESme9lm7ZWJ8Czlb58yoXnGuw9STFl5PSxHZ441bmTQ0vhvyKnq3-g96Gmo-8ueXzXBKNavx2nlkEiHRDl6vrr_qcYmvOqJdTupsVuptMblaH9fj8d07jf8_dE0dl9-2s2FAHtbF1xQJvcGtPFWobf7tCkOU2hwtqHD89VTz2cDJEcQUQ"/>
+<img alt="" class="w-8 h-8 rounded-full border-2 border-white dark:border-background-dark object-cover" data-alt="User avatar woman glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw2osrVE8RFp36Qn5pEjlHlR8xS7-ihavWLV0u2yCTP7P8fDIA0GRpVvlKZz4DUpHcihLOUy3zAD3BPLF5eEfvn3pNWqOafBhsUPYXnVw2G858VkF_ito4sjNtJN3ZqIHKFuXmfuHu3M3SLigFam6EwJLXQrXh0N-mUtAN3bH-9qlBtA2l7oCpAIeeniVQ96_dugDdc_3G_qPM81cwHdYIS2Og09ZWcYkvI4Fyq9V69EOYt3J4Y-wN3yY2g1X-Sf1Z2El3ZA0ViQ"/>
+</div>
+<p>Trusted by <span class="font-bold text-slate-800 dark:text-white">10,000+</span> patients</p>
+</div>
+</div>
+<!-- Hero Visual - Glassmorphic Interface -->
+<div class="relative mx-auto w-full max-w-lg lg:max-w-xl perspective-1000">
+<!-- Background blobs for card -->
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+<div class="absolute -bottom-8 -left-4 w-32 h-32 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+<!-- Main Glass Card -->
+<div class="relative glass-panel rounded-2xl p-6 shadow-soft transition-transform hover:scale-[1.02] duration-500">
+<!-- Header of UI -->
+<div class="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-white/10 pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary">smart_toy</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-800 dark:text-white">Health Buddy AI</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span> Online
+                                    </p>
+</div>
+</div>
+<span class="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-white/5 px-2 py-1 rounded">v2.4.0</span>
+</div>
+<!-- Chat Area -->
+<div class="space-y-4 mb-6">
+<!-- AI Message -->
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center mt-1">
+<span class="material-icons text-primary text-xs">auto_awesome</span>
+</div>
+<div class="bg-slate-100 dark:bg-white/5 p-4 rounded-2xl rounded-tl-none max-w-[85%]">
+<p class="text-sm text-slate-700 dark:text-slate-200">Hi Alex! I noticed your heart rate was slightly elevated after your run. How are you feeling right now?</p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-3 justify-end">
+<div class="bg-primary text-white p-4 rounded-2xl rounded-tr-none max-w-[85%] shadow-md shadow-primary/20">
+<p class="text-sm">I'm feeling a bit dizzy, actually. Is that normal?</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 overflow-hidden mt-1">
+<img alt="" class="w-full h-full object-cover" data-alt="User avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjbU1XkMxgxy66XpZxu1UMN0EYyorfmYPBJd-Go_gxLJyqUs2dqnrOJM9rMixroMrT1Wnm-aDUKZTS7jQbVBwaSqWUTNKSrtayoTpsRw7LExXuy3lkfk5pN8hh0DHz61lGlIp8cdN8szyUrJErLxEoA6Oy8NqEclsIKcAW4FNfp_sS6IV3pwQKoziooWxJIncEbkNb6seQZpdEiD1KR4nHXs8ORTQjsv2URotpVDX7OoORSpgiq8NtFe2EWGdDUYAGw5soQfE4hA"/>
+</div>
+</div>
+<!-- AI Analysis Card (Nested) -->
+<div class="ml-11 bg-white dark:bg-slate-800 border border-slate-100 dark:border-white/5 p-4 rounded-xl shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-icons text-amber-500 text-sm">warning</span>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Analysis</span>
+</div>
+<p class="text-sm font-semibold text-slate-800 dark:text-white mb-2">Potential Dehydration</p>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-amber-500 w-3/4 rounded-full"></div>
+</div>
+<div class="flex justify-between mt-1">
+<span class="text-[10px] text-slate-400">Severity</span>
+<span class="text-[10px] font-medium text-amber-500">Moderate</span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="relative">
+<input class="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" disabled="" placeholder="Type your symptoms..." type="text"/>
+<button class="absolute right-2 top-2 p-1.5 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+<span class="material-icons text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Section -->
+<section class="py-10 border-y border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02]">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<p class="text-center text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Trusted by leading healthcare partners</p>
+<div class="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<!-- Using text as placeholders for logos to ensure clean look without external images -->
+<div class="flex items-center gap-2 text-xl font-bold text-slate-700 dark:text-slate-300">
+<span class="material-icons text-2xl">local_hospital</span> MedCore
+                </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-700 dark:text-slate-300">
+<span class="material-icons text-2xl">monitor_heart</span> HeartPlus
+                </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-700 dark:text-slate-300">
+<span class="material-icons text-2xl">psychology</span> NeuroLink
+                </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-700 dark:text-slate-300">
+<span class="material-icons text-2xl">shield</span> SecureHealth
+                </div>
+<div class="flex items-center gap-2 text-xl font-bold text-slate-700 dark:text-slate-300">
+<span class="material-icons text-2xl">science</span> LabGenius
+                </div>
+</div>
+</div>
+</section>
+<!-- How it Works Section -->
+<section class="py-24 relative overflow-hidden">
+<div class="blob-2 pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="text-center max-w-3xl mx-auto mb-20">
+<h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Healthcare simplified in <span class="text-primary">three steps</span></h2>
+<p class="text-lg text-slate-600 dark:text-slate-300">Complex medical data turned into actionable insights instantly.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Step 1 -->
+<div class="group bg-white dark:bg-slate-800/50 rounded-2xl p-8 shadow-sm hover:shadow-soft transition-all duration-300 border border-slate-100 dark:border-white/5 relative">
+<div class="absolute -top-6 left-8 bg-background-light dark:bg-background-dark border border-slate-200 dark:border-white/10 text-primary w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shadow-sm z-10 group-hover:scale-110 transition-transform">1</div>
+<div class="mt-6 mb-6 h-40 bg-purple-50 dark:bg-white/5 rounded-xl flex items-center justify-center overflow-hidden relative">
+<!-- Abstract representation -->
+<div class="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-transparent dark:from-white/5"></div>
+<span class="material-icons text-6xl text-primary/40 group-hover:text-primary/60 transition-colors">chat_bubble_outline</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Describe Symptoms</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">Simply type how you're feeling or speak to the AI assistant just like you would a doctor.</p>
+</div>
+<!-- Step 2 -->
+<div class="group bg-white dark:bg-slate-800/50 rounded-2xl p-8 shadow-sm hover:shadow-soft transition-all duration-300 border border-slate-100 dark:border-white/5 relative">
+<div class="absolute -top-6 left-8 bg-background-light dark:bg-background-dark border border-slate-200 dark:border-white/10 text-primary w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shadow-sm z-10 group-hover:scale-110 transition-transform">2</div>
+<div class="mt-6 mb-6 h-40 bg-purple-50 dark:bg-white/5 rounded-xl flex items-center justify-center overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-transparent dark:from-white/5"></div>
+<span class="material-icons text-6xl text-primary/40 group-hover:text-primary/60 transition-colors">auto_awesome</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">AI Analysis</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">Our advanced algorithms compare your symptoms against millions of medical cases instantly.</p>
+</div>
+<!-- Step 3 -->
+<div class="group bg-white dark:bg-slate-800/50 rounded-2xl p-8 shadow-sm hover:shadow-soft transition-all duration-300 border border-slate-100 dark:border-white/5 relative">
+<div class="absolute -top-6 left-8 bg-background-light dark:bg-background-dark border border-slate-200 dark:border-white/10 text-primary w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shadow-sm z-10 group-hover:scale-110 transition-transform">3</div>
+<div class="mt-6 mb-6 h-40 bg-purple-50 dark:bg-white/5 rounded-xl flex items-center justify-center overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-transparent dark:from-white/5"></div>
+<span class="material-icons text-6xl text-primary/40 group-hover:text-primary/60 transition-colors">assignment_turned_in</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Get Care Plan</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">Receive a preliminary diagnosis and suggested next steps, from home care to seeing a specialist.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white dark:bg-black/20 border-t border-slate-200 dark:border-white/5 pt-16 pb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+<div class="col-span-2 lg:col-span-2">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-icons text-lg">health_and_safety</span>
+</div>
+<span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Health Buddy</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs leading-relaxed">
+                        Democratizing healthcare with artificial intelligence. Making accurate diagnosis accessible to everyone, everywhere.
+                    </p>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white mb-4">Product</h4>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Security</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Enterprise</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Customer Stories</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white mb-4">Company</h4>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">About</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Press</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white mb-4">Legal</h4>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terms</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">HIPAA</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-slate-100 dark:border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-slate-400">© 2023 Health Buddy AI. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-icons text-sm">facebook</span></a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-icons text-sm">camera_alt</span></a> <!-- Instagram abstract -->
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-icons text-sm">alternate_email</span></a> <!-- Twitter/X abstract -->
+</div>
+</div>
+</div>
+</footer>
+</body></html>
+
+<!-- Health Buddy Secure Login -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Health Buddy Secure Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "primary-light": "#a65be8",
+                        "primary-dark": "#6b1cb0",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem", 
+                        "lg": "1rem", 
+                        "xl": "1.5rem", 
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c7c7; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen flex flex-col md:flex-row antialiased transition-colors duration-300">
+<!-- Left Side: Visual & Emotional Anchor -->
+<div class="hidden md:flex md:w-5/12 lg:w-1/2 relative flex-col justify-between p-12 bg-gray-900 overflow-hidden">
+<!-- Background Image -->
+<div class="absolute inset-0 z-0">
+<img alt="Abstract medical DNA structure in calming blue and purple tones" class="w-full h-full object-cover opacity-60 mix-blend-overlay" data-alt="Abstract medical DNA structure in calming blue and purple tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtjerueH0ckSry3NXuA4bcArFklKEqzd_0eiGeqJmPObDWL-BshhP7GPZx6s783u6Xkxa_mUNsUUBzXqcjRAzmyUWkf7OTHV15uZHmh_YoXM8G8FVBsOFV1bt1w2stYFHTA5jduL0LiQdDKKQv7tms_9dg5pLMnO86ePvvPNu_fylp69J61-Q-iWxEsERSNBzceEGafAkHDv6w_qH7PtUAkERplhn5y-JEpg5Tx9kL-InZNKTaiDPb1ba6YrecIhS2qONO9VQ5EQ"/>
+<!-- Gradient Overlay for readability -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/90 to-background-dark/90 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 via-transparent to-transparent"></div>
+</div>
+<!-- Branding -->
+<div class="relative z-10 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+<span class="material-icons text-white text-2xl">health_and_safety</span>
+</div>
+<span class="text-white font-bold text-xl tracking-wide">Health Buddy AI</span>
+</div>
+<!-- Quote Block -->
+<div class="relative z-10 max-w-lg mb-12">
+<div class="mb-6">
+<span class="material-icons text-primary-light/50 text-6xl">format_quote</span>
+</div>
+<h2 class="text-3xl lg:text-4xl font-semibold text-white leading-tight mb-6">
+                The groundwork of all happiness is health.
+            </h2>
+<div class="flex items-center gap-4">
+<div class="h-px w-12 bg-white/40"></div>
+<p class="text-white/80 font-medium tracking-wide text-sm uppercase">Leigh Hunt</p>
+</div>
+</div>
+<!-- Decorative Circle -->
+<div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary/30 rounded-full blur-3xl z-0"></div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="w-full md:w-7/12 lg:w-1/2 flex items-center justify-center p-6 md:p-12 lg:p-24 relative">
+<!-- Background Decoration for form side -->
+<div class="absolute top-0 right-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+<div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+<div class="w-full max-w-md space-y-8">
+<!-- Mobile Logo (visible only on small screens) -->
+<div class="md:hidden flex items-center gap-2 mb-8 justify-center">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-icons text-white text-lg">health_and_safety</span>
+</div>
+<span class="text-slate-900 dark:text-white font-bold text-lg">Health Buddy AI</span>
+</div>
+<!-- Header -->
+<div class="text-center md:text-left space-y-2">
+<h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Welcome Back</h1>
+<p class="text-slate-500 dark:text-slate-400">Please enter your credentials to access your patient dashboard.</p>
+</div>
+<!-- Form -->
+<form action="#" class="space-y-6 mt-8" method="POST">
+<div class="space-y-5">
+<!-- Email Field -->
+<div class="relative group">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1" for="email">Email Address</label>
+<div class="relative">
+<input autocomplete="email" class="w-full px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-primary/20 transition-all outline-none text-slate-900 dark:text-white placeholder-slate-400 shadow-sm" id="email" name="email" placeholder="name@company.com" required="" type="email"/>
+<span class="material-icons absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">mail_outline</span>
+</div>
+</div>
+<!-- Password Field -->
+<div class="relative group">
+<div class="flex items-center justify-between mb-2 ml-1">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300" for="password">Password</label>
+<a class="text-sm font-semibold text-primary hover:text-primary-dark dark:hover:text-primary-light transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<input autocomplete="current-password" class="w-full px-6 py-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-primary/20 transition-all outline-none text-slate-900 dark:text-white placeholder-slate-400 shadow-sm" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<span class="material-icons absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600 dark:hover:text-slate-200 transition-colors">visibility_off</span>
+</div>
+</div>
+</div>
+<!-- Remember Me Checkbox -->
+<div class="flex items-center ml-1">
+<input class="h-5 w-5 rounded border-slate-300 text-primary focus:ring-primary/50 transition-colors cursor-pointer" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-3 block text-sm text-slate-600 dark:text-slate-400 cursor-pointer select-none" for="remember-me">
+                        Remember me for 30 days
+                    </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary/20 text-base font-bold text-white bg-primary hover:bg-primary-dark dark:hover:bg-primary-light focus:outline-none focus:ring-4 focus:ring-primary/30 transition-all duration-200 transform hover:-translate-y-0.5" type="submit">
+                    Sign In to Account
+                </button>
+</form>
+<!-- Divider -->
+<div class="relative py-2">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-4 bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400 font-medium">Or continue with</span>
+</div>
+</div>
+<!-- Social Auth -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 w-full px-4 py-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" type="button">
+<img alt="Google Logo" class="h-5 w-5" data-alt="Google G Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn8uGPhQTndl2SvxhGo5BKZDEGAia01Da3eRa4sBxckzn6747QYEXsYshkA6XwMhiB4xKGWgEAubiH0YqaFTdvqklVRpaav_KUKfMj1jzTgSTf-g1ZUpWVNOg2oFtDb_8tXtpMhgk23IxnVOPPrT9-qmmwAPgmtpmfkb8YkRFAlyzOKOGNpjdeNkXfvqfjFW6tjWhzw01X8qaxoeY6YqmHGCmnE21hAgC07yW-E3XhK9zSaCYklum-9LiT-88x-7g6H0zyflHXiA"/>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 w-full px-4 py-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group" type="button">
+<img alt="Apple Logo" class="h-5 w-5 dark:invert" data-alt="Apple Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRxITcWUF18aAdiIjb5VumoU2VA8BOXAd1oRw5Q0ZqfKALehcfuZuEC_XKc7Sg85f9u6b4AkAThjqjIDegc4Pxqn65C6xpuVpnDVcU6BuhfWGYT2R0CxC3ayFxDMZF-HueKqwX-eMELNqghGd-PKgjZ66eT_Ioq6XqtkO-NVtc5DwZtcck8n2DUd0BdZq9noSD3fBwjwKylQgxZqHfCrcIqSg6IOyMsR3GwUTMYuwbJ9GasJze0D9RFBNf231SNE5ODyK_4ZcHHQ"/>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">Apple</span>
+</button>
+</div>
+<!-- Sign Up Link -->
+<p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-8">
+                Don't have an account? 
+                <a class="font-bold text-primary hover:text-primary-dark dark:hover:text-primary-light transition-colors ml-1" href="#">
+                    Sign up for free
+                </a>
+</p>
+</div>
+</div>
+</body></html>
+
+<!-- Health Buddy Onboarding Step 1 -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Health Buddy Onboarding Step 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom radio logic for visual selection */
+        .role-card input:checked + div {
+            border-color: #8c2bee;
+            background-color: rgba(140, 43, 238, 0.05);
+        }
+        .role-card input:checked + div .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .role-card:hover div {
+            border-color: rgba(140, 43, 238, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+<!-- Navbar / Minimal Header -->
+<header class="w-full py-6 px-8 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-gradient-to-br from-primary to-purple-400 rounded-lg flex items-center justify-center text-white font-bold text-xl">H</div>
+<span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Health Buddy</span>
+</div>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors dark:text-slate-400" href="#">Need help?</a>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex items-center justify-center p-6">
+<div class="w-full max-w-4xl flex flex-col items-center">
+<!-- Progress Indicator Section -->
+<div class="mb-12 flex flex-col items-center">
+<div class="relative w-16 h-16 mb-4 flex items-center justify-center">
+<!-- Circular Progress Ring Background -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-200 dark:text-slate-700" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary transition-all duration-1000 ease-out" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175.84" stroke-dashoffset="117.2" stroke-width="4"></circle>
+</svg>
+<span class="absolute text-sm font-bold text-primary">1/3</span>
+</div>
+<h2 class="text-sm font-semibold uppercase tracking-wider text-primary mb-1">Step 1: Role Selection</h2>
+</div>
+<!-- Header Text -->
+<div class="text-center mb-10 max-w-lg mx-auto">
+<h1 class="text-4xl font-bold mb-4 text-slate-900 dark:text-white leading-tight">Welcome to Health Buddy</h1>
+<p class="text-lg text-slate-500 dark:text-slate-400">Let's personalize your AI experience. To get started, please tell us which role describes you best.</p>
+</div>
+<!-- Role Selection Cards -->
+<form class="w-full grid md:grid-cols-2 gap-6 mb-12">
+<!-- Patient Card -->
+<label class="role-card cursor-pointer group relative">
+<input class="peer sr-only" name="role" type="radio" value="patient"/>
+<div class="bg-white dark:bg-slate-800/50 border-2 border-transparent rounded-2xl p-8 h-full flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
+<!-- Icon Container -->
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+<span class="material-icons-round text-4xl text-primary">favorite</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 text-slate-900 dark:text-white">I am a Patient</h3>
+<p class="text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                            I'm looking for personalized health insights, symptom tracking, and daily care advice tailored to my needs.
+                        </p>
+<!-- Selection Indicator -->
+<div class="mt-auto check-icon opacity-0 transform scale-75 transition-all duration-300 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-icons-round text-lg">check</span>
+</div>
+</div>
+</label>
+<!-- Doctor Card -->
+<label class="role-card cursor-pointer group relative">
+<input class="peer sr-only" name="role" type="radio" value="doctor"/>
+<div class="bg-white dark:bg-slate-800/50 border-2 border-transparent rounded-2xl p-8 h-full flex flex-col items-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
+<!-- Icon Container -->
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+<span class="material-icons-round text-4xl text-primary">medical_services</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 text-slate-900 dark:text-white">I am a Doctor</h3>
+<p class="text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                            I need advanced tools for patient management, clinical decision support, and AI-driven data analysis.
+                        </p>
+<!-- Selection Indicator -->
+<div class="mt-auto check-icon opacity-0 transform scale-75 transition-all duration-300 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-icons-round text-lg">check</span>
+</div>
+</div>
+</label>
+</form>
+<!-- Navigation Buttons -->
+<div class="flex items-center justify-between w-full max-w-lg mx-auto">
+<button class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium px-6 py-3 transition-colors" type="button">
+                    Back
+                </button>
+<button class="bg-primary hover:bg-purple-700 text-white font-semibold py-3 px-10 rounded-xl shadow-lg shadow-primary/30 transform transition hover:scale-105 active:scale-95 flex items-center gap-2 group" type="button">
+                    Next Step
+                    <span class="material-icons-round text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="py-8 text-center text-slate-400 dark:text-slate-600 text-sm">
+<p>Already have an account? <a class="text-primary hover:underline font-medium" href="#">Log in here</a></p>
+</footer>
+</body></html>
+
+<!-- Patient Dashboard Overview -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Health Buddy AI - Patient Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                    "primary": "#8c2bee",
+                    "primary-light": "#d1abfa",
+                    "primary-dark": "#5e1da1",
+                    "background-light": "#f7f6f8",
+                    "background-dark": "#191022",
+                    "neutral-surface": "#ffffff",
+                    "neutral-surface-dark": "#2d1f3f",
+                },
+                fontFamily: {
+                    "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                boxShadow: {
+                    'glass': '0 8px 32px 0 rgba(140, 43, 238, 0.1)',
+                    'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    'card': '0 0 0 1px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04)',
+                }
+            },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-panel {
+            background: rgba(45, 31, 63, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 20px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen flex antialiased selection:bg-primary/20 selection:text-primary">
+<!-- Sidebar Navigation -->
+<aside class="fixed inset-y-0 left-0 w-72 bg-white/80 dark:bg-neutral-surface-dark/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-700/30 z-50 flex flex-col justify-between hidden lg:flex transition-colors duration-300">
+<!-- Logo Area -->
+<div class="p-8 pb-4">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center text-white shadow-lg shadow-primary/30">
+<span class="material-icons-round text-2xl">medical_services</span>
+</div>
+<div>
+<h1 class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Health Buddy</h1>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400">AI Patient Portal</p>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="space-y-2">
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl bg-primary/10 text-primary font-semibold transition-all group relative overflow-hidden" href="#">
+<div class="absolute inset-y-0 left-0 w-1 bg-primary rounded-r-full"></div>
+<span class="material-icons-round text-xl">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group" href="#">
+<span class="material-icons-round text-xl group-hover:text-primary transition-colors">assignment</span>
+<span>Medical Reports</span>
+<span class="ml-auto bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">2 NEW</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group" href="#">
+<span class="material-icons-round text-xl group-hover:text-primary transition-colors">calendar_today</span>
+<span>Appointments</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group" href="#">
+<span class="material-icons-round text-xl group-hover:text-primary transition-colors">medication</span>
+<span>Prescriptions</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions -->
+<div class="p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group" href="#">
+<span class="material-icons-round text-xl group-hover:text-primary transition-colors">settings</span>
+<span>Settings</span>
+</a>
+<!-- User Profile Snippet -->
+<div class="bg-slate-50 dark:bg-white/5 p-3 rounded-xl flex items-center gap-3 border border-slate-100 dark:border-white/5">
+<img class="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-700" data-alt="Portrait of a young woman smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjbXt-Mdy92v_gzGydeUAxXCnJZ0FcHVezAIiX991oavwC0C2hfCP6v1OLlanltA1V3sK0eYxoQqOUv-YJVgH_ePqJdToIQii67nd-_Gbb2fSzIB9lyNGf7FpdbmQhndUrJ5SVgPqDvGcVcFKm3UPEvgqEfjHRUJKYsBPU50WklVCveOQksHGtJSUR1lz1T2L29AiwR4dbv6LIpVW6uzhl0UBS3KilM1UPxSW8IZXIMxEnyQL60_k7GzxmbXh0rtiu502-bLnVww"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Sarah Jenkins</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Patient ID: #88392</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-icons-round text-lg">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-72 flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+<div>
+<h2 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">
+                    Good Morning, Sarah
+                </h2>
+<p class="text-slate-500 dark:text-slate-400 text-base lg:text-lg flex items-center gap-2">
+<span class="material-icons-round text-primary text-base">event</span>
+<span>Wednesday, October 25th</span>
+</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-3 rounded-full bg-white dark:bg-neutral-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/30 transition-all shadow-sm relative">
+<span class="material-icons-round">notifications</span>
+<span class="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-neutral-surface-dark"></span>
+</button>
+<button class="hidden md:flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+<span class="material-icons-round">add</span>
+                    New Appointment
+                </button>
+</div>
+</header>
+<!-- Top Grid: Hero & Tip -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+<!-- Hero AI Symptom Analyzer -->
+<div class="lg:col-span-2 relative overflow-hidden rounded-2xl bg-white dark:bg-neutral-surface-dark border border-slate-100 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none group">
+<!-- Decorative background elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+<div class="relative p-8 lg:p-10 flex flex-col h-full justify-center">
+<div class="flex items-center gap-3 mb-6">
+<div class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider border border-primary/10 flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                            AI Active
+                        </div>
+</div>
+<h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">How are you feeling today?</h3>
+<p class="text-slate-500 dark:text-slate-400 mb-8 max-w-lg">Describe your symptoms to our AI assistant for an instant preliminary analysis and recommended next steps.</p>
+<div class="relative group/input">
+<div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+<span class="material-icons-round text-primary/60 text-2xl group-focus-within/input:text-primary transition-colors">search</span>
+</div>
+<input class="w-full pl-14 pr-16 py-5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-inner text-lg" placeholder="e.g. 'I have a mild headache and felt dizzy this morning...'" type="text"/>
+<button class="absolute inset-y-2 right-2 p-3 rounded-lg bg-white dark:bg-neutral-surface-dark text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600 shadow-sm">
+<span class="material-icons-round">mic</span>
+</button>
+</div>
+<div class="mt-6 flex flex-wrap gap-3">
+<button class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-white hover:shadow-md dark:hover:bg-white/10 text-sm text-slate-600 dark:text-slate-300 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                            Check Temperature
+                        </button>
+<button class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-white hover:shadow-md dark:hover:bg-white/10 text-sm text-slate-600 dark:text-slate-300 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                            Log Blood Pressure
+                        </button>
+</div>
+</div>
+</div>
+<!-- Daily Health Tip Card -->
+<div class="lg:col-span-1 rounded-2xl bg-gradient-to-br from-amber-50 to-primary/10 dark:from-amber-900/20 dark:to-primary/20 border border-amber-100/50 dark:border-white/5 p-8 flex flex-col justify-between relative overflow-hidden group hover:shadow-lg transition-all duration-500">
+<!-- Abstract Pattern -->
+<div class="absolute -bottom-10 -right-10 opacity-10 transform group-hover:scale-110 transition-transform duration-700">
+<span class="material-icons-round text-[180px] text-amber-500">lightbulb</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-4">
+<span class="p-2 bg-white/60 dark:bg-white/10 rounded-lg shadow-sm backdrop-blur-sm">
+<span class="material-icons-round text-amber-500">tips_and_updates</span>
+</span>
+<h4 class="font-bold text-amber-900/80 dark:text-amber-100/90 uppercase text-xs tracking-wider">Daily Wisdom</h4>
+</div>
+<h3 class="text-xl font-bold text-slate-800 dark:text-white mb-3 leading-snug">Hydration boosts brain function.</h3>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">Even mild dehydration can impair energy levels and mood. Aim for 8 glasses of water today.</p>
+</div>
+<div class="mt-8 flex items-center justify-between">
+<div class="flex -space-x-2">
+<!-- Avatars of friends/community (dummy) -->
+<div class="w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-[10px] font-bold text-amber-800 border-2 border-white dark:border-neutral-surface-dark">JD</div>
+<div class="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center text-[10px] font-bold text-primary-dark border-2 border-white dark:border-neutral-surface-dark">AS</div>
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300 border-2 border-white dark:border-neutral-surface-dark">+5</div>
+</div>
+<button class="text-sm font-semibold text-primary hover:text-primary-dark dark:hover:text-primary-light flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        Read More <span class="material-icons-round text-base">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dashboard Widgets Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Recent Reports (Left 8 cols) -->
+<div class="lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Recent Reports</h3>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">View All History</a>
+</div>
+<!-- Report Card 1 -->
+<div class="bg-white dark:bg-neutral-surface-dark rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group flex flex-col sm:flex-row sm:items-center gap-6">
+<div class="w-14 h-14 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-2xl">science</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg text-slate-900 dark:text-white truncate">Comprehensive Blood Work</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-800">Normal</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Analysis by Dr. Emily Chen • Lab Corp Inc.</p>
+</div>
+<div class="flex flex-col sm:items-end gap-1 sm:text-right mt-2 sm:mt-0">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Oct 24, 2023</span>
+<button class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/btn">
+                            View Report <span class="material-icons-round text-base group-hover/btn:translate-x-0.5 transition-transform">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Report Card 2 -->
+<div class="bg-white dark:bg-neutral-surface-dark rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group flex flex-col sm:flex-row sm:items-center gap-6">
+<div class="w-14 h-14 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0 text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-2xl">dermatology</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg text-slate-900 dark:text-white truncate">Skin Lesion AI Scan</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-800">Reviewing</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Uploaded via Mobile App • AI Pre-screen</p>
+</div>
+<div class="flex flex-col sm:items-end gap-1 sm:text-right mt-2 sm:mt-0">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Oct 20, 2023</span>
+<button class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/btn">
+                            Track Status <span class="material-icons-round text-base group-hover/btn:translate-x-0.5 transition-transform">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Report Card 3 -->
+<div class="bg-white dark:bg-neutral-surface-dark rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group flex flex-col sm:flex-row sm:items-center gap-6">
+<div class="w-14 h-14 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0 text-primary dark:text-primary-light group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-2xl">favorite</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg text-slate-900 dark:text-white truncate">Cardiology Check-up</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-800">Normal</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Dr. A. Smith • City General Hospital</p>
+</div>
+<div class="flex flex-col sm:items-end gap-1 sm:text-right mt-2 sm:mt-0">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Oct 05, 2023</span>
+<button class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/btn">
+                            View Report <span class="material-icons-round text-base group-hover/btn:translate-x-0.5 transition-transform">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Side Widgets (Right 4 cols) -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Upcoming Appointment -->
+<div class="bg-white dark:bg-neutral-surface-dark rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Upcoming Appointment</h3>
+<div class="flex gap-4">
+<div class="flex flex-col items-center justify-center bg-primary/10 rounded-xl w-16 h-16 text-primary flex-shrink-0">
+<span class="text-xs font-bold uppercase">Nov</span>
+<span class="text-xl font-bold">02</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-800 dark:text-slate-100">Dr. Sarah Miller</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">General Practitioner</p>
+<div class="flex items-center gap-1 text-xs font-medium text-slate-400">
+<span class="material-icons-round text-sm">schedule</span>
+                                10:00 AM - 10:30 AM
+                            </div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+<span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-1 rounded">Video Call</span>
+<button class="text-sm font-bold text-primary hover:text-primary-dark">Details</button>
+</div>
+</div>
+<!-- Vitals Quick View -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                        My Vitals
+                        <button class="text-slate-400 hover:text-primary transition-colors"><span class="material-icons-round">edit</span></button>
+</h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Heart Rate -->
+<div class="p-4 rounded-xl bg-white dark:bg-neutral-surface-dark border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between h-32 hover:border-red-100 dark:hover:border-red-900/30 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500">
+<span class="material-icons-round text-lg">favorite</span>
+</div>
+<span class="text-xs text-slate-400">Now</span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-900 dark:text-white">72</span>
+<span class="text-xs font-medium text-slate-500">bpm</span>
+</div>
+</div>
+<!-- Weight -->
+<div class="p-4 rounded-xl bg-white dark:bg-neutral-surface-dark border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between h-32 hover:border-blue-100 dark:hover:border-blue-900/30 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-500">
+<span class="material-icons-round text-lg">monitor_weight</span>
+</div>
+<span class="text-xs text-emerald-500 font-bold flex items-center">-1.2 <span class="material-icons-round text-[10px]">arrow_downward</span></span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-900 dark:text-white">64</span>
+<span class="text-xs font-medium text-slate-500">kg</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Promo / Upgrade -->
+<div class="relative overflow-hidden rounded-2xl bg-slate-900 p-6 text-white text-center">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20" data-alt="Abstract medical technology background with blue light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHfwAESwFTqB3aux6bAZcpl3xS-QyTCJoYoJDxR359-zpMYacTYtp46p86Q6t65EM_3NT72yM0IuW6CS1j7TH6WqfKDcibrDLM6RPszqdaGzzQZnXRN1o0WvaI2d933nNXse3hE-OTqn35lIqKJNTrNzpDL1sFjOKxQHXfxCYwvNJFMZV9etgN-C4jLPDXB38zC-8mhMw5kUuki3YGErNc7MbRENzFZW8GkOx8LVAvDn20dIMiEGsUdw24V9R_bfwjH0BefrPw-g"/>
+<div class="relative z-10">
+<span class="material-icons-round text-3xl mb-2 text-primary-light">star</span>
+<h4 class="font-bold text-lg mb-1">Go Premium</h4>
+<p class="text-sm text-slate-300 mb-4">Get unlimited AI reports and priority support.</p>
+<button class="w-full py-2 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-100 transition-colors">Upgrade Plan</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
+
+<!-- Doctor Clinical Dashboard -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Health Buddy AI - Doctor Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#8c2bee",
+                "primary-dark": "#6b1cb8",
+                "background-light": "#f7f6f8",
+                "background-dark": "#191022",
+                "surface-light": "#ffffff",
+                "surface-dark": "#2d2339",
+                },
+                fontFamily: {
+                "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit browsers */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display antialiased transition-colors duration-200">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-20 lg:w-64 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between hidden md:flex z-20 shadow-sm transition-all duration-300">
+<div>
+<!-- Logo Area -->
+<div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-slate-100 dark:border-slate-800/50">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-purple-400 flex items-center justify-center shadow-lg shadow-primary/30">
+<span class="material-icons-round text-white text-2xl">health_and_safety</span>
+</div>
+<span class="ml-3 text-xl font-bold text-slate-800 dark:text-white hidden lg:block tracking-tight">HealthBuddy<span class="text-primary">AI</span></span>
+</div>
+<!-- Navigation Links -->
+<nav class="mt-8 px-4 space-y-2">
+<a class="flex items-center px-4 py-3 bg-primary/10 text-primary rounded-xl transition-all duration-200 group relative" href="#">
+<span class="material-icons-round text-2xl">dashboard</span>
+<span class="ml-3 font-semibold hidden lg:block">Dashboard</span>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary-300 rounded-xl transition-all duration-200 group" href="#">
+<span class="material-icons-round text-2xl group-hover:scale-110 transition-transform">people_alt</span>
+<span class="ml-3 font-medium hidden lg:block">Patients</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary-300 rounded-xl transition-all duration-200 group relative" href="#">
+<span class="material-icons-round text-2xl group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="ml-3 font-medium hidden lg:block">Messages</span>
+<span class="absolute top-3 left-8 lg:left-auto lg:right-4 w-2 h-2 rounded-full bg-rose-500"></span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary-300 rounded-xl transition-all duration-200 group" href="#">
+<span class="material-icons-round text-2xl group-hover:scale-110 transition-transform">calendar_month</span>
+<span class="ml-3 font-medium hidden lg:block">Schedule</span>
+</a>
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary-300 rounded-xl transition-all duration-200 group" href="#">
+<span class="material-icons-round text-2xl group-hover:scale-110 transition-transform">insights</span>
+<span class="ml-3 font-medium hidden lg:block">Analytics</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions -->
+<div class="p-4 border-t border-slate-100 dark:border-slate-800/50">
+<a class="flex items-center px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary-300 rounded-xl transition-all duration-200 group mb-2" href="#">
+<span class="material-icons-round text-2xl group-hover:rotate-90 transition-transform duration-500">settings</span>
+<span class="ml-3 font-medium hidden lg:block">Settings</span>
+</a>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 mt-2">
+<img alt="Dr. Profile" class="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Profile picture of Dr. Sarah Smith" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD8N7EL1OMux-yegfVx84kba5ZfQ73v8yfNE3qz-RvbcD-16L9eIgdiD6miXQK7p4ww_OEDgXCQO97d0C1uJm4itVI-Mj0b5MYaAKG5WPuRMiwrVeM6_45JxqHoMoIqOJQQyEnN_KZJz04vVNidUm9laS3v1QHBwzT-R54FAq2t1YhLzL13tt4ExHTXkEjHP0KlI3TUHg6RrP3zXjwL1TadbIpaz_N_-tQjk3ZFB8pP-JiBpbTbexWkwdDQsdZiYESnlneybfPOg"/>
+<div class="hidden lg:block overflow-hidden">
+<p class="text-sm font-bold text-slate-800 dark:text-white truncate">Dr. Sarah Smith</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Cardiology Dept.</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- Mobile Header -->
+<header class="md:hidden h-16 bg-surface-light dark:bg-surface-dark flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<span class="material-icons-round text-primary text-2xl">health_and_safety</span>
+<span class="font-bold text-lg">HealthBuddy<span class="text-primary">AI</span></span>
+</div>
+<button class="text-slate-500">
+<span class="material-icons-round text-2xl">menu</span>
+</button>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8 relative">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+<div>
+<h1 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-1">Overview Dashboard</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Welcome back, Dr. Smith. You have 5 critical alerts today.</p>
+</div>
+<div class="flex gap-3">
+<div class="relative">
+<input class="pl-10 pr-4 py-2.5 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary w-64 shadow-sm" placeholder="Search patient..." type="text"/>
+<span class="material-icons-round absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+</div>
+<button class="bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-lg shadow-primary/25 flex items-center gap-2 transition-all active:scale-95">
+<span class="material-icons-round text-lg">add</span>
+<span>New Patient</span>
+</button>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+<!-- Stat Card 1 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-icons-round">people</span>
+</div>
+<span class="text-xs font-semibold px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full flex items-center gap-1">
+<span class="material-icons-round text-xs">trending_up</span> +12%
+                            </span>
+</div>
+<div class="relative z-10">
+<h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Patients</h3>
+<p class="text-2xl font-bold text-slate-800 dark:text-white">1,242</p>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-rose-100 dark:border-rose-900/30 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-24 h-24 bg-rose-50 dark:bg-rose-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400">
+<span class="material-icons-round">warning</span>
+</div>
+<span class="text-xs font-semibold px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 rounded-full flex items-center gap-1">
+                                Needs Attn.
+                            </span>
+</div>
+<div class="relative z-10">
+<h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Critical AI Alerts</h3>
+<p class="text-2xl font-bold text-rose-600 dark:text-rose-400">5</p>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-primary dark:text-purple-400">
+<span class="material-icons-round">video_call</span>
+</div>
+<span class="text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-full">
+                                Today
+                            </span>
+</div>
+<div class="relative z-10">
+<h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending Consults</h3>
+<p class="text-2xl font-bold text-slate-800 dark:text-white">3</p>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+<span class="material-icons-round">assignment</span>
+</div>
+<span class="text-xs font-semibold px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
+                                Completed
+                            </span>
+</div>
+<div class="relative z-10">
+<h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Reports Signed</h3>
+<p class="text-2xl font-bold text-slate-800 dark:text-white">18</p>
+</div>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6 h-full pb-8">
+<!-- Patient List Table (Takes up 3/4 or 2/3 space) -->
+<div class="lg:col-span-2 xl:col-span-3 bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col">
+<div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+<span class="material-icons-round text-primary">list_alt</span> Patient Monitor
+                            </h2>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                    All Patients
+                                </button>
+<button class="px-3 py-1.5 text-xs font-medium bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-lg border border-rose-100 dark:border-rose-800 hover:bg-rose-100 transition-colors">
+                                    High Risk (5)
+                                </button>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+<th class="px-6 py-4">Patient Name</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Last Check-in</th>
+<th class="px-6 py-4">AI Insight</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1: High Risk -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of Sarah Connor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC957Wr2JICH37J9fTni-MW4dmrkh37_9LcUGphEsPsQeokec9d6fJYseq5_FIG5W-XBAx4sFMZ2_HT0cWPKw4n_OIVocx5HKRBb6oYF35loAlMDruWk2EO_fjYl8_PxaBDJD-a7uCFc8lIIFNAGc2ko8Nn0EK-4aAWHScRr5MYRTfGHep7NUhW3UUOUotgSR6rPxtF4A0Swvi0WzrFcCNUN78NuhptzdpbK24TdZVwNil3JFtE-w-7YzjjeOc2CD9s6gXOf6_w6w"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></span>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-white">Sarah Connor</p>
+<p class="text-xs text-slate-500">Female, 34</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400">
+                                                Monitoring
+                                            </span>
+</td>
+<td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                                            2 hours ago
+                                        </td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+<span class="font-medium text-rose-600 dark:text-rose-400">Irregular Heartbeat</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5">Variance detected in BPM logs.</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors p-2 bg-transparent hover:bg-primary/5 rounded-full">
+<span class="material-icons-round text-lg">arrow_forward_ios</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Medium Risk -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of Mark Twain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmQbg0-cx3WJaaHAKWC_Y5wmgdWEe7cXDNxXfdb4QRoibBzkXR2lOJZ9Z-6luvQqKgYmm3tr-J5ztTOuEyXDUZzFXk64mnxPaRhIELoNjgAqpsrVi139IJDT3qMRFjDSjM495K8xnrehJ1_6AuZyrpsQTrYvxWsMnrhQV2Nn_5OviWE41bnR7Gx_-YTrAh0WUopld1eyv9drFk-15uC539eG630XwG-DGHIoWH5QQKC-0HFxsZp-Y2scyFz84WJiA7Zi3iTWQM8g"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-slate-400 border-2 border-white dark:border-surface-dark rounded-full"></span>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-white">Mark Twain</p>
+<p class="text-xs text-slate-500">Male, 58</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+                                                Stable
+                                            </span>
+</td>
+<td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                                            1 day ago
+                                        </td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="font-medium text-amber-600 dark:text-amber-400">Missed Medication</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5">Evening dose not logged.</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors p-2 bg-transparent hover:bg-primary/5 rounded-full">
+<span class="material-icons-round text-lg">arrow_forward_ios</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Low Risk -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of Emily Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbc99DAOnA1AGUhpdSNIslxp_27-yqekBq-CbBlpth3ISEbtoy6mQ2wE6jPoS5QSP86UPlkubfpBGe2oieUxyBB2VzNZYorhaRjs-ma7jteXBAmSXXJULNsy6ocxZPRxwGZdEcxbGs8_t9g83Iz7slV121V1CXrwSw7WhGEm1AGoJUTbN21iZ2lc7dJcip-fxZOJD9MD4uvMEgMKytF9_LEfwyOWhazC7SQy1sVAfYm9dkM8fKUYlhFbLYrhLn2PIoPNyvyotlgw"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></span>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-white">Emily Chen</p>
+<p class="text-xs text-slate-500">Female, 29</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+                                                Stable
+                                            </span>
+</td>
+<td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                                            4 hours ago
+                                        </td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-medium text-blue-600 dark:text-blue-400">Routine Check</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5">Vitals normal, sleep improved.</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors p-2 bg-transparent hover:bg-primary/5 rounded-full">
+<span class="material-icons-round text-lg">arrow_forward_ios</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: High Risk -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of John Doe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4ZA_Q5sbME525bM4K9kDIVvLhwqc7tvpDOGcvlAvglO9iSYMMFeIkkOeGNOChtj1XBbpJ9DoMJN7VRZ3qvgb5ZFhILVQ3SA9lCYkZQ00J0n50iPxm4pUlaiDbrh2-_MxJmio_G1ggYLQ8MUIcQaygbJZzgB80FLdw50gR8JQJzymraqEiNZYZRFZ4l1dzi73_V3eMoQphaFHmBrLvt90imMR_l9dLsv88XUS5ZojICVr5I-B352gvAq7vDMJCz49_gUA2qwNjjg"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-slate-400 border-2 border-white dark:border-surface-dark rounded-full"></span>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-white">John Doe</p>
+<p class="text-xs text-slate-500">Male, 45</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400">
+                                                In-Patient
+                                            </span>
+</td>
+<td class="px-6 py-4 text-slate-600 dark:text-slate-300">
+                                            30 mins ago
+                                        </td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+<span class="font-medium text-rose-600 dark:text-rose-400">BP Spike</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5">Systolic &gt; 160 detected.</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors p-2 bg-transparent hover:bg-primary/5 rounded-full">
+<span class="material-icons-round text-lg">arrow_forward_ios</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+<button class="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">View All Patients</button>
+</div>
+</div>
+<!-- Right Sidebar: Critical AI Feed -->
+<div class="lg:col-span-1 bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-full overflow-hidden">
+<div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-rose-50/50 dark:bg-rose-900/10">
+<h2 class="text-lg font-bold text-rose-700 dark:text-rose-400 flex items-center gap-2">
+<span class="material-icons-round animate-pulse">notifications_active</span> Critical Feed
+                            </h2>
+<span class="bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-xs font-bold px-2 py-0.5 rounded-full">Live</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+<!-- Alert Item 1 -->
+<div class="p-3 rounded-lg bg-white dark:bg-surface-dark border border-rose-100 dark:border-rose-900/30 shadow-sm hover:border-rose-300 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="John Doe thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSlOlMtPvMnqdWbuWNOKPl8eJ5YbyNzRQ2I1ivBkyWG_UGk6S3NQ6pDU1C7kC-Mpb0ZaklM74mfEuS9JKe1ZbOwf9ubsrRM_UCcqs2VbzIxgrf-bil_iVz9kQ2qH9J0hzihihr9Y7JM5ei_kkIG9wLPUonPliCeNKD8HDym0i7sG6VUZqJ9blVpaYc6LLBmme6cwzz97goPoz8KmzN0XvU7kYG_lOptc4qZ2fuZButcuO7xz2fpUyBuUSMWaRLLsMH8c8qzjx_2g"/>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">John Doe</span>
+</div>
+<span class="text-[10px] text-slate-400">2m ago</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 font-medium mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Sudden Vitals Change</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Blood Pressure rose to 165/95. Immediate attention recommended.</p>
+<div class="mt-2 flex gap-2">
+<button class="flex-1 py-1 text-xs font-semibold bg-rose-600 text-white rounded hover:bg-rose-700">Contact</button>
+<button class="flex-1 py-1 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded hover:bg-slate-200">Dismiss</button>
+</div>
+</div>
+<!-- Alert Item 2 -->
+<div class="p-3 rounded-lg bg-white dark:bg-surface-dark border border-amber-100 dark:border-amber-900/30 shadow-sm hover:border-amber-300 transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Sarah Connor thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRwSxIQiV8l9fy2lazn-eARZeGGBq_4dVlcupPb6aRHEfX5XhYxeKDmILRv8gPAcnu2-sXLwtuEkv-T82l3PTrqSp_IOHCUyUis3IinI2Z6e-j5Mc0KP6vR0RYm3bUFLrnsNdX64JStO8QonpRZE7WtkklKvBtTFwBqYlZQRe-1j0DWj5Dqjl7Z8peXo_0yAFnJX2ZJz9yh8iBSfc8Bc5Bq3REYh4VKJ60j9PJ9aZACP1LUPY1cx9xdTgTP5iXS0_8OPoY9Ywg_g"/>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">Sarah Connor</span>
+</div>
+<span class="text-[10px] text-slate-400">1h ago</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 font-medium mb-1">Arrhythmia Detect</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Wearable device reported irregular heart rhythm for &gt; 5 mins.</p>
+</div>
+<!-- Alert Item 3 -->
+<div class="p-3 rounded-lg bg-white dark:bg-surface-dark border border-slate-100 dark:border-slate-800 shadow-sm opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Mark Twain thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2oxCyq1iCNfrpFdCv-fk5oZx6zapB-TjTkvxWgOpy6IaDgu74odMPweC-hr4N7H9SyuK_t70pBQZ0sVyIEPk8TKBJY9pruDsqxlKNmPeIP95aoieUrsiQHZKK3MyfMwfLVbzztkebqX7AR2irkAb5HSjUkeLODWUAkA1_ye_vCDlIYjCOHCeJ-O1eKZQnw9DdFcdHtPeBN7YiIMQWbZX5aG1UszIRyL3j397oRgzPgoqMKpyySt-n-44jeju73tJXnOyNc8JCjg"/>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">Mark Twain</span>
+</div>
+<span class="text-[10px] text-slate-400">Yesterday</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 font-medium mb-1">Medication Missed</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Patient did not confirm evening insulin dosage.</p>
+</div>
+<!-- Alert Item 4 -->
+<div class="p-3 rounded-lg bg-white dark:bg-surface-dark border border-slate-100 dark:border-slate-800 shadow-sm opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-bold">AI</span>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">System</span>
+</div>
+<span class="text-[10px] text-slate-400">Yesterday</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 font-medium mb-1">Weekly Report Ready</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Department cardiology summary is available for review.</p>
+</div>
+</div>
+<div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-white/5">
+<button class="w-full py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors flex items-center justify-center gap-1">
+                                View Alert History <span class="material-icons-round text-sm">history</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
+
+<!-- AI Health Buddy Chat -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Health Buddy Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "primary-light": "#f3e9fe", // Derived from #8c2bee
+                        "primary-hover": "#7621cc",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2a1f36",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#3f334d",
+                        "text-main": "#1f2937",
+                        "text-sub": "#6b7280",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for a cleaner look */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+        }
+        
+        /* Pulse animation for typing indicator */
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        .typing-dot {
+            animation: pulse-dot 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main h-screen overflow-hidden flex flex-col md:flex-row antialiased">
+<!-- Sidebar Navigation -->
+<aside class="w-full md:w-80 flex-shrink-0 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex flex-col h-full z-20">
+<!-- Brand & New Chat -->
+<div class="p-6 border-b border-border-light dark:border-border-dark flex flex-col gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
+<span class="material-icons-round">local_hospital</span>
+</div>
+<div>
+<h1 class="font-bold text-xl text-gray-900 dark:text-white">Health Buddy</h1>
+<p class="text-xs text-primary font-semibold tracking-wide uppercase">AI Assistant</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition-all duration-200 group">
+<span class="material-icons-round group-hover:rotate-90 transition-transform">add</span>
+                New Consultation
+            </button>
+</div>
+<!-- Chat History List -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+<!-- Group: Today -->
+<div>
+<h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-2">Today</h3>
+<ul class="space-y-1">
+<li>
+<a class="block px-3 py-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-icons-round text-lg">chat_bubble_outline</span>
+<span class="text-sm font-medium truncate">Mild Headache Symptoms</span>
+</div>
+</a>
+</li>
+<li>
+<a class="block px-3 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-icons-round text-lg text-gray-400">history</span>
+<span class="text-sm font-medium truncate">Vitamin D Dosage?</span>
+</div>
+</a>
+</li>
+</ul>
+</div>
+<!-- Group: Yesterday -->
+<div>
+<h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-2">Yesterday</h3>
+<ul class="space-y-1">
+<li>
+<a class="block px-3 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-icons-round text-lg text-gray-400">history</span>
+<span class="text-sm font-medium truncate">Sleep Schedule Tips</span>
+</div>
+</a>
+</li>
+</ul>
+</div>
+<!-- Group: Previous 7 Days -->
+<div>
+<h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-2">Previous 7 Days</h3>
+<ul class="space-y-1">
+<li>
+<a class="block px-3 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-icons-round text-lg text-gray-400">history</span>
+<span class="text-sm font-medium truncate">Knee Pain Analysis</span>
+</div>
+</a>
+</li>
+<li>
+<a class="block px-3 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<span class="material-icons-round text-lg text-gray-400">history</span>
+<span class="text-sm font-medium truncate">Healthy Meal Prep Ideas</span>
+</div>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<!-- User Profile -->
+<div class="p-4 border-t border-border-light dark:border-border-dark bg-gray-50/50 dark:bg-surface-dark">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors cursor-pointer border border-transparent hover:border-border-light dark:hover:border-border-dark hover:shadow-sm">
+<div class="relative">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" data-alt="Portrait of a smiling woman with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9Z4XzLtjWJaxpNgtOBzCRjhX68Hv4f3IVTdXHrIL067d_AqnqjMRDqYL9kht4ekSgnUIIjKP_boNrnrsSTaAdtxzFJdGRYT1i5A3GNNapvUB8rR0V3_aG9jJWrA7O6xdNvIorpDeNvYprgsKCzBfcouiV9sDt3WHVlm8LMZ3UcKG8myAX5RUWzWG_2TGTCRgAHTj9-kOqBE-jAdviLuNTgbhLuM7tgaTERV76OFrpI9HJ2zsBHtZPOMHghEC3JyTGH74E5qVzSQ"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-gray-900 dark:text-white truncate">Sarah Jenkins</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 truncate">Premium Member</p>
+</div>
+<span class="material-icons-round text-gray-400">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Chat Area -->
+<main class="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark relative">
+<!-- Header -->
+<header class="h-16 flex-shrink-0 bg-surface-light/80 dark:bg-surface-dark/90 backdrop-blur-md border-b border-border-light dark:border-border-dark flex items-center justify-between px-6 z-10 sticky top-0">
+<div class="flex items-center gap-3">
+<div class="md:hidden">
+<button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
+<span class="material-icons-round">menu</span>
+</button>
+</div>
+<div>
+<h2 class="font-bold text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                        Mild Headache Symptoms
+                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider border border-green-200">Active</span>
+</h2>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-gray-500 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors" title="Export Chat">
+<span class="material-icons-round">ios_share</span>
+</button>
+<button class="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Clear History">
+<span class="material-icons-round">delete_outline</span>
+</button>
+<button class="p-2 text-gray-500 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors" title="Chat Settings">
+<span class="material-icons-round">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Messages Container -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 scroll-smooth" id="chat-container">
+<!-- Timestamp Separator -->
+<div class="flex justify-center">
+<span class="text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">Today, 10:23 AM</span>
+</div>
+<!-- AI Welcome Message -->
+<div class="flex gap-4 max-w-3xl">
+<div class="flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center text-white shadow-md">
+<span class="material-icons-round text-xl">smart_toy</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold text-gray-500 ml-1">Health Buddy AI</span>
+<div class="bg-primary-light dark:bg-primary/20 text-gray-800 dark:text-gray-100 p-5 rounded-2xl rounded-tl-none shadow-sm border border-primary/10">
+<p class="leading-relaxed">Hello Sarah! I'm your Health Buddy. I see you've logged in today. How are you feeling right now? Remember, I'm here to help you navigate your symptoms or answer any health-related questions.</p>
+</div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex flex-row-reverse gap-4 max-w-3xl ml-auto">
+<div class="flex-shrink-0">
+<img alt="User" class="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm" data-alt="User avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmc9m0NqcBC7dPNzMVessa1WAPe39nDDIovG6bHiPQkqFh4kN6HWjB9ItuZCfB0HuMQ3bgoqfJsdYtKrDeQDARWubVWDOvhcOSZT4TKwNaN6mqgAuy0j1rs95Luxyob7uau37WwOneeW73hP_uOr0TacqtcbdGid_MuaU1X8WbKUat1JlTTu5ibTOIwhijFHQHy9bcpl1hK88i-SYiX7GZFDtAsERq38-ckAL9DWTUHc2u0n3dg0-PaQrNwRom8TVujrS4FJBgjg"/>
+</div>
+<div class="flex flex-col gap-1 items-end">
+<span class="text-xs font-bold text-gray-500 mr-1">You</span>
+<div class="bg-white dark:bg-surface-dark text-gray-800 dark:text-gray-100 p-5 rounded-2xl rounded-tr-none shadow-sm border border-gray-200 dark:border-gray-700">
+<p class="leading-relaxed">Hi there. I've been having a mild headache since morning, specifically around my temples. It's getting a bit annoying while I try to work.</p>
+</div>
+</div>
+</div>
+<!-- AI Response -->
+<div class="flex gap-4 max-w-3xl">
+<div class="flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center text-white shadow-md">
+<span class="material-icons-round text-xl">smart_toy</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold text-gray-500 ml-1">Health Buddy AI</span>
+<div class="bg-primary-light dark:bg-primary/20 text-gray-800 dark:text-gray-100 p-5 rounded-2xl rounded-tl-none shadow-sm border border-primary/10">
+<p class="leading-relaxed mb-4">I'm sorry to hear that you're experiencing discomfort, Sarah. A tension headache like you're describing is often caused by stress, eye strain, or dehydration.</p>
+<p class="font-bold mb-2 text-primary-hover dark:text-primary-light">Here are a few quick things that might help:</p>
+<ul class="list-disc pl-5 space-y-2 mb-4">
+<li><strong>Hydration:</strong> Drink a large glass of water. Dehydration is a common trigger.</li>
+<li><strong>Eye Rest:</strong> If you've been at a screen, look at something 20 feet away for 20 seconds.</li>
+<li><strong>Neck Stretch:</strong> Gently stretch your neck from side to side to release tension.</li>
+</ul>
+<p class="leading-relaxed">Would you like me to guide you through a quick 2-minute relaxation exercise?</p>
+</div>
+<!-- Interactive Suggestions/Pills -->
+<div class="flex flex-wrap gap-2 mt-2 ml-1">
+<button class="px-4 py-2 bg-white dark:bg-surface-dark border border-primary/20 hover:border-primary text-primary text-sm font-medium rounded-full transition-colors shadow-sm">
+                            Yes, let's try relaxation
+                        </button>
+<button class="px-4 py-2 bg-white dark:bg-surface-dark border border-primary/20 hover:border-primary text-primary text-sm font-medium rounded-full transition-colors shadow-sm">
+                            No, tell me about medication
+                        </button>
+</div>
+</div>
+</div>
+<!-- User Message 2 -->
+<div class="flex flex-row-reverse gap-4 max-w-3xl ml-auto">
+<div class="flex-shrink-0">
+<img alt="User" class="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 shadow-sm" data-alt="User avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZVqa0TpgSqp_SRBHlTWnQJf0ra38_EWJyEl3dR-jCyHDtLDXxvmFE0XHH52morEzj2xDT_YvuN9zrFrZBhqAGApfVhzVl8fkA_fXSJYeitKICaJ5eJlYsslnfBxVKtuO_sEVvXq6Be_h48sQXxirdOEPPQxDvIzUQQ_dgrAIWg_8x-ZsyLLCry6vfUbi44XDxrF2dlnfOAX2HEkoflT5zUq1oB5CHR3Iz8lhl66a4LrCkeHcxPs_KkzanqIxNEjHOSSJzB4i0pQ"/>
+</div>
+<div class="flex flex-col gap-1 items-end">
+<span class="text-xs font-bold text-gray-500 mr-1">You</span>
+<div class="bg-white dark:bg-surface-dark text-gray-800 dark:text-gray-100 p-5 rounded-2xl rounded-tr-none shadow-sm border border-gray-200 dark:border-gray-700">
+<p class="leading-relaxed">I think I'll try drinking some water first. Is it okay if I take a Tylenol as well?</p>
+</div>
+</div>
+</div>
+<!-- AI Typing Indicator -->
+<div class="flex gap-4 max-w-3xl">
+<div class="flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center text-white shadow-md opacity-80">
+<span class="material-icons-round text-xl">smart_toy</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold text-gray-500 ml-1">Health Buddy AI</span>
+<div class="bg-primary-light dark:bg-primary/20 p-4 rounded-2xl rounded-tl-none shadow-sm border border-primary/10 w-24 flex items-center justify-center gap-1">
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+<div class="w-2 h-2 bg-primary rounded-full typing-dot"></div>
+</div>
+</div>
+</div>
+<!-- Spacer for bottom input area -->
+<div class="h-24"></div>
+</div>
+<!-- Input Area Footer -->
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pointer-events-none">
+<div class="max-w-4xl mx-auto pointer-events-auto">
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex items-end gap-2 relative">
+<!-- Attachment Button -->
+<button class="p-3 text-gray-400 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors flex-shrink-0">
+<span class="material-icons-round">add_circle_outline</span>
+</button>
+<!-- Text Area -->
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-gray-800 dark:text-white placeholder-gray-400 resize-none py-3 max-h-32 custom-scrollbar" placeholder="Type your symptoms or ask a health question..." rows="1"></textarea>
+<!-- Mic Button -->
+<button class="p-3 text-gray-400 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors flex-shrink-0">
+<span class="material-icons-round">mic</span>
+</button>
+<!-- Send Button -->
+<button class="p-3 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95 flex-shrink-0">
+<span class="material-icons-round">arrow_upward</span>
+</button>
+</div>
+<p class="text-center text-xs text-gray-400 mt-2">Health Buddy AI can make mistakes. Consider checking important information.</p>
+</div>
+</div>
+</main>
+</body></html>
+
+<!-- Patient Health Profile -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Health Profile - Health Buddy AI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "primary-50": "#f4eaff",
+                        "primary-100": "#e6d0fd",
+                        "primary-200": "#d2a8fb",
+                        "primary-300": "#b97bf8",
+                        "primary-400": "#a254f3",
+                        "primary-500": "#8c2bee", // Base
+                        "primary-600": "#7818d6",
+                        "primary-700": "#6613b3",
+                        "primary-800": "#561491",
+                        "primary-900": "#461374",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-white min-h-screen">
+<!-- Top Navigation -->
+<nav class="sticky top-0 z-30 w-full bg-white/80 dark:bg-[#191022]/80 backdrop-blur-md border-b border-primary-100 dark:border-primary-900">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between h-16">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-icons-round text-primary text-2xl">local_hospital</span>
+</div>
+<span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400 dark:from-primary-300 dark:to-primary-100">
+                        Health Buddy AI
+                    </span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-primary-400 hover:text-primary transition-colors relative">
+<span class="material-icons-round">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary font-bold text-sm">
+                        DR
+                    </div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="pb-20">
+<!-- Header / Cover Section -->
+<div class="relative w-full h-48 sm:h-64 overflow-hidden bg-gradient-to-r from-primary-800 to-primary-500">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+<!-- Decorative circles -->
+<div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 rounded-full bg-white opacity-5 blur-3xl"></div>
+<div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-60 h-60 rounded-full bg-primary-300 opacity-20 blur-3xl"></div>
+<!-- Cover Content -->
+<div class="absolute bottom-4 right-6 flex gap-3">
+<button class="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+<span class="material-icons-round text-sm">share</span> Share Profile
+                </button>
+<button class="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+<span class="material-icons-round text-sm">settings</span> Settings
+                </button>
+</div>
+</div>
+<!-- Profile Info Overlap -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 sm:-mt-20 relative z-10">
+<div class="flex flex-col sm:flex-row items-end sm:items-end gap-6 mb-8">
+<!-- Avatar -->
+<div class="relative group">
+<div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full p-1 bg-white dark:bg-background-dark shadow-xl ring-4 ring-primary/20">
+<img alt="Sarah Jenkins Profile" class="w-full h-full object-cover rounded-full" data-alt="Portrait of a woman with a confident smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbERCh0-gIbRe3fl3S86Zw-5alRGoXUUt7YOUlo1jvQa9Hm3yM32i3b0MNcLoq03_AgM3eXRIoIcq8OE9KVqyL3xcuxl-5sz_QP8tAe0zK9ifH-6WC3ub8EA8rMRKtKPsrvauiXkLl3iRV5FfRrYR9MUEWTnCViEy_LVFkuPoPT0z-N91pi2NLatGEC_yxP9nQJ7Biw42QHC_GhFCp6149tQvDsjem3oxchXGP6lX-1B7Lxp_VeolNJs7otLn8RmORzGPU0m3ryQ"/>
+</div>
+<button class="absolute bottom-2 right-2 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-600 transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-icons-round text-sm">camera_alt</span>
+</button>
+</div>
+<!-- Text Info -->
+<div class="flex-1 pb-2">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Sarah Jenkins</h1>
+<div class="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
+<span class="bg-primary/10 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full border border-primary/20">
+                                    ID: #8920-PAT
+                                </span>
+<span class="flex items-center gap-1">
+<span class="material-icons-round text-base">location_on</span>
+                                    San Francisco, CA
+                                </span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+<span>Joined Jan 2023</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold transition-all">
+<span class="material-icons-round text-base">message</span> Message
+                            </button>
+<button class="flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-lg shadow-lg shadow-primary/30 hover:bg-primary-600 hover:shadow-primary/40 font-semibold transition-all">
+<span class="material-icons-round text-base">edit</span> Edit Profile
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="border-b border-slate-200 dark:border-slate-700 mb-8 overflow-x-auto">
+<nav class="flex gap-8 min-w-max">
+<a class="border-b-2 border-primary text-primary font-semibold py-4 px-1 inline-flex items-center gap-2" href="#">
+<span class="material-icons-round text-xl">person</span> Overview
+                    </a>
+<a class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 py-4 px-1 inline-flex items-center gap-2 transition-all" href="#">
+<span class="material-icons-round text-xl">history</span> Visits &amp; Timeline
+                    </a>
+<a class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 py-4 px-1 inline-flex items-center gap-2 transition-all" href="#">
+<span class="material-icons-round text-xl">description</span> Lab Results
+                    </a>
+<a class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 py-4 px-1 inline-flex items-center gap-2 transition-all" href="#">
+<span class="material-icons-round text-xl">medication</span> Medications
+                    </a>
+</nav>
+</div>
+<!-- Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column (Sidebar Style) -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Personal Info Card -->
+<div class="bg-white dark:bg-[#1e1429] rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                                Personal Details
+                            </h2>
+<button class="text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 p-1.5 rounded-lg transition-colors">
+<span class="material-icons-round text-xl">edit</span>
+</button>
+</div>
+<div class="space-y-5">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Date of Birth</p>
+<p class="text-slate-800 dark:text-slate-200 font-semibold">Oct 24, 1985</p>
+</div>
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Age</p>
+<p class="text-slate-800 dark:text-slate-200 font-semibold">38 Years</p>
+</div>
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Gender</p>
+<p class="text-slate-800 dark:text-slate-200 font-semibold">Female</p>
+</div>
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Blood Type</p>
+<p class="text-slate-800 dark:text-slate-200 font-semibold">O+</p>
+</div>
+</div>
+<hr class="border-slate-100 dark:border-slate-800"/>
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Contact</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-icons-round text-slate-400 text-lg">phone</span>
+<p class="text-slate-800 dark:text-slate-200 font-medium">+1 (555) 123-4567</p>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-icons-round text-slate-400 text-lg">email</span>
+<p class="text-slate-800 dark:text-slate-200 font-medium truncate">sarah.jenkins@example.com</p>
+</div>
+</div>
+<hr class="border-slate-100 dark:border-slate-800"/>
+<div>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Emergency Contact</p>
+<div class="bg-primary-50 dark:bg-primary-900/20 p-3 rounded-lg border border-primary-100 dark:border-primary-800">
+<p class="text-primary-800 dark:text-primary-200 font-bold text-sm">Mark Jenkins (Husband)</p>
+<p class="text-primary-600 dark:text-primary-300 text-sm mt-0.5">+1 (555) 987-6543</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Insurance Card -->
+<div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-lg p-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary opacity-20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<span class="material-icons-round text-3xl text-primary-300">verified_user</span>
+<span class="bg-white/10 px-2 py-1 rounded text-xs font-medium tracking-wide">ACTIVE</span>
+</div>
+<div class="relative z-10">
+<p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Provider</p>
+<h3 class="text-xl font-bold mb-4">BlueCross BlueShield</h3>
+<div class="flex justify-between items-end">
+<div>
+<p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Policy Number</p>
+<p class="font-mono text-lg tracking-wide text-primary-100">XJY-8922-001</p>
+</div>
+<div class="text-right">
+<p class="text-slate-400 text-xs">Exp</p>
+<p class="font-medium">12/25</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Main Content) -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Vitals Quick View -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-white dark:bg-[#1e1429] p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-icons-round text-6xl text-primary">favorite</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 font-medium text-sm">Heart Rate</span>
+<span class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs px-2 py-0.5 rounded-full font-bold">Normal</span>
+</div>
+<div>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-slate-900 dark:text-white">72</span>
+<span class="text-sm text-slate-500">bpm</span>
+</div>
+<p class="text-xs text-slate-400 mt-1">Last checked: 2h ago</p>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1e1429] p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-icons-round text-6xl text-blue-500">speed</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 font-medium text-sm">Blood Pressure</span>
+<span class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs px-2 py-0.5 rounded-full font-bold">Normal</span>
+</div>
+<div>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-slate-900 dark:text-white">118/78</span>
+<span class="text-sm text-slate-500">mmHg</span>
+</div>
+<p class="text-xs text-slate-400 mt-1">Last checked: 1d ago</p>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1e1429] p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-icons-round text-6xl text-orange-500">water_drop</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-slate-400 font-medium text-sm">Glucose</span>
+<span class="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 text-xs px-2 py-0.5 rounded-full font-bold">Elevated</span>
+</div>
+<div>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-slate-900 dark:text-white">105</span>
+<span class="text-sm text-slate-500">mg/dL</span>
+</div>
+<p class="text-xs text-slate-400 mt-1">Last checked: 4h ago</p>
+</div>
+</div>
+</div>
+<!-- Medical History Section -->
+<div class="bg-white dark:bg-[#1e1429] rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-icons-round text-primary">history_edu</span>
+                                Medical History
+                            </h2>
+<button class="text-primary text-sm font-semibold hover:underline">View Full Record</button>
+</div>
+<div class="space-y-6">
+<!-- Allergies -->
+<div>
+<h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Allergies</h3>
+<div class="flex flex-wrap gap-3">
+<div class="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 px-3 py-2 rounded-lg">
+<span class="material-icons-round text-red-500 text-lg">warning</span>
+<div>
+<p class="text-sm font-bold text-red-700 dark:text-red-300">Peanuts</p>
+<p class="text-xs text-red-600/70 dark:text-red-400/70">Severe</p>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 px-3 py-2 rounded-lg">
+<span class="material-icons-round text-orange-500 text-lg">info</span>
+<div>
+<p class="text-sm font-bold text-orange-700 dark:text-orange-300">Penicillin</p>
+<p class="text-xs text-orange-600/70 dark:text-orange-400/70">Moderate</p>
+</div>
+</div>
+</div>
+</div>
+<hr class="border-slate-100 dark:border-slate-800"/>
+<!-- Conditions -->
+<div>
+<h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Active Conditions</h3>
+<div class="space-y-3">
+<div class="flex items-start gap-4 p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+<div class="bg-primary-100 dark:bg-primary-900 text-primary p-2 rounded-lg">
+<span class="material-icons-round">monitor_heart</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="text-slate-900 dark:text-white font-semibold">Type 2 Diabetes</p>
+<span class="text-xs text-slate-400">Since 2018</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Managed with Metformin and diet. Last HbA1c: 6.8%</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+<div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 p-2 rounded-lg">
+<span class="material-icons-round">trending_up</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="text-slate-900 dark:text-white font-semibold">Hypertension</p>
+<span class="text-xs text-slate-400">Since 2019</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Stage 1. Monitoring weekly blood pressure readings.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Connected Devices Section -->
+<div class="bg-white dark:bg-[#1e1429] rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-icons-round text-primary">devices</span>
+                                Connected Devices
+                            </h2>
+<button class="flex items-center gap-1 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/50 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors">
+<span class="material-icons-round text-sm">add</span> Connect New
+                            </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Device Card 1 -->
+<div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex items-center gap-4 bg-slate-50/50 dark:bg-slate-800/20">
+<div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm">
+<span class="material-icons-round text-slate-800 dark:text-white text-2xl">watch</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-bold text-slate-900 dark:text-white">Apple Watch</h4>
+<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Last synced: Just now</p>
+<div class="flex items-center gap-1 mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+<span class="material-icons-round text-xs text-green-500">battery_full</span> 84% Battery
+                                    </div>
+</div>
+</div>
+<!-- Device Card 2 -->
+<div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex items-center gap-4 bg-slate-50/50 dark:bg-slate-800/20">
+<div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm">
+<span class="material-icons-round text-slate-800 dark:text-white text-2xl">bloodtype</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-bold text-slate-900 dark:text-white">GlucoMonitor X2</h4>
+<span class="w-2 h-2 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Last synced: 4h ago</p>
+<div class="flex items-center gap-1 mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+<span class="material-icons-round text-xs text-orange-400">battery_std</span> 32% Battery
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
+
+<!-- Doctor Portal Settings -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doctor Portal Settings - Health Buddy AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8c2bee",
+                        "primary-hover": "#7a25d1",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2d1b3e",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styling for range slider */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #8c2bee;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 0 4px rgba(140, 43, 238, 0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track {
+            background: #4b5563;
+        }
+        
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<nav class="bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-700/50 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between h-16">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-icons-round text-xl">medical_services</span>
+</div>
+<span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white">Health Buddy <span class="text-primary">AI</span></span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-icons-round">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Dr. Sarah Jenkins</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Cardiology Dept.</p>
+</div>
+<img alt="Dr. Sarah Jenkins Profile" class="h-9 w-9 rounded-full ring-2 ring-primary/20 object-cover" data-alt="Professional headshot of a female doctor in a white coat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCUYv8Db2r4SfJktC2d3O6EiY-1DyTOU6__CP5hLDlYbO_uwT5_l95JMP1O1IH1hsCudJ_g09jr-Kmxdx1SNWEjv8xwdkQzcvpYkOJDdbyOCaV7VNiaNM8kkKDNvlgxTaTqdcldtwlGbaHsSMI6FdYMRF5pWDp4yxHY_F8EfpcdMXH1P6YP77yHhu8YSsPmMVTuw3kc6FOFoVtSRIPFyfzu2fThYUxLWAaskIAlfGhmwQ266_bs-ZIzBawwvJbLVUZJL1ff2fKmg"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-8">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
+<p class="mt-2 text-slate-500 dark:text-slate-400">Manage your account preferences, security, and AI diagnostic configuration.</p>
+</div>
+<div class="lg:grid lg:grid-cols-12 lg:gap-8">
+<!-- Sidebar Navigation Tabs -->
+<aside class="lg:col-span-3 mb-8 lg:mb-0">
+<nav class="space-y-1 sticky top-24">
+<a aria-current="page" class="group flex items-center px-3 py-3 text-sm font-medium bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-icons-round mr-3 text-xl">person</span>
+<span class="truncate">Account &amp; Profile</span>
+</a>
+<a class="group flex items-center px-3 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all" href="#">
+<span class="material-icons-round mr-3 text-xl text-slate-400 group-hover:text-slate-500">lock</span>
+<span class="truncate">Security</span>
+</a>
+<a class="group flex items-center px-3 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all" href="#">
+<span class="material-icons-round mr-3 text-xl text-slate-400 group-hover:text-slate-500">tune</span>
+<span class="truncate">AI Preferences</span>
+</a>
+<a class="group flex items-center px-3 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all" href="#">
+<span class="material-icons-round mr-3 text-xl text-slate-400 group-hover:text-slate-500">notifications</span>
+<span class="truncate">Notifications</span>
+</a>
+<a class="group flex items-center px-3 py-3 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 rounded-lg mt-8 transition-all" href="#">
+<span class="material-icons-round mr-3 text-xl">logout</span>
+<span class="truncate">Sign Out</span>
+</a>
+</nav>
+</aside>
+<!-- Main Settings Panel -->
+<div class="lg:col-span-9 space-y-6">
+<!-- Section 1: Profile Information -->
+<div class="bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10 rounded-xl overflow-hidden">
+<div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-white/5 flex justify-between items-center">
+<h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white">Profile Information</h3>
+<span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Verified MD</span>
+</div>
+<div class="p-6">
+<div class="flex flex-col sm:flex-row gap-6 mb-8">
+<div class="flex-shrink-0">
+<div class="relative">
+<img alt="Current profile photo" class="h-24 w-24 rounded-xl object-cover ring-4 ring-white dark:ring-surface-dark shadow-md" data-alt="Doctor profile picture large view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9qegeJFCqEtgRQ7qsBvTJ-uEeuzTSCSeOaPjId1BjapqrAPVzWmxe4XyslR8avrmP_HTz-GSAGeGI6UTfnVz85zvjga1IlCoxNJ65ncr7xJSYNh-aWA_sGdANcAu49i4O_hMZl51jRhX_YcJaedFjfb0FPvXIMAeZPAehFoKur_1_JPbOslbPCvQ6WfN560gMGRzwtbx590HGCw4QjbnfKFxX0BSuW-WExX4ORwHs-9Wt5ljUdFJ6qcM-iw5qvb5h1mPngTYxTA"/>
+<button class="absolute -bottom-2 -right-2 bg-primary text-white p-1.5 rounded-full shadow-lg hover:bg-primary-hover transition-colors" title="Change photo">
+<span class="material-icons-round text-sm">edit</span>
+</button>
+</div>
+</div>
+<div class="flex-grow grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="first-name">First name</label>
+<div class="mt-2">
+<input autocomplete="given-name" class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="first-name" name="first-name" type="text" value="Sarah"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="last-name">Last name</label>
+<div class="mt-2">
+<input autocomplete="family-name" class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="last-name" name="last-name" type="text" value="Jenkins"/>
+</div>
+</div>
+<div class="sm:col-span-2">
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="email">Work Email</label>
+<div class="mt-2">
+<input autocomplete="email" class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="email" name="email" type="email" value="sarah.jenkins@mercyhospital.org"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="specialty">Specialty</label>
+<div class="mt-2">
+<select class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="specialty" name="specialty">
+<option selected="">Cardiology</option>
+<option>Neurology</option>
+<option>General Practice</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="license">Medical License #</label>
+<div class="mt-2">
+<input class="block w-full rounded-lg border-0 py-2.5 text-slate-500 shadow-sm ring-1 ring-inset ring-slate-200 bg-slate-50 dark:bg-slate-900/50 dark:text-slate-400 dark:ring-slate-700 sm:text-sm sm:leading-6 cursor-not-allowed" disabled="" id="license" name="license" type="text" value="MD-8834-NY"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 2: AI Sensitivity -->
+<div class="bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10 rounded-xl overflow-hidden relative">
+<!-- Gradient accent -->
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-white/5">
+<div class="flex items-center gap-2">
+<span class="material-icons-round text-primary">auto_awesome</span>
+<h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white">AI Diagnostic Sensitivity</h3>
+</div>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400 max-w-2xl">Adjust how aggressively the AI flags potential anomalies in patient data.</p>
+</div>
+<div class="p-8">
+<div class="mb-10 relative pt-6">
+<label class="sr-only" for="ai-sensitivity">AI Sensitivity Slider</label>
+<input class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 focus:outline-none focus:ring-0" id="ai-sensitivity" max="100" min="1" type="range" value="75"/>
+<div class="flex justify-between text-xs text-slate-500 font-medium mt-4 uppercase tracking-wider">
+<span>Conservative</span>
+<span>Balanced</span>
+<span>Highly Sensitive</span>
+</div>
+</div>
+<div class="bg-primary/5 rounded-lg p-4 border border-primary/10 flex gap-4 items-start">
+<span class="material-icons-round text-primary mt-0.5">info</span>
+<div>
+<h4 class="text-sm font-medium text-slate-900 dark:text-white">Current Setting: High Sensitivity (75%)</h4>
+<p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                                    At this level, the AI will flag minor irregularities in lab results (±2% deviation). Recommended for early detection programs.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Notification & Privacy (Toggles) -->
+<div class="bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10 rounded-xl overflow-hidden">
+<div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-white/5">
+<h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white">Notification Preferences</h3>
+</div>
+<div class="p-6 space-y-6">
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium leading-6 text-slate-900 dark:text-white">Critical Patient Alerts</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Receive immediate SMS for vitals dropping below threshold.</span>
+</div>
+<!-- Enabled Toggle -->
+<button aria-checked="true" class="bg-primary relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" role="switch" type="button">
+<span aria-hidden="true" class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<hr class="border-slate-100 dark:border-slate-800"/>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium leading-6 text-slate-900 dark:text-white">Daily AI Summary</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Email digest of all patient interactions analyzed by AI.</span>
+</div>
+<!-- Enabled Toggle -->
+<button aria-checked="true" class="bg-primary relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" role="switch" type="button">
+<span aria-hidden="true" class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<hr class="border-slate-100 dark:border-slate-800"/>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium leading-6 text-slate-900 dark:text-white">Marketing Communications</span>
+<span class="text-sm text-slate-500 dark:text-slate-400">Receive news about new AI features and platform updates.</span>
+</div>
+<!-- Disabled Toggle -->
+<button aria-checked="false" class="bg-slate-200 dark:bg-slate-700 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" role="switch" type="button">
+<span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Section 4: Security (Minimalist) -->
+<div class="bg-surface-light dark:bg-surface-dark shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10 rounded-xl overflow-hidden">
+<div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-white/5">
+<h3 class="text-lg font-semibold leading-6 text-slate-900 dark:text-white">Security</h3>
+</div>
+<div class="p-6">
+<div class="max-w-md space-y-4">
+<div>
+<label class="block text-sm font-medium leading-6 text-slate-900 dark:text-white" for="current-password">Change Password</label>
+<div class="mt-2">
+<input class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="current-password" name="current-password" placeholder="Current Password" type="password"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<input class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="new-password" name="new-password" placeholder="New Password" type="password"/>
+</div>
+<div>
+<input class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" id="confirm-password" name="confirm-password" placeholder="Confirm New" type="password"/>
+</div>
+</div>
+<div class="pt-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-icons-round text-slate-400">phonelink_lock</span>
+<span class="text-sm text-slate-700 dark:text-slate-300">2FA is currently <span class="font-bold text-green-600">Enabled</span></span>
+</div>
+<button class="text-sm font-medium text-primary hover:text-primary-hover">Manage 2FA</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex items-center justify-end gap-x-4 pt-4 pb-12">
+<button class="text-sm font-semibold leading-6 text-slate-900 dark:text-white px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" type="button">Cancel</button>
+<button class="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all shadow-primary/30" type="submit">Save Changes</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

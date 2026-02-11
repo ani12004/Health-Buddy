@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --background: 247 246 248;
+    --foreground: 15 23 42;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/50;
+  }
+
+  .dark .glass-panel {
+    @apply bg-[#191022]/60 border-white/5;
+  }
+
+  .hero-gradient-bg {
+    background: radial-gradient(circle at 50% 0%, rgba(140, 43, 238, 0.15) 0%, rgba(247, 246, 248, 0) 70%);
+  }
+
+  .dark .hero-gradient-bg {
+    background: radial-gradient(circle at 50% 0%, rgba(140, 43, 238, 0.25) 0%, rgba(25, 16, 34, 0) 70%);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full dark:bg-slate-700;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-600;
+}
