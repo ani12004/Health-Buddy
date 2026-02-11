@@ -1,13 +1,26 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
+// import { User, Session } from '@supabase/supabase-js' // Removed
 import { useRouter } from 'next/navigation'
+import { useUser as useClerkUser, useClerk, useAuth as useClerkAuth } from '@clerk/nextjs'
+
+// Mocking Supabase User type for compatibility or importing if needed.
+// Ideally we should update the type definition, but for now we adapt.
+interface SupabaseUserAdapter {
+    id: string
+    email?: string
+    user_metadata: {
+        [key: string]: any
+    }
+    app_metadata: {
+        [key: string]: any
+    }
+}
 
 interface AuthContextType {
-    user: User | null
-    session: Session | null
+    user: SupabaseUserAdapter | null
+    session: any | null // We don't really have a Supabase session anymore
     isLoading: boolean
     signOut: () => Promise<void>
 }
@@ -20,36 +33,36 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
-    const [session, setSession] = useState<Session | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const { user: clerkUser, isLoaded } = useClerkUser()
+    const { signOut: clerkSignOut } = useClerk()
     const router = useRouter()
-    const supabase = createClient()
 
-    useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (event, session) => {
-                setSession(session)
-                setUser(session?.user ?? null)
-                setIsLoading(false)
-                if (event === 'SIGNED_OUT') {
-                    router.push('/login')
-                }
-            }
-        )
-
-        return () => {
-            subscription.unsubscribe()
+    const formattedUser: SupabaseUserAdapter | null = useMemo(() => {
+        if (!clerkUser) return null
+        return {
+            id: clerkUser.id,
+            email: clerkUser.primaryEmailAddress?.emailAddress,
+            user_metadata: {
+                role: clerkUser.publicMetadata?.role,
+                full_name: clerkUser.fullName,
+                avatar_url: clerkUser.imageUrl,
+            },
+            app_metadata: {},
         }
-    }, [supabase, router])
+    }, [clerkUser])
 
     const signOut = async () => {
-        await supabase.auth.signOut()
+        await clerkSignOut()
         router.push('/login')
     }
 
     return (
-        <AuthContext.Provider value={{ user, session, isLoading, signOut }}>
+        <AuthContext.Provider value={{
+            user: formattedUser,
+            session: null, // Session is managed by Clerk now
+            isLoading: !isLoaded,
+            signOut
+        }}>
             {children}
         </AuthContext.Provider>
     )
