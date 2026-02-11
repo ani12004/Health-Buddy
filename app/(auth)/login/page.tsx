@@ -3,66 +3,59 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useSignIn } from '@clerk/nextjs'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Shield, Mail, Lock, Eye, EyeOff, Quote } from 'lucide-react'
-import { toast } from 'sonner' // Ensure sonner is installed
+import { toast } from 'sonner'
 
 export default function LoginPage() {
+    const { isLoaded, signIn, setActive } = useSignIn()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
-    const supabase = createClient()
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!isLoaded) return;
         setIsLoading(true)
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
+            const result = await signIn.create({
+                identifier: email,
                 password,
             })
 
-            if (error) {
-                toast.error(error.message)
-                return
-            }
+            if (result.status === "complete") {
+                await setActive({ session: result.createdSessionId })
+                toast.success('Welcome back!')
 
-            // Check user role to redirect appropriately
-            // Fetch profile to get role
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', data.user.id)
-                .single()
+                // Sync user to Supabase and get role
+                try {
+                    const { syncUser } = await import('@/lib/actions/auth')
+                    const syncResult = await syncUser()
+                    const role = syncResult?.role || 'patient'
 
-            const role = profile?.role || 'patient' // Default to patient if not found (shouldn't happen)
+                    router.refresh()
 
-            // Sync user metadata if needed (middleware relies on this)
-            if (data.user?.user_metadata?.role !== role) {
-                await supabase.auth.updateUser({
-                    data: { role: role }
-                })
-            }
-
-            toast.success('Welcome back!')
-
-            // Refresh router to ensure middleware sees the new session
-            router.refresh()
-
-            if (role === 'doctor') {
-                router.push('/doctor/dashboard')
+                    if (role === 'doctor') {
+                        router.push('/doctor/dashboard')
+                    } else {
+                        router.push('/patient/dashboard')
+                    }
+                } catch (err) {
+                    console.error('Sync failed', err)
+                    router.push('/patient/dashboard')
+                }
             } else {
-                router.push('/patient/dashboard')
+                toast.error('Sign in failed. Check credentials.')
             }
 
-        } catch (error) {
-            toast.error('An unexpected error occurred.')
+        } catch (error: any) {
             console.error(error)
+            toast.error(error.errors?.[0]?.message || 'Failed to sign in.')
         } finally {
             setIsLoading(false)
         }
@@ -146,7 +139,6 @@ export default function LoginPage() {
                             <div className="relative group">
                                 <div className="flex items-center justify-between mb-2 ml-1">
                                     <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300" htmlFor="password">Password</label>
-                                    {/* <a href="#" className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">Forgot Password?</a> */}
                                 </div>
                                 <div className="relative">
                                     <Input

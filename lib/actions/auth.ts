@@ -1,56 +1,90 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { auth, clerkClient } from '@clerk/nextjs/server'
+
+export async function syncUser() {
+    const { userId } = await auth()
+    if (!userId) return null
+
+    const client = await clerkClient()
+    const user = await client.users.getUser(userId)
+    const email = user.emailAddresses[0]?.emailAddress
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'
+    const role = user.publicMetadata.role as string || 'patient'
+
+    const supabase = await createServiceRoleClient()
+
+    // Sync Profile
+    await supabase.from('profiles').upsert({
+        id: userId,
+        email: email,
+        full_name: fullName,
+        role: role,
+        updated_at: new Date().toISOString()
+    }, { onConflict: 'id' })
+
+    return { success: true, role }
+}
 
 export async function updateUserRole(role: 'patient' | 'doctor') {
-    const supabase = await createClient()
-    // Force refresh of auth state
-    await supabase.auth.refreshSession()
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const { userId } = await auth()
 
-    if (error || !user) {
-        console.error("Auth Error in updateUserRole:", error)
+    if (!userId) {
         throw new Error('Not authenticated')
     }
 
-    // 1. Update Auth Metadata
-    const { error: authError } = await supabase.auth.updateUser({
-        data: { role }
+    const client = await clerkClient()
+    const user = await client.users.getUser(userId)
+    const email = user.emailAddresses[0]?.emailAddress
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'
+
+    const supabase = await createServiceRoleClient()
+
+    // 1. Update Clerk Auth Metadata
+    await client.users.updateUser(userId, {
+        publicMetadata: { role }
     })
 
-    if (authError) throw authError
-
-    // 2. Update Profiles Table
+    // 2. Ensure Profile Exists in Supabase (Sync Clerk User to Supabase Profile)
+    // We use the Clerk/User ID as the Profile ID
     const { error: profileError } = await supabase
         .from('profiles')
-        .update({ role })
-        .eq('id', user.id)
+        .upsert({
+            id: userId,
+            email: email,
+            full_name: fullName,
+            role: role,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'id' })
 
-    if (profileError) throw profileError
+    if (profileError) {
+        console.error('Profile Sync Error:', profileError)
+        throw new Error('Failed to sync profile')
+    }
 
     // 3. Handle specific table migration
-    // Logic: verification of existing record prevents duplicates, delete from other table
     if (role === 'doctor') {
-        // Add to doctors if not exists
+        // Add to doctors
         const { error: doctorError } = await supabase
             .from('doctors')
-            .upsert({ id: user.id }, { onConflict: 'id', ignoreDuplicates: true })
+            .upsert({ id: userId }, { onConflict: 'id', ignoreDuplicates: true })
 
         // Remove from patients
-        await supabase.from('patients').delete().eq('id', user.id)
+        await supabase.from('patients').delete().eq('id', userId)
 
         if (doctorError) throw doctorError
 
     } else {
-        // Add to patients if not exists
+        // Add to patients
         const { error: patientError } = await supabase
             .from('patients')
-            .upsert({ id: user.id }, { onConflict: 'id', ignoreDuplicates: true })
+            .upsert({ id: userId }, { onConflict: 'id', ignoreDuplicates: true })
 
         // Remove from doctors
-        await supabase.from('doctors').delete().eq('id', user.id)
+        await supabase.from('doctors').delete().eq('id', userId)
 
         if (patientError) throw patientError
     }

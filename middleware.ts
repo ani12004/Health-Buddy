@@ -1,77 +1,36 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-export async function middleware(request: NextRequest) {
-    let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
-    });
+const isPatientRoute = createRouteMatcher(['/patient(.*)']);
+const isDoctorRoute = createRouteMatcher(['/doctor(.*)']);
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return request.cookies.getAll();
-                },
-                setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        request.cookies.set(name, value)
-                    );
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    });
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        response.cookies.set(name, value, options)
-                    );
-                },
-            },
-        }
-    );
+export default clerkMiddleware(async (auth, req) => {
+    const { userId, sessionClaims, redirectToSignIn } = await auth();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    // Route protection logic
-    if (request.nextUrl.pathname.startsWith("/patient")) {
-        if (!user) {
-            return NextResponse.redirect(new URL("/login", request.url));
-        }
-        // Check role
-        const role = user.user_metadata.role;
-        if (role !== "patient") {
-            return NextResponse.redirect(new URL("/doctor/dashboard", request.url));
-        }
+    // If the user isn't signed in and the route is private, redirect to sign-in
+    if (!userId && (isPatientRoute(req) || isDoctorRoute(req))) {
+        return redirectToSignIn({ returnBackUrl: req.url });
     }
 
-    if (request.nextUrl.pathname.startsWith("/doctor")) {
-        if (!user) {
-            return NextResponse.redirect(new URL("/login", request.url));
+    // Role-based access control
+    if (userId) {
+        const role = sessionClaims?.metadata?.role;
+
+        if (isPatientRoute(req) && role !== 'patient') {
+            return NextResponse.redirect(new URL('/doctor/dashboard', req.url));
         }
-        // Check role
-        const role = user.user_metadata.role;
-        if (role !== "doctor") {
-            return NextResponse.redirect(new URL("/patient/dashboard", request.url));
+
+        if (isDoctorRoute(req) && role !== 'doctor') {
+            return NextResponse.redirect(new URL('/patient/dashboard', req.url));
         }
     }
-
-    return response;
-}
+});
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * - public folder
-         */
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        // Skip Next.js internals and all static files, unless found in search params
+        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+        // Always run for API routes
+        '/(api|trpc)(.*)',
     ],
 };

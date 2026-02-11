@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { analyzeSymptoms } from '@/lib/actions/gemini'
+import { analyzeSymptoms } from '@/lib/actions/gemini/symptoms'
 import { Sparkles, ArrowRight, AlertTriangle, Info } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 

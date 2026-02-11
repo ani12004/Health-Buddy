@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { analyzeHealthData } from '@/lib/actions/gemini'
+import { analyzeHealthData } from '@/lib/actions/gemini/checkup'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Notifications } from '@/components/layout/Notifications'

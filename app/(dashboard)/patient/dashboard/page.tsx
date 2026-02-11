@@ -11,16 +11,17 @@ import {
     Calendar,
     Bell
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
 import { Notifications } from '@/components/layout/Notifications'
 
 export default async function PatientDashboard() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { userId } = await auth()
+    const supabase = await createServiceRoleClient()
 
     let profile = null
-    if (user) {
-        const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+    if (userId) {
+        const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
         profile = data
     }
 
