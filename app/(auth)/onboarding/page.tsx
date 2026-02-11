@@ -35,7 +35,17 @@ export default function OnboardingPage() {
         setIsLoading(true)
         try {
             await updateUserRole(selectedRole)
-        } catch (error) {
+            // If we reach here without redirect, something went wrong
+            toast.error('Failed to update role. Please try again.')
+            setIsLoading(false)
+        } catch (error: any) {
+            // Next.js redirect throws a special error that should not be caught
+            // Check if this is a redirect error by looking for NEXT_REDIRECT
+            if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.includes('NEXT_REDIRECT')) {
+                // This is expected behavior - let it propagate
+                throw error
+            }
+            // Only show error toast for actual errors
             toast.error('Failed to update role. Please try again.')
             console.error(error)
             setIsLoading(false)
