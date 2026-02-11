@@ -22,7 +22,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl="/login"
+      signUpUrl="/register"
+      afterSignOutUrl="/login"
+    >
       <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <body className={`${manrope.variable} font-display antialiased bg-background-light dark:bg-background-dark text-slate-900 dark:text-white`}>
           <AuthProvider>

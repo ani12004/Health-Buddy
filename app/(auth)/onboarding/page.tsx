@@ -1,35 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Heart, Activity, Check, ArrowRight } from 'lucide-react'
 import { updateUserRole } from '@/lib/actions/auth'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils/cn'
+import { useAuth } from '@clerk/nextjs'
 
 export default function OnboardingPage() {
+    const { userId, isLoaded } = useAuth()
     const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | null>(null)
     const [isLoading, setIsLoading] = useState(false)
-    const [verifyingSession, setVerifyingSession] = useState(true)
     const router = useRouter()
 
-    // Check for session on mount
-    useState(() => {
-        const checkSession = async () => {
-            const { createClient } = await import('@/lib/supabase/client')
-            const supabase = createClient()
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                toast.error('Please log in to continue.')
-                router.push('/login')
-            }
-            setVerifyingSession(false)
+    useEffect(() => {
+        if (isLoaded && !userId) {
+            toast.error('Please log in to continue.')
+            router.push('/login')
         }
-        checkSession()
-    })
+    }, [isLoaded, userId, router])
 
-    if (verifyingSession) {
+    if (!isLoaded || !userId) {
         return <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
     }
 
