@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+:root {
+  --background: #F7F5FF;
+  --foreground: #1C1C1E;
+  /* Primary Text */
+
+  /* Lavender Theme */
+  --primary: #7C6CF2;
+  /* Deep Lavender - Using for primary actions */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #E9E4FF;
+  /* Soft Lavender */
+  --secondary-foreground: #7C6CF2;
+  /* Deep Lavender */
+
+  --accent: #B7A9FF;
+  /* Lavender Core */
+  --accent-foreground: #FFFFFF;
+
+  --muted: #F7F5FF;
+  /* Same as background or slightly darkened? Using BG for now or white/transparent */
+  --muted-foreground: #6E6E73;
+  /* Secondary Text */
+
+  --card: #FFFFFF;
+  --card-foreground: #1C1C1E;
+
+  --border: #E5E5EA;
+  /* Divider */
+  --input: #E5E5EA;
+
+  --radius: 1rem;
+
+  /* State Colors */
+  --success: #6EE7B7;
+  /* Muted Green */
+  --warning: #FCD34D;
+  /* Soft Amber */
+  --destructive: #EF4444;
+  /* Desaturated Red */
+}
+
+/* Dark Mode (optional future proofing) */
+/* Dark Mode removed to enforce Lavender Light Theme as requested */
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Outfit', Arial, Helvetica, sans-serif;
+  /* Explicitly adding Outfit if available, else fallback */
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/5 backdrop-blur-[18px] border border-white/20 shadow-none;
+    /* 5-8% opacity, 18px blur, no heavy border */
+  }
+
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-[18px] border border-white/20 shadow-sm;
+    /* Slightly more opaque for legible cards */
+  }
+
+  .glass-dark {
+    @apply bg-black/5 backdrop-blur-[18px] border border-white/5 shadow-none;
+  }
+}
