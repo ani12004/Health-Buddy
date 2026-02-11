@@ -14,7 +14,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     // Role-based access control
     if (userId) {
-        const role = sessionClaims?.metadata?.role;
+        const role = (sessionClaims as any)?.metadata?.role;
 
         if (isPatientRoute(req) && role !== 'patient') {
             return NextResponse.redirect(new URL('/doctor/dashboard', req.url));
