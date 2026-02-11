@@ -36,7 +36,7 @@ export function Navbar() {
                         ) : (
                             <>
                                 <Link href="/login" className="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary transition-colors">Log in</Link>
-                                <Link href="/login">
+                                <Link href="/onboarding">
                                     <Button variant="primary" className="shadow-lg shadow-primary/25 hover:shadow-primary/40">
                                         Get Started
                                     </Button>
@@ -70,7 +70,7 @@ export function Navbar() {
                                     <Link href="/login">
                                         <Button variant="ghost" className="w-full justify-start">Log in</Button>
                                     </Link>
-                                    <Link href="/login">
+                                    <Link href="/onboarding">
                                         <Button className="w-full">Get Started</Button>
                                     </Link>
                                 </>
