@@ -31,8 +31,8 @@ export default function LandingPage() {
                   Instant symptom analysis and personalized health insights powered by advanced medical AI. Always available, always accurate.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                  <Link href="/patient/dashboard" className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300 text-center flex items-center justify-center gap-2">
-                    Try Symptom Checker
+                  <Link href="/onboarding" className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300 text-center flex items-center justify-center gap-2">
+                    Get Started
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link href="#demo" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white rounded-full font-semibold hover:bg-slate-50 dark:hover:bg-white/10 transition-all duration-300 text-center flex items-center justify-center gap-2 group">
