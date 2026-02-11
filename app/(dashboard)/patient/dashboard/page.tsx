@@ -11,10 +11,20 @@ import {
     Calendar,
     Bell
 } from 'lucide-react'
-// import { useUser } from '@/hooks/useUser'
-// We are in a dashboard layout, user is guaranteed. We can fetch specific patient data here.
+import { createClient } from '@/lib/supabase/server'
+import { Notifications } from '@/components/layout/Notifications'
 
-export default function PatientDashboard() {
+export default async function PatientDashboard() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    let profile = null
+    if (user) {
+        const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+        profile = data
+    }
+
+    const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : 'there'
 
     return (
         <div className="space-y-8">
@@ -22,7 +32,7 @@ export default function PatientDashboard() {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">
-                        Good Morning
+                        Good Morning, {firstName}
                     </h2>
                     <p className="text-slate-500 dark:text-slate-400 text-base lg:text-lg flex items-center gap-2">
                         <Calendar className="w-5 h-5 text-primary" />
@@ -31,10 +41,7 @@ export default function PatientDashboard() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button className="p-3 rounded-full bg-white dark:bg-neutral-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:border-primary/30 transition-all shadow-sm relative">
-                        <Bell className="w-6 h-6" />
-                        <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-neutral-surface-dark"></span>
-                    </button>
+                    <Notifications />
                 </div>
             </header>
 

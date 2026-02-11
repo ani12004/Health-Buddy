@@ -5,15 +5,30 @@ import { Quote, Activity } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
 export async function DailyTipCard() {
-    // const supabase = await createClient()
-    // const { data: tip } = await supabase.from('daily_tips').select('*').single()
+    const supabase = await createClient()
 
-    // Hardcoded for now but RSC structure is ready
-    const tip = {
+    // Get count of tips
+    const { count } = await supabase
+        .from('daily_tips')
+        .select('*', { count: 'exact', head: true })
+
+    let tip = {
         title: "Hydration boosts brain function.",
         content: "Drinking water helps maintain focus and energy levels throughout the day. Aim for 8 glasses daily.",
-        progress: 4,
-        total: 8
+        category: "General"
+    }
+
+    if (count && count > 0) {
+        const randomIndex = Math.floor(Math.random() * count)
+        const { data } = await supabase
+            .from('daily_tips')
+            .select('*')
+            .range(randomIndex, randomIndex)
+            .single()
+
+        if (data) {
+            tip = data
+        }
     }
 
     return (
@@ -31,11 +46,10 @@ export async function DailyTipCard() {
                     {tip.content}
                 </p>
             </div>
-            <div className="mt-6 flex items-center gap-2">
-                <div className="h-1 flex-1 bg-amber-200/50 dark:bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 w-1/2 rounded-full"></div>
-                </div>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{tip.progress}/{tip.total} cups</span>
+            <div className="mt-6">
+                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                    {tip.category || 'General'}
+                </span>
             </div>
         </div>
     )
@@ -69,7 +83,17 @@ export async function RecentReportsList() {
                             </div>
                             <div className="flex-1">
                                 <h4 className="font-bold text-slate-900 dark:text-white">{report.title}</h4>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(report.created_at).toLocaleDateString()}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(report.created_at).toLocaleDateString()}</p>
+                                    {report.severity && (
+                                        <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${report.severity === 'critical' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                                                report.severity === 'warning' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' :
+                                                    'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                            }`}>
+                                            {report.severity}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
                                 {report.type}

@@ -15,7 +15,8 @@ import {
     MessageSquare,
     Activity,
     BarChart2,
-    Shield // For Logo
+    Shield, // For Logo
+    Brain,
 } from 'lucide-react'
 import { useAuth } from '@/components/providers'
 
@@ -30,10 +31,11 @@ export function Sidebar({ profile }: SidebarProps) {
 
     const patientLinks = [
         { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { href: '/patient/profile', label: 'Medical Reports', icon: FileText }, // Using profile/reports tab concept
+        { href: '/patient/profile', label: 'Medical Reports', icon: FileText },
         { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
         { href: '/patient/medications', label: 'Prescriptions', icon: Pill },
         { href: '/patient/chat', label: 'AI Chat', icon: MessageSquare },
+        { href: '/patient/ai-checkup', label: 'AI Checkup', icon: Brain },
     ]
 
     const doctorLinks = [
@@ -84,7 +86,7 @@ export function Sidebar({ profile }: SidebarProps) {
             {/* Bottom Actions */}
             <div className="p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
                 <Link
-                    href={role === 'doctor' ? '/doctor/settings' : '/patient/profile'}
+                    href={role === 'doctor' ? '/doctor/settings' : '/patient/settings'}
                     className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
                 >
                     <Settings className="w-5 h-5 group-hover:text-primary transition-colors" />
