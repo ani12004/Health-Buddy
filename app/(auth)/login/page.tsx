@@ -67,7 +67,7 @@ export default function LoginPage() {
             await signIn.authenticateWithRedirect({
                 strategy,
                 redirectUrl: '/sso-callback',
-                redirectUrlComplete: '/patient/dashboard',
+                redirectUrlComplete: '/',
             })
         } catch (err) {
             console.error('OAuth error', err)

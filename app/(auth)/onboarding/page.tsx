@@ -7,7 +7,7 @@ import { Heart, Activity, Check, ArrowRight } from 'lucide-react'
 import { updateUserRole } from '@/lib/actions/auth'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils/cn'
-import { useAuth } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 
 export default function OnboardingPage() {
     const { userId, isLoaded } = useAuth()
@@ -15,12 +15,20 @@ export default function OnboardingPage() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
+    const { user, isLoaded: isUserLoaded } = useUser()
+
     useEffect(() => {
         if (isLoaded && !userId) {
             toast.error('Please log in to continue.')
             router.push('/login')
         }
-    }, [isLoaded, userId, router])
+
+        // Redirect if already has a role
+        if (isUserLoaded && user?.publicMetadata?.role) {
+            const role = user.publicMetadata.role as string;
+            router.push(role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard');
+        }
+    }, [isLoaded, userId, isUserLoaded, user, router])
 
     if (!isLoaded || !userId) {
         return <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
