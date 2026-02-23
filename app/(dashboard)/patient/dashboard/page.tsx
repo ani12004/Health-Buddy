@@ -17,13 +17,17 @@ import { Notifications } from '@/components/layout/Notifications'
 
 export default async function PatientDashboard() {
     const { userId } = await auth()
+
+    if (!userId) {
+        // middleware should handle this, but for safety
+        return null
+    }
+
     const supabase = await createServiceRoleClient()
 
     let profile = null
-    if (userId) {
-        const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
-        profile = data
-    }
+    const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
+    profile = data
 
     const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : 'there'
 

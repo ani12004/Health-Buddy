@@ -1,12 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
 import { Pill, Calendar, Clock, AlertCircle } from 'lucide-react'
 import { Notifications } from '@/components/layout/Notifications'
 
 export default async function MedicationsPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { userId } = await auth()
+    const supabase = await createServiceRoleClient()
 
-    if (!user) {
+    if (!userId) {
         return <div>Please log in to view prescriptions.</div>
     }
 
@@ -16,7 +17,7 @@ export default async function MedicationsPage() {
             *,
             doctor:doctor_id(full_name, specialty)
         `)
-        .eq('patient_id', user.id)
+        .eq('patient_id', userId)
         .order('status', { ascending: true }) // Active first (assuming 'active' < 'completed' alphabetically? No, 'active' comes first)
         .order('end_date', { ascending: false })
 

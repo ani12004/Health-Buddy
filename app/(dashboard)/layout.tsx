@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { UserProfile } from '@/types'
@@ -8,19 +9,19 @@ export default async function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
-    const supabase = await createClient()
+    const { userId } = await auth()
 
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
+    if (!userId) {
         redirect('/login')
     }
+
+    const supabase = await createServiceRoleClient()
 
     // Fetch full profile
     const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
     return (

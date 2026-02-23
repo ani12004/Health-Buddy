@@ -1,19 +1,23 @@
-
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
 import { PatientList } from '@/components/features/PatientList'
 import { CriticalAlerts } from '@/components/features/CriticalAlerts'
 import { Users, UserPlus, Search, Activity, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { redirect } from 'next/navigation'
 
 export default async function DoctorDashboard() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { userId } = await auth()
+
+    if (!userId) {
+        redirect('/login')
+    }
+
+    const supabase = await createServiceRoleClient()
 
     let doctorName = 'Doctor'
-    if (user) {
-        const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
-        if (data?.full_name) doctorName = data.full_name
-    }
+    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
+    if (profile?.full_name) doctorName = profile.full_name
 
     // Fetch Stats
     const { count: patientCount } = await supabase.from('patients').select('*', { count: 'exact', head: true })

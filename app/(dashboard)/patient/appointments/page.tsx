@@ -1,12 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
+import { auth } from '@clerk/nextjs/server'
 import { Calendar, Clock, MapPin, User as UserIcon, AlertCircle } from 'lucide-react'
 import { Notifications } from '@/components/layout/Notifications'
 
 export default async function AppointmentsPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { userId } = await auth()
+    const supabase = await createServiceRoleClient()
 
-    if (!user) {
+    if (!userId) {
         return <div>Please log in to view appointments.</div>
     }
 
@@ -17,7 +18,7 @@ export default async function AppointmentsPage() {
             *,
             doctor:doctor_id(full_name, specialty)
         `)
-        .eq('patient_id', user.id)
+        .eq('patient_id', userId)
         .order('appointment_date', { ascending: true })
 
     const now = new Date()
@@ -115,8 +116,8 @@ export default async function AppointmentsPage() {
                                 <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-bold text-slate-700 dark:text-slate-300">{app.type}</h4>
                                     <span className={`text-xs font-bold px-2 py-1 rounded ${app.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                            app.status === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                                'bg-slate-200 text-slate-600'
+                                        app.status === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                            'bg-slate-200 text-slate-600'
                                         }`}>
                                         {app.status}
                                     </span>
