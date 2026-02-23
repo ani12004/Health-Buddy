@@ -22,13 +22,7 @@ export default function OnboardingPage() {
             toast.error('Please log in to continue.')
             router.push('/login')
         }
-
-        // Redirect if already has a role
-        if (isUserLoaded && user?.publicMetadata?.role) {
-            const role = user.publicMetadata.role as string;
-            router.push(role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard');
-        }
-    }, [isLoaded, userId, isUserLoaded, user, router])
+    }, [isLoaded, userId, router])
 
     if (!isLoaded || !userId) {
         return <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>

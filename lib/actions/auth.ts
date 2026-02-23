@@ -1,13 +1,17 @@
 'use server'
 
 import { createServiceRoleClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+// import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { auth, clerkClient } from '@clerk/nextjs/server'
 
 export async function syncUser() {
+    console.log('[DEBUG] syncUser started')
     const { userId } = await auth()
-    if (!userId) return null
+    if (!userId) {
+        console.log('[DEBUG] syncUser: No userId')
+        return null
+    }
 
     const client = await clerkClient()
     const user = await client.users.getUser(userId)
@@ -18,6 +22,7 @@ export async function syncUser() {
     const supabase = await createServiceRoleClient()
 
     // Sync Profile
+    console.log('[DEBUG] syncUser: Upserting profile')
     await supabase.from('profiles').upsert({
         id: userId,
         email: email,
@@ -26,12 +31,13 @@ export async function syncUser() {
         updated_at: new Date().toISOString()
     }, { onConflict: 'id' })
 
+    console.log('[DEBUG] syncUser: Finished')
     return { success: true, role }
 }
 
 export async function updateUserRole(role: 'patient' | 'doctor') {
     const { userId } = await auth()
-    console.log('[DEBUG] 1. Action started:', { userId, role })
+    console.log('[DEBUG] 1. updateUserRole started:', { userId, role })
 
     if (!userId) {
         console.error('[DEBUG] 1. ERROR: No userId found')
@@ -73,7 +79,7 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
             }, { onConflict: 'id' })
 
         if (profileError) {
-            console.error('[DEBUG] 9. Supabase Upsert ERROR:', profileError)
+            console.error('[DEBUG] 9. Supabase Upsert ERROR:', profileError.message)
             throw new Error(`Failed to sync profile: ${profileError.message}`)
         }
         console.log('[DEBUG] 10. Supabase upsert SUCCESS')
@@ -86,7 +92,7 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
                 .upsert({ id: userId }, { onConflict: 'id', ignoreDuplicates: true })
 
             if (doctorError) {
-                console.error('[DEBUG] 12. Doctors table ERROR:', doctorError)
+                console.error('[DEBUG] 12. Doctors table ERROR:', doctorError.message)
                 throw doctorError
             }
             console.log('[DEBUG] 13. Deleting from patients table if exists...')
@@ -99,18 +105,18 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
                 .upsert({ id: userId }, { onConflict: 'id', ignoreDuplicates: true })
 
             if (patientError) {
-                console.error('[DEBUG] 12. Patients table ERROR:', patientError)
+                console.error('[DEBUG] 12. Patients table ERROR:', patientError.message)
                 throw patientError
             }
             console.log('[DEBUG] 13. Deleting from doctors table if exists...')
             await supabase.from('doctors').delete().eq('id', userId)
         }
 
-        console.log('[DEBUG] 14. Calling revalidatePath...')
-        revalidatePath('/', 'layout')
-        console.log('[DEBUG] 15. RevalidatePath SUCCESS')
+        console.log('[DEBUG] 14. Skipping revalidatePath (for now)')
+        // revalidatePath('/', 'layout')
 
         success = true
+        console.log('[DEBUG] 15. Marked as success')
 
     } catch (error: any) {
         console.error('[DEBUG] CATCH BLOCK:', error)
