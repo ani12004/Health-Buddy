@@ -11,21 +11,26 @@ import { useAuth, useUser } from '@clerk/nextjs'
 
 export default function OnboardingPage() {
     const { userId, isLoaded } = useAuth()
+    const { user, isLoaded: isUserLoaded } = useUser()
     const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
-    const { user, isLoaded: isUserLoaded } = useUser()
-
     useEffect(() => {
         if (isLoaded && !userId) {
-            toast.error('Please log in to continue.')
             router.push('/login')
         }
     }, [isLoaded, userId, router])
 
-    if (!isLoaded || !userId) {
-        return <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+    if (!isLoaded || !isUserLoaded || !userId) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    <p className="text-slate-500 animate-pulse font-medium">Preparing your experience...</p>
+                </div>
+            </div>
+        )
     }
 
     const handleNextStep = async () => {
@@ -37,19 +42,17 @@ export default function OnboardingPage() {
         setIsLoading(true)
         try {
             await updateUserRole(selectedRole)
-            // If we reach here without redirect, something went wrong
-            toast.error('Failed to update role. Please try again.')
+            // If we reach here, it means redirect didn't happen yet (or it's a slow link)
             setIsLoading(false)
         } catch (error: any) {
-            // Next.js redirect throws a special error that should not be caught
-            // Check if this is a redirect error by looking for NEXT_REDIRECT
-            if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.includes('NEXT_REDIRECT')) {
-                // This is expected behavior - let it propagate
-                throw error
+            // Check if this is a Next.js redirect
+            if (error?.digest?.includes('NEXT_REDIRECT')) {
+                // Let Next.js handle it
+                return
             }
-            // Only show error toast for actual errors
-            toast.error('Failed to update role. Please try again.')
-            console.error(error)
+
+            toast.error(error.message || 'Failed to update role. Please try again.')
+            console.error('[Onboarding] Error:', error)
             setIsLoading(false)
         }
     }

@@ -93,7 +93,7 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
 
             if (doctorError) {
                 console.error('[DEBUG] 12. Doctors table ERROR:', doctorError.message)
-                throw doctorError
+                throw new Error(`Doctor profile sync failed: ${doctorError.message}`)
             }
             console.log('[DEBUG] 13. Deleting from patients table if exists...')
             await supabase.from('patients').delete().eq('id', userId)
@@ -106,13 +106,13 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
 
             if (patientError) {
                 console.error('[DEBUG] 12. Patients table ERROR:', patientError.message)
-                throw patientError
+                throw new Error(`Patient profile sync failed: ${patientError.message}`)
             }
             console.log('[DEBUG] 13. Deleting from doctors table if exists...')
             await supabase.from('doctors').delete().eq('id', userId)
         }
 
-        console.log('[DEBUG] 14. Skipping revalidatePath (for now)')
+        console.log('[DEBUG] 14. Revalidating path...')
         // revalidatePath('/', 'layout')
 
         success = true
@@ -120,6 +120,8 @@ export async function updateUserRole(role: 'patient' | 'doctor') {
 
     } catch (error: any) {
         console.error('[DEBUG] CATCH BLOCK:', error)
+        // If it's already a handled redirect error, re-throw it
+        if (error?.digest?.includes('NEXT_REDIRECT')) throw error
         throw error
     }
 
