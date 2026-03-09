@@ -41,18 +41,32 @@ export default function OnboardingPage() {
 
         setIsLoading(true)
         try {
-            await updateUserRole(selectedRole)
-            // If we reach here, it means redirect didn't happen yet (or it's a slow link)
-            setIsLoading(false)
-        } catch (error: any) {
-            // Check if this is a Next.js redirect
-            if (error?.digest?.includes('NEXT_REDIRECT')) {
-                // Let Next.js handle it
+            const result = await updateUserRole(selectedRole) as any
+
+            if (result?.error) {
+                toast.error(result.error)
+                console.error('[Onboarding] Server Action Error:', result.error)
+                setIsLoading(false)
                 return
             }
 
-            toast.error(error.message || 'Failed to update role. Please try again.')
-            console.error('[Onboarding] Error:', error)
+            if (result?.success) {
+                // Perform client-side redirection for faster response
+                const dest = selectedRole === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard'
+                router.push(dest)
+                // We keep isLoading true while redirecting
+            } else {
+                toast.error('Something went wrong. Please try again.')
+                setIsLoading(false)
+            }
+        } catch (error: any) {
+            // Check if this is a Next.js redirect
+            if (error?.digest?.includes('NEXT_REDIRECT')) {
+                return
+            }
+
+            toast.error('A connection error occurred. Please check your internet.')
+            console.error('[Onboarding] Unexpected error:', error)
             setIsLoading(false)
         }
     }
