@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useSignIn } from '@clerk/nextjs'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Shield, Mail, Lock, Eye, EyeOff, Quote } from 'lucide-react'
+import { Shield, Mail, Lock, Eye, EyeOff, Quote, User, Stethoscope } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
@@ -15,6 +15,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
+    const [role, setRole] = useState<'patient' | 'doctor'>('patient')
     const router = useRouter()
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -134,6 +135,26 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-6 mt-8">
+                        {/* Role Toggle Switch */}
+                        <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 border border-slate-200 dark:border-slate-700">
+                            <button
+                                type="button"
+                                onClick={() => setRole('patient')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${role === 'patient' ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                            >
+                                <User className="w-4 h-4" />
+                                Patient
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRole('doctor')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${role === 'doctor' ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                            >
+                                <Stethoscope className="w-4 h-4" />
+                                Doctor
+                            </button>
+                        </div>
+
                         <div className="space-y-5">
                             <div className="relative group">
                                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1" htmlFor="email">Email Address</label>
