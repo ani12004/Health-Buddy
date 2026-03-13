@@ -60,15 +60,19 @@ export default function AICheckupPage() {
         setResult(null)
 
         try {
+            console.log('Sending health data to AI...')
             const result = await analyzeHealthData(formData)
+            console.log('AI Response:', result)
             
             if (result.error) {
                 toast.error(result.error)
-                if (result.error.includes('Rate limit')) {
+                if (result.error.toLowerCase().includes('rate limit')) {
+                    console.log('Rate limit detected! Starting 30s cooldown.')
                     setCooldown(30)
                     const timer = setInterval(() => {
                         setCooldown(prev => {
                             if (prev <= 1) {
+                                console.log('Cooldown complete.')
                                 clearInterval(timer)
                                 return 0
                             }
@@ -82,7 +86,7 @@ export default function AICheckupPage() {
             setResult(result.data)
             toast.success('Analysis complete')
         } catch (error: any) {
-            console.error('Submit Error:', error)
+            console.error('Submit Error (Caught):', error)
             toast.error('A system error occurred. Please try again.')
         } finally {
             setLoading(false)

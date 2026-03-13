@@ -1,15 +1,12 @@
-'use server'
-
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function chatWithAI(message: string) {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) {
         return { error: 'Gemini API Key is not configured.' }
     }
 
     try {
+        const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
 
         const prompt = `

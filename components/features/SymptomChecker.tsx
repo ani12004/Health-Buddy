@@ -18,11 +18,17 @@ export function SymptomChecker() {
         setResult(null)
 
         try {
-            const data = await analyzeSymptoms(symptoms)
-            setResult(data)
+            const result = await analyzeSymptoms(symptoms)
+            
+            if (result.error) {
+                console.error('Symptom Analysis Error:', result.error)
+                // Use a generic alert or toast if available here
+                return
+            }
+
+            setResult(result.data)
         } catch (error) {
-            console.error(error)
-            // Todo: show error toast
+            console.error('Symptom Analysis Failed:', error)
         } finally {
             setIsLoading(false)
         }

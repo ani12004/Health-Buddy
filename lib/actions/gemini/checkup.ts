@@ -1,15 +1,12 @@
-'use server'
-
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function analyzeHealthData(data: any) {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) {
         return { error: 'Gemini API Key is not configured on the server.' }
     }
 
     try {
+        const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' })
 
         const prompt = `
