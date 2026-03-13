@@ -68,13 +68,13 @@ export function ChatWindow() {
             // 2. Call AI
             const result = await chatWithAI(userMessageContent)
 
-            if (result.error) {
-                toast.error(result.error)
+            if (result.error || !result.data) {
+                toast.error(result.error || 'Failed to get response.')
                 setIsLoading(false)
                 return
             }
 
-            const response = result.data
+            const response = result.data as string
 
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),
