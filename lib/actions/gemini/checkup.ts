@@ -56,13 +56,27 @@ export async function analyzeHealthData(data: any) {
         const response = await result.response
         const text = response.text()
 
-        // Clean up markdown if present
-        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim()
+        try {
+            // Robust JSON extraction: Find the first '{' and matching last '}'
+            const start = text.indexOf('{')
+            const end = text.lastIndexOf('}')
+            
+            if (start === -1 || end === -1) {
+                console.error('No JSON found in response:', text)
+                throw new Error('No valid JSON structure found in AI response')
+            }
 
-        return JSON.parse(cleanText)
+            const cleanText = text.substring(start, end + 1)
+            return JSON.parse(cleanText)
+
+        } catch (parseError) {
+            console.error('Gemini Checkup Parse Error:', parseError)
+            console.error('Full AI Response:', text)
+            throw new Error('Failed to parse analysis results. Please try again.')
+        }
 
     } catch (error) {
         console.error('Gemini Checkup Analysis Error:', error)
-        throw new Error('Failed to analyze health data.')
+        throw error // Re-throw to be caught by the client
     }
 }

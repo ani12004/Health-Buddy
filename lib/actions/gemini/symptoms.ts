@@ -22,15 +22,25 @@ export async function analyzeSymptoms(symptoms: string) {
             "advice": "Actionable advice (e.g., rest, see a doctor, go to ER)."
         }
 
-        Do not include markdown code blocks. Just return the raw JSON string.
+        Return ONLY a raw JSON string. Do not include markdown code blocks (like \`\`\`json), commentary, or any other text before or after the JSON object.
         `
 
         const result = await model.generateContent(prompt)
         const response = await result.response
         const text = response.text()
-        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim()
 
-        return JSON.parse(cleanText)
+        try {
+            const start = text.indexOf('{')
+            const end = text.lastIndexOf('}')
+            if (start === -1 || end === -1) throw new Error('No JSON found')
+            
+            const cleanText = text.substring(start, end + 1)
+            return JSON.parse(cleanText)
+        } catch (parseError) {
+            console.error('Gemini Symptom Parse Error:', parseError)
+            console.error('Full AI Response:', text)
+            throw new Error('Failed to parse symptom analysis results.')
+        }
 
     } catch (error) {
         console.error('Gemini Symptom Analysis Error:', error)

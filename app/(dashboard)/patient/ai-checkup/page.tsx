@@ -80,7 +80,7 @@ export default function AICheckupPage() {
                         AI Health Checkup
                     </h2>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">
-                        Professional health assessment powered by Gemini 2.5 Flash.
+                        Professional health assessment powered by Gemini AI.
                     </p>
                 </div>
                 <Notifications />
