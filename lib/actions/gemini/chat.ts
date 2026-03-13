@@ -1,3 +1,6 @@
+'use server'
+
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export async function chatWithAI(message: string) {
     const apiKey = process.env.GEMINI_API_KEY

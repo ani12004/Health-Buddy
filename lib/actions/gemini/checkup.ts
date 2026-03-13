@@ -1,3 +1,6 @@
+'use server'
+
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export async function analyzeHealthData(data: any) {
     const apiKey = process.env.GEMINI_API_KEY
