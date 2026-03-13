@@ -21,6 +21,7 @@ export function ChatWindow() {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [cooldown, setCooldown] = useState(0)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [sessionId] = useState(() => crypto.randomUUID())
 
@@ -70,6 +71,18 @@ export function ChatWindow() {
 
             if (result.error || !result.data) {
                 toast.error(result.error || 'Failed to get response.')
+                if (result.error?.includes('Rate limit')) {
+                    setCooldown(30)
+                    const timer = setInterval(() => {
+                        setCooldown(prev => {
+                            if (prev <= 1) {
+                                clearInterval(timer)
+                                return 0
+                            }
+                            return prev - 1
+                        })
+                    }, 1000)
+                }
                 setIsLoading(false)
                 return
             }
@@ -172,10 +185,14 @@ export function ChatWindow() {
                     />
                     <button
                         onClick={handleSend}
-                        disabled={!input.trim() || isLoading}
-                        className="absolute right-2 top-2 p-1.5 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!input.trim() || isLoading || cooldown > 0}
+                        className="absolute right-2 top-2 p-1.5 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 min-w-[40px] justify-center"
                     >
-                        <Send className="w-4 h-4" />
+                        {cooldown > 0 ? (
+                            <span className="text-[10px] font-bold">{cooldown}s</span>
+                        ) : (
+                            <Send className="w-4 h-4" />
+                        )}
                     </button>
                 </div>
             </div>

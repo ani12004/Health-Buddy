@@ -20,6 +20,7 @@ export default function AICheckupPage() {
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState<any>(null)
     const [currentStep, setCurrentStep] = useState(1)
+    const [cooldown, setCooldown] = useState(0)
 
     const [formData, setFormData] = useState({
         age: '',
@@ -63,6 +64,18 @@ export default function AICheckupPage() {
             
             if (result.error) {
                 toast.error(result.error)
+                if (result.error.includes('Rate limit')) {
+                    setCooldown(30)
+                    const timer = setInterval(() => {
+                        setCooldown(prev => {
+                            if (prev <= 1) {
+                                clearInterval(timer)
+                                return 0
+                            }
+                            return prev - 1
+                        })
+                    }, 1000)
+                }
                 return
             }
 
@@ -283,11 +296,16 @@ export default function AICheckupPage() {
                                         <ChevronRight className="w-5 h-5 ml-2" />
                                     </Button>
                                 ) : (
-                                    <Button type="submit" disabled={loading} className="flex-[2] h-14 rounded-2xl shadow-xl shadow-primary/30">
+                                    <Button type="submit" disabled={loading || cooldown > 0} className="flex-[2] h-14 rounded-2xl shadow-xl shadow-primary/30">
                                         {loading ? (
                                             <>
                                                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                                                 Analyzing Health...
+                                            </>
+                                        ) : cooldown > 0 ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                Retry in {cooldown}s
                                             </>
                                         ) : (
                                             <>
