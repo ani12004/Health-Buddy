@@ -10,7 +10,7 @@ export async function chatWithAI(message: string) {
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
 
         const prompt = `
         Act as a friendly and knowledgeable medical AI assistant named "Health Buddy".

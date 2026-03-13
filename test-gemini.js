@@ -1,29 +1,28 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-async function listModels() {
+async function testNewModels() {
     const key = 'AIzaSyAzgCpqT8Msl6UDwdRws13QU7Rbl9aZz8k';
-    console.log('Listing available models for API Key: AIzaSy...');
+    console.log('Testing New Gemini Models (2.5 & 3 series)...');
+    
+    const genAI = new GoogleGenerativeAI(key);
+    const modelsToTest = [
+        'gemini-3.1-pro-preview',
+        'gemini-3-flash',
+        'gemini-2.5-pro',
+        'gemini-2.5-flash'
+    ];
 
-    try {
-        const genAI = new GoogleGenerativeAI(key);
-        // The SDK doesn't have a direct listModels, we have to use the REST API or another way.
-        // But we can try a few common names.
-        const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-pro', 'gemini-1.0-pro'];
-
-        for (const modelName of models) {
-            try {
-                const model = genAI.getGenerativeModel({ model: modelName });
-                const result = await model.generateContent('ping');
-                const response = await result.response;
-                console.log(`Model ${modelName}: SUCCESS - ${response.text()}`);
-                return; // Stop at first working model
-            } catch (err) {
-                console.log(`Model ${modelName}: FAILED - ${err.message}`);
-            }
+    for (const modelName of modelsToTest) {
+        try {
+            console.log(`Checking ${modelName}...`);
+            const model = genAI.getGenerativeModel({ model: modelName });
+            const result = await model.generateContent('ping');
+            const response = await result.response;
+            console.log(`SUCCESS: ${modelName} responded: ${response.text().substring(0, 50)}...`);
+        } catch (err) {
+            console.log(`FAILED: ${modelName} - ${err.message}`);
         }
-    } catch (error) {
-        console.error('List Models failed:', error.message);
     }
 }
 
-listModels();
+testNewModels();

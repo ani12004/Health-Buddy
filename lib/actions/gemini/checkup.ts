@@ -10,7 +10,7 @@ export async function analyzeHealthData(data: any) {
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' })
 
         const prompt = `
         Act as a medical AI assistant. Analyze the following patient health parameters:
@@ -63,7 +63,7 @@ export async function analyzeHealthData(data: any) {
         try {
             const start = text.indexOf('{')
             const end = text.lastIndexOf('}')
-            
+
             if (start === -1 || end === -1) {
                 console.error('No JSON found in response:', text)
                 return { error: 'The AI provided an invalid response format.' }
@@ -83,7 +83,7 @@ export async function analyzeHealthData(data: any) {
         if (error?.message?.includes('429')) message = 'Rate limit exceeded. Please wait a moment.'
         if (error?.message?.includes('404')) message = 'AI model not found. This may be due to API key restrictions.'
         if (error?.message?.includes('400')) message = 'Invalid request to AI service.'
-        
+
         return { error: message }
     }
 }
