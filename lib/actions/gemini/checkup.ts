@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function analyzeHealthData(data: any) {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
         const prompt = `
         Act as a medical AI assistant. Analyze the following patient health parameters:

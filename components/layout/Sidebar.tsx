@@ -17,14 +17,17 @@ import {
     BarChart2,
     Shield, // For Logo
     Brain,
+    X,
 } from 'lucide-react'
 import { useAuth } from '@/components/providers'
 
 interface SidebarProps {
     profile: UserProfile | null
+    isOpen?: boolean
+    onClose?: () => void
 }
 
-export function Sidebar({ profile }: SidebarProps) {
+export function Sidebar({ profile, isOpen, onClose }: SidebarProps) {
     const pathname = usePathname()
     const { signOut } = useAuth()
     const role = profile?.role || 'patient'
@@ -48,13 +51,19 @@ export function Sidebar({ profile }: SidebarProps) {
     const links = role === 'doctor' ? doctorLinks : patientLinks
 
     return (
-        <aside className="fixed inset-y-0 left-0 w-72 bg-white/80 dark:bg-neutral-surface-dark/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-700/30 z-50 flex flex-col justify-between hidden lg:flex transition-colors duration-300">
+        <aside className={cn(
+            "fixed inset-y-0 left-0 w-72 bg-white dark:bg-neutral-surface-dark border-r border-slate-200/60 dark:border-slate-700/30 z-50 flex flex-col justify-between transition-transform duration-300 lg:translate-x-0",
+            isOpen ? "translate-x-0" : "-translate-x-full"
+        )}>
             {/* Logo Area */}
             <div className="p-8 pb-4">
-                <div className="flex items-center gap-3 mb-10">
+                <div className="flex items-center justify-between mb-10">
                     <Link href="/" className="block">
-                        <img src="/logo_navi_health_buddy.png" alt="Health Buddy" className="h-12 w-auto object-contain" />
+                        <img src="/logo_navi_health_buddy.png" alt="Health Buddy" className="h-10 w-auto object-contain" />
                     </Link>
+                    <button onClick={onClose} className="lg:hidden p-2 text-slate-500">
+                        <X className="w-5 h-5" />
+                    </button>
                 </div>
 
                 {/* Nav Links */}
@@ -67,6 +76,7 @@ export function Sidebar({ profile }: SidebarProps) {
                             <Link
                                 key={link.href}
                                 href={link.href}
+                                onClick={onClose}
                                 className={cn(
                                     "flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold transition-all group relative overflow-hidden",
                                     isActive
@@ -87,6 +97,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <div className="p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
                 <Link
                     href={role === 'doctor' ? '/doctor/settings' : '/patient/settings'}
+                    onClick={onClose}
                     className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
                 >
                     <Settings className="w-5 h-5 group-hover:text-primary transition-colors" />

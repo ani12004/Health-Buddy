@@ -6,12 +6,13 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function chatWithAI(message: string) {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
         const prompt = `
         Act as a friendly and knowledgeable medical AI assistant named "Health Buddy".
         User message: "${message}"
 
+        Detect the language of the user's message and respond in that same language.
         Provide a helpful, empathetic, and medically sound response. 
         Keep it concise (under 100 words) unless a detailed explanation is necessary.
         Always advise consulting a doctor for serious concerns.

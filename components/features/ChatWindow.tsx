@@ -5,7 +5,7 @@ import { Send, User, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 // import { createClient } from '@/lib/supabase/client' // Removed
 import { chatWithAI } from '@/lib/actions/gemini/chat'
-import { saveMessage } from '@/lib/actions/chat'
+import { saveMessage, getChatMessages } from '@/lib/actions/chat'
 import { cn } from '@/lib/utils/cn'
 import { toast } from 'sonner'
 
@@ -22,18 +22,28 @@ export function ChatWindow() {
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
-    // const supabase = createClient() // Removed
+    const [sessionId] = useState(() => crypto.randomUUID())
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
 
+    // Load history
+    useEffect(() => {
+        const loadHistory = async () => {
+            setIsLoading(true)
+            const history = await getChatMessages(sessionId)
+            if (history.length > 0) {
+                setMessages(history)
+            }
+            setIsLoading(false)
+        }
+        loadHistory()
+    }, [sessionId])
+
     useEffect(() => {
         scrollToBottom()
     }, [messages])
-
-
-    const [sessionId] = useState(() => crypto.randomUUID())
 
     const handleSend = async () => {
         if (!input.trim()) return
@@ -52,8 +62,8 @@ export function ChatWindow() {
         setMessages(prev => [...prev, userMessage])
 
         try {
-            // 1. Save User Message to DB (Fire and forget)
-            saveMessage(userMessageContent, 'user', sessionId)
+            // 1. Save User Message to DB
+            await saveMessage(userMessageContent, 'user', sessionId)
 
             // 2. Call AI
             const response = await chatWithAI(userMessageContent)
@@ -66,8 +76,8 @@ export function ChatWindow() {
             }
             setMessages(prev => [...prev, aiMessage])
 
-            // 3. Save AI Message to DB (Fire and forget)
-            saveMessage(response, 'ai', sessionId)
+            // 3. Save AI Message to DB
+            await saveMessage(response, 'ai', sessionId)
 
         } catch (error) {
             toast.error('Failed to send message.')
