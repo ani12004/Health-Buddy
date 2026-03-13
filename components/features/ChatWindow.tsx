@@ -66,7 +66,15 @@ export function ChatWindow() {
             await saveMessage(userMessageContent, 'user', sessionId)
 
             // 2. Call AI
-            const response = await chatWithAI(userMessageContent)
+            const result = await chatWithAI(userMessageContent)
+
+            if (result.error) {
+                toast.error(result.error)
+                setIsLoading(false)
+                return
+            }
+
+            const response = result.data
 
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),

@@ -5,6 +5,10 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function analyzeSymptoms(symptoms: string) {
+    if (!process.env.GEMINI_API_KEY) {
+        return { error: 'Gemini API Key is not configured.' }
+    }
+
     try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
@@ -35,15 +39,18 @@ export async function analyzeSymptoms(symptoms: string) {
             if (start === -1 || end === -1) throw new Error('No JSON found')
             
             const cleanText = text.substring(start, end + 1)
-            return JSON.parse(cleanText)
+            return { data: JSON.parse(cleanText) }
         } catch (parseError) {
             console.error('Gemini Symptom Parse Error:', parseError)
-            console.error('Full AI Response:', text)
-            throw new Error('Failed to parse symptom analysis results.')
+            return { error: 'Failed to process symptom analysis.' }
         }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Gemini Symptom Analysis Error:', error)
-        throw new Error('Failed to analyze symptoms.')
+        let message = 'Failed to analyze symptoms.'
+        if (error?.message?.includes('429')) message = 'Rate limit exceeded.'
+        if (error?.message?.includes('404')) message = 'AI model not found. Check API key permissions.'
+        
+        return { error: message }
     }
 }
