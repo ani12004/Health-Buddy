@@ -1,56 +1,44 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-const isPublicRoute = createRouteMatcher(['/login', '/register', '/sso-callback', '/onboarding', '/', '/api/webhooks(.*)']);
-const isPatientRoute = createRouteMatcher(['/patient(.*)']);
-const isDoctorRoute = createRouteMatcher(['/doctor(.*)']);
+export async function middleware(request: NextRequest) {
+    const { supabaseResponse, user } = await updateSession(request)
 
-export default clerkMiddleware(async (auth, req) => {
-    const { userId, sessionClaims, redirectToSignIn } = await auth();
-    const isAuthTransition = ['/sso-callback', '/onboarding'].includes(req.nextUrl.pathname) || req.nextUrl.pathname.startsWith('/api');
-
-    // 1. If the route is a public route
-    if (isPublicRoute(req)) {
-        if (userId && !isAuthTransition) {
-            // User is authenticated, redirect them to their dashboard or onboarding
-            const role = (sessionClaims?.publicMetadata as any)?.role;
-
-            if (!role) {
-                return NextResponse.redirect(new URL('/onboarding', req.url));
+    const isPublicRoute = ['/login', '/register', '/'].includes(request.nextUrl.pathname) || request.nextUrl.pathname.startsWith('/api')
+    
+    // Allow public routes
+    if (isPublicRoute) {
+        if (user && !request.nextUrl.pathname.startsWith('/api')) {
+            const role = user.user_metadata?.role;
+            if (role === 'doctor') {
+                return NextResponse.redirect(new URL('/doctor/dashboard', request.url))
+            } else if (role === 'patient') {
+                return NextResponse.redirect(new URL('/patient/dashboard', request.url))
             }
-
-            const dashboardUrl = role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard';
-            return NextResponse.redirect(new URL(dashboardUrl, req.url));
         }
-
-        return NextResponse.next();
+        return supabaseResponse
     }
 
-    // If the user isn't signed in and the route is private, redirect to sign-in
-    if (!userId && (isPatientRoute(req) || isDoctorRoute(req))) {
-        return redirectToSignIn({ returnBackUrl: req.url });
+    // Require Auth for private routes
+    if (!user) {
+        return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // 2. Role-based access control
-    if (userId) {
-        const role = (sessionClaims?.publicMetadata as any)?.role;
+    // Role-based access control
+    const role = user.user_metadata?.role;
+    const isPatientRoute = request.nextUrl.pathname.startsWith('/patient')
+    const isDoctorRoute = request.nextUrl.pathname.startsWith('/doctor')
 
-        // If user is authenticated but has no role, force them to onboarding
-        if (!role && !isAuthTransition) {
-            return NextResponse.redirect(new URL('/onboarding', req.url));
-        }
-
-        if (isPatientRoute(req) && role !== 'patient') {
-            return NextResponse.redirect(new URL('/doctor/dashboard', req.url));
-        }
-
-        if (isDoctorRoute(req) && role !== 'doctor') {
-            return NextResponse.redirect(new URL('/patient/dashboard', req.url));
-        }
+    if (isPatientRoute && role !== 'patient') {
+        return NextResponse.redirect(new URL('/doctor/dashboard', request.url))
     }
 
-    return NextResponse.next();
-});
+    if (isDoctorRoute && role !== 'doctor') {
+        return NextResponse.redirect(new URL('/patient/dashboard', request.url))
+    }
+
+    return supabaseResponse
+}
 
 export const config = {
     matcher: [
@@ -59,4 +47,4 @@ export const config = {
         // Always run for API routes
         '/(api|trpc)(.*)',
     ],
-};
+}

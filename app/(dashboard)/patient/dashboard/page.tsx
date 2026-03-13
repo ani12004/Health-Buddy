@@ -1,5 +1,3 @@
-
-
 import { SymptomChecker } from '@/components/features/SymptomChecker'
 import { VitalCard } from '@/components/features/VitalCard'
 import { DailyTipCard, RecentReportsList } from '@/components/features/DashboardWidgets'
@@ -11,22 +9,20 @@ import {
     Calendar,
     Bell
 } from 'lucide-react'
-import { createServiceRoleClient } from '@/lib/supabase/server'
-import { auth } from '@clerk/nextjs/server'
+import { createClient } from '@/lib/supabase/server'
 import { Notifications } from '@/components/layout/Notifications'
+import { redirect } from 'next/navigation'
 
 export default async function PatientDashboard() {
-    const { userId } = await auth()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!userId) {
-        // middleware should handle this, but for safety
-        return null
+    if (!user) {
+        redirect('/login')
     }
 
-    const supabase = await createServiceRoleClient()
-
     let profile = null
-    const { data } = await supabase.from('profiles').select('full_name').eq('id', userId).single()
+    const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
     profile = data
 
     const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : 'there'

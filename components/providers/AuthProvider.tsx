@@ -1,26 +1,13 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
-// import { User, Session } from '@supabase/supabase-js' // Removed
+import { User, Session, SupabaseClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
-import { useUser as useClerkUser, useClerk, useAuth as useClerkAuth } from '@clerk/nextjs'
-
-// Mocking Supabase User type for compatibility or importing if needed.
-// Ideally we should update the type definition, but for now we adapt.
-interface SupabaseUserAdapter {
-    id: string
-    email?: string
-    user_metadata: {
-        [key: string]: any
-    }
-    app_metadata: {
-        [key: string]: any
-    }
-}
+import { createClient } from '@/lib/supabase/client'
 
 interface AuthContextType {
-    user: SupabaseUserAdapter | null
-    session: any | null // We don't really have a Supabase session anymore
+    user: User | null
+    session: Session | null
     isLoading: boolean
     signOut: () => Promise<void>
 }
@@ -29,38 +16,53 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     session: null,
     isLoading: true,
-    signOut: async () => { },
+    signOut: async () => {},
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const { user: clerkUser, isLoaded } = useClerkUser()
-    const { signOut: clerkSignOut } = useClerk()
+    const [user, setUser] = useState<User | null>(null)
+    const [session, setSession] = useState<Session | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
     const router = useRouter()
+    const supabase = createClient()
 
-    const formattedUser: SupabaseUserAdapter | null = useMemo(() => {
-        if (!clerkUser) return null
-        return {
-            id: clerkUser.id,
-            email: clerkUser.primaryEmailAddress?.emailAddress,
-            user_metadata: {
-                role: clerkUser.publicMetadata?.role,
-                full_name: clerkUser.fullName,
-                avatar_url: clerkUser.imageUrl,
-            },
-            app_metadata: {},
+    useEffect(() => {
+        const fetchSession = async () => {
+            setIsLoading(true)
+            const { data: { session }, error } = await supabase.auth.getSession()
+            setSession(session)
+            setUser(session?.user ?? null)
+            setIsLoading(false)
         }
-    }, [clerkUser])
+
+        fetchSession()
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (_event, updatedSession) => {
+                setSession(updatedSession)
+                setUser(updatedSession?.user ?? null)
+                setIsLoading(false)
+                router.refresh()
+            }
+        )
+
+        return () => {
+            subscription.unsubscribe()
+        }
+    }, [router, supabase.auth])
 
     const signOut = async () => {
-        await clerkSignOut()
+        setIsLoading(true)
+        await supabase.auth.signOut()
         router.push('/login')
+        router.refresh()
     }
 
     return (
         <AuthContext.Provider value={{
-            user: formattedUser,
-            session: null, // Session is managed by Clerk now
-            isLoading: !isLoaded,
+            user,
+            session,
+            isLoading,
             signOut
         }}>
             {children}

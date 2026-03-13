@@ -1,17 +1,17 @@
 'use server'
 
-import { createServiceRoleClient } from '@/lib/supabase/server'
-import { auth } from '@clerk/nextjs/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function saveMessage(content: string, role: 'user' | 'ai', sessionId: string) {
     try {
-        const { userId } = await auth()
-        if (!userId) return
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) return
 
-        const supabase = await createServiceRoleClient()
-
+        // Insert using the authenticated user's client (RLS will automatically restrict)
         await supabase.from('chats').insert({
-            user_id: userId,
+            user_id: user.id,
             session_id: sessionId,
             sender: role,
             message: content

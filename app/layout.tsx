@@ -14,27 +14,19 @@ export const metadata: Metadata = {
   },
 }
 
-import { ClerkProvider } from '@clerk/nextjs'
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider
-      signInUrl="/login"
-      signUpUrl="/register"
-      afterSignOutUrl="/login"
-    >
-      <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-        <body className={`${manrope.variable} font-display antialiased bg-background-light dark:bg-background-dark text-slate-900 dark:text-white`}>
-          <AuthProvider>
-            {children}
-            <Toaster position="top-center" />
-          </AuthProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <body className={`${manrope.variable} font-display antialiased bg-background-light dark:bg-background-dark text-slate-900 dark:text-white`}>
+        <AuthProvider>
+          {children}
+          <Toaster position="top-center" />
+        </AuthProvider>
+      </body>
+    </html>
   )
 }

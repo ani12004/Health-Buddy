@@ -3,76 +3,52 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSignIn } from '@clerk/nextjs'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Shield, Mail, Lock, Eye, EyeOff, Quote, User, Stethoscope } from 'lucide-react'
+import { Shield, Mail, Eye, EyeOff, Quote } from 'lucide-react'
 import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
-    const { isLoaded, signIn, setActive } = useSignIn()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
-    const [role, setRole] = useState<'patient' | 'doctor'>('patient')
     const router = useRouter()
+    const supabase = createClient()
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!isLoaded) return;
         setIsLoading(true)
 
         try {
-            const result = await signIn.create({
-                identifier: email,
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
                 password,
             })
 
-            if (result.status === "complete") {
-                await setActive({ session: result.createdSessionId })
-                toast.success('Welcome back!')
-
-                // Sync user to Supabase and get role
-                try {
-                    const { syncUser } = await import('@/lib/actions/auth')
-                    const syncResult = await syncUser()
-                    const role = syncResult?.role || 'patient'
-
-                    router.refresh()
-
-                    if (role === 'doctor') {
-                        router.push('/doctor/dashboard')
-                    } else {
-                        router.push('/patient/dashboard')
-                    }
-                } catch (err) {
-                    console.error('Sync failed', err)
-                    router.push('/patient/dashboard')
-                }
-            } else {
-                toast.error('Sign in failed. Check credentials.')
+            if (error) {
+                toast.error(error.message)
+                return
             }
 
+            if (data.session) {
+                toast.success('Welcome back!')
+                router.refresh()
+                // The middleware handles redirect logic based on metadata role!
+                // But we can eagerly redirect.
+                const role = data.user?.user_metadata?.role
+                if (role === 'doctor') {
+                    router.push('/doctor/dashboard')
+                } else {
+                    router.push('/patient/dashboard')
+                }
+            }
         } catch (error: any) {
             console.error(error)
-            toast.error(error.errors?.[0]?.message || 'Failed to sign in.')
+            toast.error('Failed to sign in.')
         } finally {
             setIsLoading(false)
-        }
-    }
-
-    const handleOAuth = async (strategy: 'oauth_google' | 'oauth_apple') => {
-        if (!isLoaded) return
-        try {
-            await signIn.authenticateWithRedirect({
-                strategy,
-                redirectUrl: '/sso-callback',
-                redirectUrlComplete: '/',
-            })
-        } catch (err) {
-            console.error('OAuth error', err)
-            toast.error('Failed to initiate social login')
         }
     }
 
@@ -135,26 +111,6 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-6 mt-8">
-                        {/* Role Toggle Switch */}
-                        <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 border border-slate-200 dark:border-slate-700">
-                            <button
-                                type="button"
-                                onClick={() => setRole('patient')}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${role === 'patient' ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                            >
-                                <User className="w-4 h-4" />
-                                Patient
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setRole('doctor')}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-lg transition-all ${role === 'doctor' ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                            >
-                                <Stethoscope className="w-4 h-4" />
-                                Doctor
-                            </button>
-                        </div>
-
                         <div className="space-y-5">
                             <div className="relative group">
                                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 ml-1" htmlFor="email">Email Address</label>
@@ -202,27 +158,6 @@ export default function LoginPage() {
                             Sign In to Account
                         </Button>
                     </form>
-
-                    <div className="relative py-2">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400 font-medium">Or continue with</span>
-                        </div>
-                    </div>
-
-                    {/* Social Auth Placeholders */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <button type="button" onClick={() => handleOAuth('oauth_google')} className="flex items-center justify-center gap-3 w-full px-4 py-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group">
-                            <img alt="Google Logo" className="h-5 w-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn8uGPhQTndl2SvxhGo5BKZDEGAia01Da3eRa4sBxckzn6747QYEXsYshkA6XwMhiB4xKGWgEAubiH0YqaFTdvqklVRpaav_KUKfMj1jzTgSTf-g1ZUpWVNOg2oFtDb_8tXtpMhgk23IxnVOPPrT9-qmmwAPgmtpmfkb8YkRFAlyzOKOGNpjdeNkXfvqfjFW6tjWhzw01X8qaxoeY6YqmHGCmnE21hAgC07yW-E3XhK9zSaCYklum-9LiT-88x-7g6H0zyflHXiA" />
-                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">Google</span>
-                        </button>
-                        <button type="button" onClick={() => handleOAuth('oauth_apple')} className="flex items-center justify-center gap-3 w-full px-4 py-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group">
-                            <img alt="Apple Logo" className="h-5 w-5 dark:invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRxITcWUF18aAdiIjb5VumoU2VA8BOXAd1oRw5Q0ZqfKALehcfuZuEC_XKc7Sg85f9u6b4AkAThjqjIDegc4Pxqn65C6xpuVpnDVcU6BuhfWGYT2R0CxC3ayFxDMZF-HueKqwX-eMELNqghGd-PKgjZ66eT_Ioq6XqtkO-NVtc5DwZtcck8n2DUd0BdZq9noSD3fBwjwKylQgxZqHfCrcIqSg6IOyMsR3GwUTMYuwbJ9GasJze0D9RFBNf231SNE5ODyK_4ZcHHQ" />
-                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white">Apple</span>
-                        </button>
-                    </div>
 
                     <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-8">
                         Don't have an account?
