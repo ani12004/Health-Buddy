@@ -59,12 +59,18 @@ export default function AICheckupPage() {
         setResult(null)
 
         try {
-            const analysis = await analyzeHealthData(formData)
-            setResult(analysis)
+            const result = await analyzeHealthData(formData)
+            
+            if (result.error) {
+                toast.error(result.error)
+                return
+            }
+
+            setResult(result.data)
             toast.success('Analysis complete')
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to generate analysis. Please try again.')
+        } catch (error: any) {
+            console.error('Submit Error:', error)
+            toast.error('A system error occurred. Please try again.')
         } finally {
             setLoading(false)
         }

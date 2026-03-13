@@ -5,6 +5,10 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function analyzeHealthData(data: any) {
+    if (!process.env.GEMINI_API_KEY) {
+        return { error: 'Gemini API Key is not configured on the server.' }
+    }
+
     try {
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
@@ -49,7 +53,7 @@ export async function analyzeHealthData(data: any) {
             "disclaimer": "Standard medical disclaimer."
         }
         
-        Do not include markdown code blocks (like \`\`\`json). Just return the raw JSON string.
+        Return ONLY a raw JSON string. Do not include markdown code blocks.
         `
 
         const result = await model.generateContent(prompt)
@@ -57,26 +61,29 @@ export async function analyzeHealthData(data: any) {
         const text = response.text()
 
         try {
-            // Robust JSON extraction: Find the first '{' and matching last '}'
             const start = text.indexOf('{')
             const end = text.lastIndexOf('}')
             
             if (start === -1 || end === -1) {
                 console.error('No JSON found in response:', text)
-                throw new Error('No valid JSON structure found in AI response')
+                return { error: 'The AI provided an invalid response format.' }
             }
 
             const cleanText = text.substring(start, end + 1)
-            return JSON.parse(cleanText)
+            return { data: JSON.parse(cleanText) }
 
         } catch (parseError) {
             console.error('Gemini Checkup Parse Error:', parseError)
-            console.error('Full AI Response:', text)
-            throw new Error('Failed to parse analysis results. Please try again.')
+            return { error: 'Failed to process the AI analysis results.' }
         }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Gemini Checkup Analysis Error:', error)
-        throw error // Re-throw to be caught by the client
+        let message = 'Failed to analyze health data.'
+        if (error?.message?.includes('429')) message = 'Rate limit exceeded. Please wait a moment.'
+        if (error?.message?.includes('404')) message = 'AI model not found. This may be due to API key restrictions.'
+        if (error?.message?.includes('400')) message = 'Invalid request to AI service.'
+        
+        return { error: message }
     }
 }
