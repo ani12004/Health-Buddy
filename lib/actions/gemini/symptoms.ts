@@ -12,11 +12,7 @@ export async function analyzeSymptoms(symptoms: string) {
         Act as a medical AI assistant. Analyze the following symptoms provided by a patient:
         "${symptoms}"
 
-        Task:
-        1. Identify the potential condition(s).
-        2. Assess the severity (Low, Moderate, High).
-        3. Provide a brief summary.
-        4. Give a clear recommendation/advice.
+        Detect the language of the patient's symptoms and provide all field values (title, summary, advice) in that same language. The keys (title, severity, summary, advice) must remain in English as defined below.
 
         Return the response in strictly valid JSON format with the following structure:
         {
