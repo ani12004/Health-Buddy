@@ -24,6 +24,7 @@ export function Navbar() {
                     <div className="hidden md:flex items-center space-x-10">
                         <Link href="#features" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">Features</Link>
                         <Link href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">How it Works</Link>
+                        <Link href="/docs" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">Docs</Link>
                         {/* <Link href="#" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">Pricing</Link> */}
                     </div>
 
@@ -60,6 +61,7 @@ export function Navbar() {
                     <div className="px-4 pt-2 pb-6 space-y-2">
                         <Link href="#features" className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">Features</Link>
                         <Link href="#how-it-works" className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">How it Works</Link>
+                        <Link href="/docs" className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-primary hover:bg-slate-50">Docs Library</Link>
                         <div className="pt-4 flex flex-col gap-3">
                             {user ? (
                                 <Link href={profile?.role === 'doctor' ? '/doctor/dashboard' : '/patient/dashboard'}>
