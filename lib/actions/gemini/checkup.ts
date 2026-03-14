@@ -10,7 +10,7 @@ export async function analyzeHealthData(data: any) {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
         const prompt = `
         Act as a medical AI assistant. Analyze the following patient health parameters:
