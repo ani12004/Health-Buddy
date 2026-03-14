@@ -54,8 +54,7 @@ export default function AICheckupPage() {
     const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4))
     const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1))
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleAnalyze = async () => {
         if (loading || cooldown > 0 || currentStep !== 4) return
         
         setLoading(true)
@@ -69,12 +68,10 @@ export default function AICheckupPage() {
             if (result.error) {
                 toast.error(result.error)
                 if (result.error.toLowerCase().includes('rate limit')) {
-                    console.log('Rate limit detected! Starting 30s cooldown.')
                     setCooldown(30)
                     const timer = setInterval(() => {
                         setCooldown(prev => {
                             if (prev <= 1) {
-                                console.log('Cooldown complete.')
                                 clearInterval(timer)
                                 return 0
                             }
@@ -88,7 +85,7 @@ export default function AICheckupPage() {
             setResult(result.data)
             toast.success('Analysis complete')
         } catch (error: any) {
-            console.error('Submit Error (Caught):', error)
+            console.error('Analyze Error:', error)
             toast.error('A system error occurred. Please try again.')
         } finally {
             setLoading(false)
@@ -139,7 +136,7 @@ export default function AICheckupPage() {
                             ))}
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                             <div className="min-h-[320px]">
                                 {currentStep === 1 && (
                                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
@@ -302,7 +299,7 @@ export default function AICheckupPage() {
                                         <ChevronRight className="w-5 h-5 ml-2" />
                                     </Button>
                                 ) : (
-                                    <Button type="submit" disabled={loading || cooldown > 0} className="flex-[2] h-14 rounded-2xl shadow-xl shadow-primary/30">
+                                    <Button type="button" onClick={handleAnalyze} disabled={loading || cooldown > 0} className="flex-[2] h-14 rounded-2xl shadow-xl shadow-primary/30">
                                         {loading ? (
                                             <>
                                                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
