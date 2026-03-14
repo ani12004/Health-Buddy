@@ -2,7 +2,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-export async function chatWithAI(message: string) {
+export async function chatWithAI(message: string, history: { role: string, parts: { text: string }[] }[] = []) {
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
         return { error: 'Gemini API Key is not configured.' }
@@ -11,6 +11,13 @@ export async function chatWithAI(message: string) {
     try {
         const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
+        
+        const chat = model.startChat({
+            history: history,
+            generationConfig: {
+                maxOutputTokens: 1000,
+            },
+        })
 
         const prompt = `
         Act as a friendly and knowledgeable medical AI assistant named "Health Buddy".
@@ -22,7 +29,7 @@ export async function chatWithAI(message: string) {
         Always advise consulting a doctor for serious concerns.
         `
 
-        const result = await model.generateContent(prompt)
+        const result = await chat.sendMessage(message)
         const response = await result.response
         return { data: response.text() }
 

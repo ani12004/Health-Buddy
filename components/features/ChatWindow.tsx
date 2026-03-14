@@ -66,8 +66,13 @@ export function ChatWindow() {
             // 1. Save User Message to DB
             await saveMessage(userMessageContent, 'user', sessionId)
 
-            // 2. Call AI
-            const result = await chatWithAI(userMessageContent)
+            // 2. Call AI with History
+            const formattedHistory = messages.map(msg => ({
+                role: msg.role === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.content }]
+            }))
+            
+            const result = await chatWithAI(userMessageContent, formattedHistory)
 
             if (result.error || !result.data) {
                 toast.error(result.error || 'Failed to get response.')
