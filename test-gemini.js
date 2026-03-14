@@ -1,7 +1,12 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 async function runFullTestSuite() {
-    const key = 'AIzaSyAzgCpqT8Msl6UDwdRws13QU7Rbl9aZz8k';
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+        console.error('Error: GEMINI_API_KEY environment variable is not set.');
+        console.log('Please set it in your environment or run with: node --env-file=.env.local test-gemini.js');
+        process.exit(1);
+    }
     const genAI = new GoogleGenerativeAI(key);
 
     console.log('--- STARTING FULL AI SUITE VERIFICATION ---');
@@ -27,7 +32,7 @@ async function runFullTestSuite() {
     // 2. AI Chat (gemini-3-flash)
     try {
         console.log('\n[2/3] Testing AI Chat (gemini-3-flash)...');
-        const chatModel = genAI.getGenerativeModel({ model: 'gemini-3-flash' });
+        const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         const chatResult = await chatModel.generateContent('Explain the signs of a heart attack briefly.');
         console.log('CHAT RESULT:', chatResult.response.text());
     } catch (e) { console.error('Chat Failed:', e.message); }
