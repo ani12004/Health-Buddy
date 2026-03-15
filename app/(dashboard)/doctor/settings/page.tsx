@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import { Notifications } from '@/components/layout/Notifications'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { User, Phone, Ruler, Weight, Shield, Save, Loader2, Lock } from 'lucide-react'
+import { User, Phone, Save, Loader2, Award, Building2, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { AvatarUpload } from '@/components/features/AvatarUpload'
 
-export default function SettingsPage() {
+export default function DoctorSettingsPage() {
     const supabase = createClient()
     const router = useRouter()
     const [loading, setLoading] = useState(true)
@@ -20,13 +20,9 @@ export default function SettingsPage() {
         full_name: '',
         email: '',
         phone: '',
-        dob: '',
-        blood_type: '',
-        height: '',
-        weight: '',
-        insurance_provider: '',
-        insurance_member_id: '',
-        insurance_plan: ''
+        specialty: '',
+        license_number: '',
+        hospital_affiliation: ''
     })
 
     useEffect(() => {
@@ -39,33 +35,29 @@ export default function SettingsPage() {
         if (!user) return
 
         // Fetch profile
-        const { data: profile } = await supabase
+        const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .single()
 
-        setProfile(profile)
+        setProfile(profileData)
 
-        // Fetch patient details
-        const { data: patient } = await supabase
-            .from('patients')
+        // Fetch doctor details
+        const { data: doctor } = await supabase
+            .from('doctors')
             .select('*')
             .eq('id', user.id)
             .single()
 
-        if (profile && patient) {
+        if (profile) {
             setFormData({
                 full_name: profile.full_name || '',
                 email: profile.email || '',
                 phone: profile.phone || '',
-                dob: patient.dob || '',
-                blood_type: patient.blood_type || '',
-                height: patient.height || '',
-                weight: patient.weight || '',
-                insurance_provider: patient.insurance_provider || '',
-                insurance_member_id: patient.insurance_member_id || '',
-                insurance_plan: patient.insurance_plan || ''
+                specialty: doctor?.specialty || '',
+                license_number: doctor?.license_number || '',
+                hospital_affiliation: doctor?.hospital_affiliation || ''
             })
         }
         setLoading(false)
@@ -94,26 +86,22 @@ export default function SettingsPage() {
 
             if (profileError) throw profileError
 
-            // Update Patient
-            const { error: patientError } = await supabase
-                .from('patients')
+            // Update Doctor
+            const { error: doctorError } = await supabase
+                .from('doctors')
                 .update({
-                    dob: formData.dob || null,
-                    blood_type: formData.blood_type,
-                    height: formData.height,
-                    weight: formData.weight,
-                    insurance_provider: formData.insurance_provider,
-                    insurance_member_id: formData.insurance_member_id,
-                    insurance_plan: formData.insurance_plan
+                    specialty: formData.specialty,
+                    license_number: formData.license_number,
+                    hospital_affiliation: formData.hospital_affiliation
                 })
                 .eq('id', user.id)
 
-            if (patientError) throw patientError
+            if (doctorError) throw doctorError
 
-            toast.success('Profile updated successfully')
+            toast.success('Professional profile updated')
             router.refresh()
         } catch (error: any) {
-            console.error('Error updating profile:', error)
+            console.error('Error updating doctor profile:', error)
             toast.error('Failed to update profile')
         } finally {
             setSaving(false)
@@ -133,18 +121,18 @@ export default function SettingsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Settings</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Update your personal information and preferences.</p>
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Professional Settings</h2>
+                    <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your professional profile and hospital details.</p>
                 </div>
                 <Notifications />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Personal Information */}
+                {/* Basic Information */}
                 <section className="bg-white dark:bg-neutral-surface-dark rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-700 shadow-sm">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                         <User className="w-5 h-5 text-primary" />
-                        Personal Information
+                        Basic Information
                     </h3>
 
                     <div className="flex flex-col md:flex-row items-center gap-8 mb-8 pb-8 border-b border-slate-100 dark:border-slate-800">
@@ -154,82 +142,52 @@ export default function SettingsPage() {
                             onUploadSuccess={(url) => setProfile({ ...profile, avatar_url: url })}
                         />
                         <div className="text-center md:text-left">
-                            <h4 className="font-bold text-slate-900 dark:text-white">Profile Picture</h4>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Upload a professional photo. Max 2MB.</p>
+                            <h4 className="font-bold text-slate-900 dark:text-white">Profile Photo</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Upload a professional headshot. Max 2MB.</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
-                            <Input name="full_name" value={formData.full_name} onChange={handleChange} placeholder="John Doe" />
+                            <Input name="full_name" value={formData.full_name} onChange={handleChange} placeholder="Dr. John Doe" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number</label>
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Contact Number</label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
                                 <Input name="phone" value={formData.phone} onChange={handleChange} className="pl-10" placeholder="+1 (555) 000-0000" />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Date of Birth</label>
-                            <Input type="date" name="dob" value={formData.dob} onChange={handleChange} />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Blood Type</label>
-                            <select
-                                name="blood_type"
-                                value={formData.blood_type}
-                                onChange={(e) => setFormData({ ...formData, blood_type: e.target.value })}
-                                className="w-full h-11 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            >
-                                <option value="">Select...</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Height</label>
-                            <div className="relative">
-                                <Ruler className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
-                                <Input name="height" value={formData.height} onChange={handleChange} className="pl-10" placeholder="e.g. 175cm / 5'9''" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Weight</label>
-                            <div className="relative">
-                                <Weight className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
-                                <Input name="weight" value={formData.weight} onChange={handleChange} className="pl-10" placeholder="e.g. 70kg / 154lbs" />
-                            </div>
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address (Read-only)</label>
+                            <Input name="email" value={formData.email} disabled className="bg-slate-50 dark:bg-white/5 opacity-60" />
                         </div>
                     </div>
                 </section>
 
-                {/* Insurance Information */}
+                {/* Professional Qualifications */}
                 <section className="bg-white dark:bg-neutral-surface-dark rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-700 shadow-sm">
                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-primary" />
-                        Insurance Information
+                        <Award className="w-5 h-5 text-primary" />
+                        Professional Qualifications
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Medical Specialty</label>
+                            <Input name="specialty" value={formData.specialty} onChange={handleChange} placeholder="e.g. Cardiologist" />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">License Number</label>
+                            <Input name="license_number" value={formData.license_number} onChange={handleChange} placeholder="MD12345678" />
+                        </div>
                         <div className="space-y-2 col-span-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Insurance Provider</label>
-                            <Input name="insurance_provider" value={formData.insurance_provider} onChange={handleChange} placeholder="e.g. BlueCross BlueShield" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Member ID</label>
-                            <Input name="insurance_member_id" value={formData.insurance_member_id} onChange={handleChange} placeholder="Member ID" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Plan Name/ID</label>
-                            <Input name="insurance_plan" value={formData.insurance_plan} onChange={handleChange} placeholder="e.g. Gold Premium" />
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Hospital/Clinic Affiliation</label>
+                            <div className="relative">
+                                <Building2 className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
+                                <Input name="hospital_affiliation" value={formData.hospital_affiliation} onChange={handleChange} className="pl-10" placeholder="e.g. City General Hospital" />
+                            </div>
                         </div>
                     </div>
                 </section>

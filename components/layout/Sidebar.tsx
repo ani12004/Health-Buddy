@@ -18,6 +18,7 @@ import {
     Shield, // For Logo
     Brain,
     X,
+    User as UserIcon
 } from 'lucide-react'
 import { useAuth } from '@/components/providers'
 
@@ -34,7 +35,8 @@ export function Sidebar({ profile, isOpen, onClose }: SidebarProps) {
 
     const patientLinks = [
         { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { href: '/patient/profile', label: 'Medical Reports', icon: FileText },
+        { href: '/patient/profile', label: 'Profile', icon: UserIcon },
+        { href: '/patient/medical-reports', label: 'Medical Reports', icon: FileText },
         { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
         { href: '/patient/medications', label: 'Prescriptions', icon: Pill },
         { href: '/patient/chat', label: 'AI Chat', icon: MessageSquare },

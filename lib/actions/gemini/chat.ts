@@ -10,7 +10,7 @@ export async function chatWithAI(message: string, history: { role: string, parts
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
         
         const chat = model.startChat({
             history: history,
