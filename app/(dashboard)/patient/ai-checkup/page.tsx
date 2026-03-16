@@ -178,7 +178,7 @@ export default function AICheckupPage() {
                         AI Health Checkup
                     </h2>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">
-                        Professional health assessment powered by Gemini AI.
+                        Professional health assessment powered by HealthBuddy AI v9.
                     </p>
                 </div>
                 <Notifications />
@@ -435,7 +435,7 @@ export default function AICheckupPage() {
                             </div>
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">AI Consultation Ready</h3>
                             <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
-                                Complete the 4-step assessment to the left. Gemini will then process your data to predict potential health risks.
+                                Complete the 4-step assessment to the left. Our AI will then process your data to predict potential health risks.
                             </p>
                         </div>
                     ) : (
