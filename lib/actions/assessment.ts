@@ -38,8 +38,33 @@ export async function analyzeHealth(input: AssessmentInput) {
         const mlResults = await runMLBridge(input);
         if ('error' in mlResults) return mlResults;
 
-        // 2. Run Gemini Interpreter
-        const interpretation = await getGeminiInterpretation(input, mlResults);
+        // 2. Map ML Results to DB Schema
+        // Normalize keys for internal use
+        const normalizedProbs = {
+            heart_disease: mlResults["Heart Disease"].risk_percent / 100,
+            hypertension: mlResults["Hypertension"].risk_percent / 100,
+            diabetes: mlResults["Diabetes"].risk_percent / 100
+        };
+
+        const normalizedConf = {
+            heart_disease: mlResults["Heart Disease"].confidence / 100,
+            hypertension: mlResults["Hypertension"].confidence / 100,
+            diabetes: mlResults["Diabetes"].confidence / 100
+        };
+
+        const normalizedShap = {
+            heart_disease: mlResults["Heart Disease"].top_risk_drivers.concat(mlResults["Heart Disease"].protective_factors),
+            hypertension: mlResults["Hypertension"].top_risk_drivers.concat(mlResults["Hypertension"].protective_factors),
+            diabetes: mlResults["Diabetes"].top_risk_drivers.concat(mlResults["Diabetes"].protective_factors)
+        };
+
+        // Consolidate interpretation from ML output
+        const interpretation = {
+            summary: mlResults["Heart Disease"].summary_paragraph, // Using Heart Disease as primary summary
+            factors: mlResults["Heart Disease"].clinical_flags.map((f: any) => f.message),
+            recommendations: mlResults["Heart Disease"].recommendations,
+            consultation_trigger: "High risk detection in cardiovascular or metabolic screening."
+        };
         
         // 3. Store in Supabase
         const { data, error: dbError } = await supabase
@@ -47,12 +72,12 @@ export async function analyzeHealth(input: AssessmentInput) {
             .insert({
                 patient_id: user.id,
                 inputs: input,
-                probabilities: mlResults.probabilities,
-                confidence_scores: mlResults.confidence,
+                probabilities: normalizedProbs,
+                confidence_scores: normalizedConf,
                 health_score: mlResults.health_score,
-                shap_values: mlResults.shap,
+                shap_values: normalizedShap,
                 explanation: interpretation,
-                severity: determineSeverity(mlResults.probabilities)
+                severity: determineSeverity(normalizedProbs)
             })
             .select()
             .single();
@@ -67,47 +92,9 @@ export async function analyzeHealth(input: AssessmentInput) {
     }
 }
 
-async function getGeminiInterpretation(input: any, mlResults: any) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('Gemini API Key missing');
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-
-    const prompt = `
-    Act as a senior medical AI consultant. Interpret the following ML risk predictions for a patient.
-    
-    ### Patient Context:
-    - Age: ${input.age}, Sex: ${input.sex}, BMI: ${input.bmi}
-    - BP: ${input.systolic_bp}/${input.diastolic_bp}
-    - History: ${input.history}, Activity: ${input.activity}
-    
-    ### ML Risk Scores:
-    - Heart Disease Risk: ${(mlResults.probabilities.heart_disease * 100).toFixed(1)}%
-    - Hypertension Risk: ${(mlResults.probabilities.hypertension * 100).toFixed(1)}%
-    - Unified Health Score: ${mlResults.health_score}/100 (100 is best)
-    
-    ### Task:
-    Explain these results in human terms. Focus on why the risks are at this level based on their metrics.
-    
-    Return strictly valid JSON in this format:
-    {
-        "summary": "Concise overview (2-3 sentences)",
-        "factors": ["Factor 1: Brief explanation", "Factor 2..."],
-        "recommendations": ["Actionable step 1", "Actionable step 2..."],
-        "consultation_trigger": "Specific condition or symptom when they MUST see a doctor."
-    }
-    
-    Respond ONLY with raw JSON.
-    `;
-
-    const result = await model.generateContent(prompt);
-    return JSON.parse(result.response.text().replace(/```json|```/g, ''));
-}
-
 function determineSeverity(probs: any): string {
     const maxProb = Math.max(...Object.values(probs) as number[]);
-    if (maxProb > 0.7) return 'critical';
-    if (maxProb > 0.4) return 'warning';
+    if (maxProb > 0.65) return 'critical';
+    if (maxProb > 0.35) return 'warning';
     return 'normal';
 }

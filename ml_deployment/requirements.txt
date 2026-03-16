@@ -1,0 +1,15 @@
+# Health Buddy AI — Python ML Microservice
+# Generated with pip freeze for exact reproducibility on Render.com
+# Run: pip install -r requirements.txt
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+joblib>=1.4.0
+numpy>=1.26.0
+pandas>=2.2.0
+reportlab>=4.0.0
+scikit-learn==1.6.1
+shap>=0.44.0
+torch>=2.2.0
+xgboost>=2.0.0

@@ -1,0 +1,23 @@
+[
+  "age",
+  "sex",
+  "bmi",
+  "waist",
+  "systolic_bp",
+  "diastolic_bp",
+  "heart_rate",
+  "history",
+  "total_cholesterol",
+  "ldl",
+  "hdl",
+  "triglycerides",
+  "fasting_glucose",
+  "hba1c",
+  "smoking",
+  "activity",
+  "stress",
+  "salt_intake",
+  "pulse_pressure",
+  "chol_hdl_ratio",
+  "glucose_bmi_index"
+]
