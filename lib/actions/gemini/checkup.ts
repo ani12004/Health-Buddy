@@ -97,7 +97,80 @@ export async function analyzeHealthData(data: any) {
         const hyperRes = mlResults["Hypertension"] || {};
         const diabRes = mlResults["Diabetes"] || {};
 
-        // Ensure we have valid data
+        // Build comprehensive overall assessment explaining everything
+        const buildOverallAssessment = () => {
+            const healthScore = mlResults.health_score || 0;
+            const parts: string[] = [];
+
+            // 1. Health Score Context
+            if (healthScore >= 70) {
+                parts.push(`Your overall health score of ${healthScore}/100 indicates good health status with manageable risk factors.`);
+            } else if (healthScore >= 50) {
+                parts.push(`Your overall health score of ${healthScore}/100 indicates moderate health concerns that warrant attention and lifestyle modifications.`);
+            } else {
+                parts.push(`Your overall health score of ${healthScore}/100 indicates significant health risks requiring immediate attention and medical consultation.`);
+            }
+
+            // 2. Disease-specific risk breakdown
+            const diseaseRisks: string[] = [];
+            const formatRisk = (name: string, res: any) => {
+                if (!res.risk_percent) return null;
+                const level = res.risk_level === 'HIGH' ? 'high' : res.risk_level === 'MODERATE' ? 'moderate' : 'low';
+                return `${name} at ${res.risk_percent}% (${level} risk)`;
+            };
+
+            const heartRisk = formatRisk('Heart Disease', heartRes);
+            const hyperRisk = formatRisk('Hypertension', hyperRes);
+            const diabRisk = formatRisk('Diabetes', diabRes);
+
+            if (heartRisk) diseaseRisks.push(heartRisk);
+            if (hyperRisk) diseaseRisks.push(hyperRisk);
+            if (diabRisk) diseaseRisks.push(diabRisk);
+
+            if (diseaseRisks.length > 0) {
+                parts.push(`Our ensemble ML analysis evaluated your risk across three conditions: ${diseaseRisks.join(', ')}.`);
+            }
+
+            // 3. Key Risk Drivers (top factors increasing risk)
+            const allRiskDrivers = [
+                ...(heartRes.top_risk_drivers || []).map((d: any) => ({ ...d, disease: 'heart' })),
+                ...(hyperRes.top_risk_drivers || []).map((d: any) => ({ ...d, disease: 'blood pressure' })),
+                ...(diabRes.top_risk_drivers || []).map((d: any) => ({ ...d, disease: 'diabetes' }))
+            ].sort((a, b) => (b.shap || 0) - (a.shap || 0)).slice(0, 3);
+
+            if (allRiskDrivers.length > 0) {
+                const driverNames = allRiskDrivers.map((d: any) => {
+                    const name = d.feature?.replace(/_/g, ' ') || 'unknown factor';
+                    return name.charAt(0).toUpperCase() + name.slice(1);
+                });
+                parts.push(`The primary factors contributing to your risk profile include ${driverNames.join(', ')}.`);
+            }
+
+            // 4. Protective Factors
+            const allProtective = [
+                ...(heartRes.protective_factors || []),
+                ...(hyperRes.protective_factors || []),
+                ...(diabRes.protective_factors || [])
+            ].slice(0, 2);
+
+            if (allProtective.length > 0) {
+                const protectiveNames = allProtective.map((p: any) => {
+                    const name = p.feature?.replace(/_/g, ' ') || 'healthy habit';
+                    return name.charAt(0).toUpperCase() + name.slice(1);
+                });
+                parts.push(`On the positive side, ${protectiveNames.join(' and ')} ${allProtective.length === 1 ? 'is' : 'are'} working in your favor.`);
+            }
+
+            // 5. Action-oriented closing
+            const highRiskCount = [heartRes, hyperRes, diabRes].filter(r => r.risk_level === 'HIGH').length;
+            if (highRiskCount > 0) {
+                parts.push(`Given ${highRiskCount > 1 ? 'multiple elevated risk areas' : 'an elevated risk area'}, we recommend consulting with your healthcare provider to discuss preventive strategies and potential screenings.`);
+            } else {
+                parts.push(`Continue maintaining healthy habits and review the detailed breakdown below for personalized insights.`);
+            }
+
+            return parts.join(' ');
+        };
 
         // Build predictions array with full ML data
         const buildPrediction = (res: any, disease: string) => ({
@@ -116,7 +189,7 @@ export async function analyzeHealthData(data: any) {
         });
 
         const uiOutput = {
-            overallAssessment: heartRes.summary_paragraph || 'Health assessment complete. Review individual disease risk scores below.',
+            overallAssessment: buildOverallAssessment(),
             healthScore: mlResults.health_score || 0,
             predictions: [
                 buildPrediction(heartRes, 'Heart Disease'),

@@ -447,15 +447,50 @@ export default function AICheckupPage() {
                                         <div>
                                             <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Overall Health Score</h3>
                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-6xl font-black text-primary">{result.healthScore}</span>
+                                                <span className={cn(
+                                                    "text-6xl font-black",
+                                                    result.healthScore >= 70 ? "text-emerald-500" : result.healthScore >= 50 ? "text-amber-500" : "text-red-500"
+                                                )}>{result.healthScore}</span>
                                                 <span className="text-2xl font-bold text-slate-400">/100</span>
                                             </div>
                                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
                                                 {result.healthScore >= 70 ? 'Good health indicators' : result.healthScore >= 50 ? 'Moderate risk factors detected' : 'Multiple risk factors require attention'}
                                             </p>
                                         </div>
-                                        <div className="w-24 h-24 rounded-full border-8 border-primary/20 flex items-center justify-center">
-                                            <Zap className={cn("w-10 h-10", result.healthScore >= 70 ? "text-emerald-500" : result.healthScore >= 50 ? "text-amber-500" : "text-red-500")} />
+                                        {/* Circular Progress Indicator */}
+                                        <div className="relative w-28 h-28">
+                                            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                                                {/* Background circle */}
+                                                <circle
+                                                    cx="50" cy="50" r="42"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="8"
+                                                    className="text-slate-200 dark:text-slate-700"
+                                                />
+                                                {/* Progress circle */}
+                                                <circle
+                                                    cx="50" cy="50" r="42"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="8"
+                                                    strokeLinecap="round"
+                                                    strokeDasharray={`${result.healthScore * 2.64} 264`}
+                                                    className={cn(
+                                                        "transition-all duration-1000",
+                                                        result.healthScore >= 70 ? "text-emerald-500" : result.healthScore >= 50 ? "text-amber-500" : "text-red-500"
+                                                    )}
+                                                />
+                                            </svg>
+                                            {/* Center icon */}
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className={cn(
+                                                    "w-14 h-14 rounded-full flex items-center justify-center",
+                                                    result.healthScore >= 70 ? "bg-emerald-100 dark:bg-emerald-900/30" : result.healthScore >= 50 ? "bg-amber-100 dark:bg-amber-900/30" : "bg-red-100 dark:bg-red-900/30"
+                                                )}>
+                                                    <Zap className={cn("w-7 h-7", result.healthScore >= 70 ? "text-emerald-600 dark:text-emerald-400" : result.healthScore >= 50 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400")} />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </section>
