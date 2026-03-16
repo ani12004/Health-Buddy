@@ -1,8 +1,65 @@
 'use server'
 
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@/lib/supabase/server'
 import { runMLBridge } from '../ml/bridge'
+
+// Helper functions to map form values to ML model expected values
+function mapSmoking(smoker: string): string {
+    switch (smoker) {
+        case 'Yes':
+            return 'Regular Smoker'
+        case 'Former':
+            return 'Former Smoker'
+        case 'No':
+        default:
+            return 'Non-Smoker'
+    }
+}
+
+function mapActivity(activity: string): string {
+    switch (activity) {
+        case 'Light':
+            return 'Light'
+        case 'Moderate':
+        case 'Moderately Active':
+            return 'Moderate'
+        case 'Active':
+            return 'Active'
+        case 'Very Active':
+            return 'Very Active'
+        case 'Sedentary':
+        default:
+            return 'Sedentary'
+    }
+}
+
+function mapStress(stress: string): string {
+    switch (stress) {
+        case 'Low':
+            return 'Low'
+        case 'Moderate':
+        case 'Medium':
+            return 'Moderate'
+        case 'High':
+            return 'High'
+        default:
+            return 'Moderate'
+    }
+}
+
+function mapSaltIntake(salt: string): string {
+    switch (salt) {
+        case 'Low':
+            return 'Low'
+        case 'Medium':
+        case 'Moderate':
+            return 'Medium'
+        case 'High':
+            return 'High'
+        default:
+            return 'Medium'
+    }
+}
 
 export async function analyzeHealthData(data: any) {
     const supabase = await createClient()
@@ -10,6 +67,7 @@ export async function analyzeHealthData(data: any) {
 
     try {
         // 1. Run ML Bridge
+        // Map form field names to ML input field names
         const mlInput = {
             age: Number(data.age) || 40,
             sex: data.sex || 'Male',
@@ -18,59 +76,77 @@ export async function analyzeHealthData(data: any) {
             systolic_bp: Number(data.systolic_bp) || 120,
             diastolic_bp: Number(data.diastolic_bp) || 80,
             heart_rate: Number(data.resting_heart_rate) || 72,
-            history: (data.heart_disease || data.hypertension || data.family_history_heart === 'Yes') ? 'Yes' : 'None',
+            history: (data.heart_disease || data.hypertension) ? 'Yes' : 'None',
             total_cholesterol: Number(data.total_cholesterol) || 200,
             ldl: Number(data.ldl) || 130,
             hdl: Number(data.hdl) || 50,
             triglycerides: Number(data.triglycerides) || 150,
             fasting_glucose: Number(data.fasting_glucose) || 95,
             hba1c: Number(data.hba1c) || 5.4,
-            smoking: data.smoker === 'Yes' ? 'Regular Smoker' : data.smoker === 'Former' ? 'Former Smoker' : 'Non-Smoker',
-            activity: data.physical_activity_level === 'Active' ? 'Very Active' : data.physical_activity_level,
-            stress: data.stress_level === 'Moderate' ? 'Moderate' : data.stress_level,
-            salt_intake: data.salt_intake === 'Moderate' ? 'Medium' : data.salt_intake
+            smoking: mapSmoking(data.smoker),
+            activity: mapActivity(data.physical_activity_level),
+            stress: mapStress(data.stress_level),
+            salt_intake: mapSaltIntake(data.salt_intake)
         };
 
         const mlResults = await runMLBridge(mlInput);
         if ('error' in mlResults) return mlResults;
 
-        // 2. Format Data for UI (page.tsx expectations)
+        // 2. Format Data for UI (v9 structure - using native ML interpretation)
+        const heartRes = mlResults["Heart Disease"] || {};
+        const hyperRes = mlResults["Hypertension"] || {};
+        const diabRes = mlResults["Diabetes"] || {};
+
+        // Ensure we have valid data
+
+        // Build predictions array with full ML data
+        const buildPrediction = (res: any, disease: string) => ({
+            disease,
+            probability: `${res.risk_percent || 0}%`,
+            riskLevel: res.risk_level === 'HIGH' ? 'High' :
+                       res.risk_level === 'MODERATE' ? 'Medium' : 'Low',
+            confidence: res.confidence || 0,
+            modelAgreement: res.model_agreement || 0,
+            individualModels: res.individual_models || {},
+            topRiskDrivers: res.top_risk_drivers || [],
+            protectiveFactors: res.protective_factors || [],
+            summaryParagraph: res.summary_paragraph || '',
+            cardText: res.card_text || '',
+            reasoning: res.summary_paragraph ? res.summary_paragraph.split('.').slice(0, 2).join('.') + '.' : `${disease} risk assessment based on ensemble ML analysis.`
+        });
+
         const uiOutput = {
-            overallAssessment: mlResults["Heart Disease"]?.summary_paragraph || 'Analysis complete. Please review your risk factors below.',
+            overallAssessment: heartRes.summary_paragraph || 'Health assessment complete. Review individual disease risk scores below.',
+            healthScore: mlResults.health_score || 0,
             predictions: [
-                {
-                    disease: 'Heart Disease',
-                    probability: `${(mlResults["Heart Disease"]?.risk_percent || 0).toFixed(1)}%`,
-                    riskLevel: mlResults["Heart Disease"]?.risk_level === 'HIGH' ? 'High' : 
-                               mlResults["Heart Disease"]?.risk_level === 'MODERATE' ? 'Medium' : 'Low',
-                    reasoning: mlResults["Heart Disease"]?.card_text || 'Calculated based on your cardiovascular markers.'
-                },
-                {
-                    disease: 'Hypertension',
-                    probability: `${(mlResults["Hypertension"]?.risk_percent || 0).toFixed(1)}%`,
-                    riskLevel: mlResults["Hypertension"]?.risk_level === 'HIGH' ? 'High' : 
-                               mlResults["Hypertension"]?.risk_level === 'MODERATE' ? 'Medium' : 'Low',
-                    reasoning: mlResults["Hypertension"]?.card_text || 'Calculated based on your blood pressure and metabolic data.'
-                },
-                {
-                    disease: 'Diabetes',
-                    probability: `${(mlResults["Diabetes"]?.risk_percent || 0).toFixed(1)}%`,
-                    riskLevel: mlResults["Diabetes"]?.risk_level === 'HIGH' ? 'High' : 
-                               mlResults["Diabetes"]?.risk_level === 'MODERATE' ? 'Medium' : 'Low',
-                    reasoning: mlResults["Diabetes"]?.card_text || 'Calculated based on your glucose and HbA1c levels.'
-                }
+                buildPrediction(heartRes, 'Heart Disease'),
+                buildPrediction(hyperRes, 'Hypertension'),
+                buildPrediction(diabRes, 'Diabetes')
             ],
-            suggestions: mlResults["Heart Disease"]?.recommendations || [],
-            disclaimer: "Disclaimer: This AI health assessment uses a machine learning ensemble trained on clinical data. It is for informational purposes only and not a substitute for professional medical advice. If you have critical readings (marked in red), please consult a physician immediately."
+            clinicalFlags: heartRes.clinical_flags || [],
+            suggestions: [
+                ...(heartRes.recommendations || []),
+                ...(hyperRes.recommendations || []),
+                ...(diabRes.recommendations || [])
+            ].filter((v, i, a) => a.indexOf(v) === i).slice(0, 5) || ['Consult with your healthcare provider for personalized preventive care recommendations.'],
+            disclaimer: "HealthBuddy's v9 ensemble provides risk estimation, not diagnosis. Always consult a physician."
         };
 
         // 3. Persist Full Report for History/PDF
         if (user) {
             const severity = (
-                mlResults["Heart Disease"]?.risk_level === 'HIGH' || 
-                mlResults["Hypertension"]?.risk_level === 'HIGH' || 
+                mlResults["Heart Disease"]?.risk_level === 'HIGH' ||
+                mlResults["Hypertension"]?.risk_level === 'HIGH' ||
                 mlResults["Diabetes"]?.risk_level === 'HIGH'
             ) ? 'critical' : 'normal';
+
+            const healthScore = mlResults.health_score || Math.round(
+                100 - ((
+                    (parseFloat(heartRes.risk_percent) || 0) +
+                    (parseFloat(hyperRes.risk_percent) || 0) +
+                    (parseFloat(diabRes.risk_percent) || 0)
+                ) / 3)
+            );
 
             const { data: assessment, error: aError } = await supabase
                 .from('health_assessments')
@@ -78,15 +154,15 @@ export async function analyzeHealthData(data: any) {
                     patient_id: user.id,
                     inputs: mlInput,
                     probabilities: {
-                        heart_disease: (mlResults["Heart Disease"]?.risk_percent || 0) / 100,
-                        hypertension: (mlResults["Hypertension"]?.risk_percent || 0) / 100,
-                        diabetes: (mlResults["Diabetes"]?.risk_percent || 0) / 100
+                        heart_disease: (heartRes.risk_percent || 0) / 100,
+                        hypertension: (hyperRes.risk_percent || 0) / 100,
+                        diabetes: (diabRes.risk_percent || 0) / 100
                     },
-                    health_score: mlResults.health_score || 85,
+                    health_score: healthScore,
                     explanation: {
-                        summary: mlResults["Heart Disease"]?.summary_paragraph,
-                        recommendations: mlResults["Heart Disease"]?.recommendations,
-                        flags: mlResults["Heart Disease"]?.clinical_flags
+                        summary: heartRes.summary_paragraph || 'Assessment complete',
+                        recommendations: heartRes.recommendations || [],
+                        flags: heartRes.clinical_flags || []
                     },
                     severity: severity
                 })
@@ -101,12 +177,12 @@ export async function analyzeHealthData(data: any) {
                         assessment_id: assessment.id,
                         title: 'AI Health Risk Assessment',
                         type: 'ai-checkup',
-                        summary: mlResults["Heart Disease"]?.summary_paragraph || 'AI Clinical assessment complete.',
+                        summary: heartRes.summary_paragraph || 'AI Clinical assessment complete.',
                         content: {
                             ...uiOutput,
                             ml_raw: mlResults,
                             patient_name: user?.user_metadata?.full_name || 'Patient'
-                        }, 
+                        },
                         severity: severity,
                         status: 'generated'
                     });

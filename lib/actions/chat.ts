@@ -48,3 +48,29 @@ export async function getChatMessages(sessionId: string) {
         return []
     }
 }
+
+export async function getLatestCheckupResult() {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return null
+
+        // Get latest report of type 'ai-checkup'
+        const { data, error } = await supabase
+            .from('reports')
+            .select('content')
+            .eq('patient_id', user.id)
+            .eq('type', 'ai-checkup')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+
+        if (error || !data) return null
+        
+        // The ml_raw results are stored inside content
+        return data.content?.ml_raw || null
+    } catch (error) {
+        console.error('Failed to fetch latest checkup result:', error)
+        return null
+    }
+}

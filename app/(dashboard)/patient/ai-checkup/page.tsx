@@ -5,7 +5,7 @@ import { analyzeHealthData } from '@/lib/actions/gemini/checkup'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Notifications } from '@/components/layout/Notifications'
-import { Brain, Activity, Heart, AlertTriangle, CheckCircle, Loader2, Info, ChevronRight, ChevronLeft, ClipboardList } from 'lucide-react'
+import { Brain, Activity, Heart, AlertTriangle, CheckCircle, Loader2, Info, ChevronRight, ChevronLeft, ClipboardList, TrendingUp, Shield, Zap, BarChart3 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils/cn'
 
@@ -15,6 +15,79 @@ const STEPS = [
     { id: 3, title: 'Lab Results', description: 'Blood & glucose levels' },
     { id: 4, title: 'Lifestyle', description: 'Habits & history' }
 ]
+
+interface ClinicalFlag {
+    field: string
+    status: 'danger' | 'warning' | 'normal' | 'protective'
+    message: string
+}
+
+function getClinicalFlags(input: any): ClinicalFlag[] {
+    const flags: ClinicalFlag[] = []
+    const safeNum = (v: any) => parseFloat(v) || 0
+
+    if (safeNum(input.systolic_bp) >= 140) flags.push({ field: 'systolic_bp', status: 'danger', message: `Systolic BP critically elevated at ${input.systolic_bp} mmHg` })
+    else if (safeNum(input.systolic_bp) >= 130) flags.push({ field: 'systolic_bp', status: 'warning', message: `Systolic BP above normal at ${input.systolic_bp} mmHg` })
+
+    if (safeNum(input.diastolic_bp) >= 90) flags.push({ field: 'diastolic_bp', status: 'danger', message: `Diastolic BP critically elevated at ${input.diastolic_bp} mmHg` })
+    else if (safeNum(input.diastolic_bp) >= 80) flags.push({ field: 'diastolic_bp', status: 'warning', message: `Diastolic BP above normal at ${input.diastolic_bp} mmHg` })
+
+    if (safeNum(input.fasting_glucose) >= 126) flags.push({ field: 'fasting_glucose', status: 'danger', message: `Fasting glucose critically elevated at ${input.fasting_glucose} mg/dL` })
+    else if (safeNum(input.fasting_glucose) >= 100) flags.push({ field: 'fasting_glucose', status: 'warning', message: `Fasting glucose above normal at ${input.fasting_glucose} mg/dL` })
+
+    if (safeNum(input.hba1c) >= 6.5) flags.push({ field: 'hba1c', status: 'danger', message: `HbA1c critically elevated at ${input.hba1c}%` })
+    else if (safeNum(input.hba1c) >= 5.7) flags.push({ field: 'hba1c', status: 'warning', message: `HbA1c above normal at ${input.hba1c}%` })
+
+    if (safeNum(input.ldl) >= 160) flags.push({ field: 'ldl', status: 'danger', message: `LDL critically elevated at ${input.ldl} mg/dL` })
+    else if (safeNum(input.ldl) >= 130) flags.push({ field: 'ldl', status: 'warning', message: `LDL above normal at ${input.ldl} mg/dL` })
+
+    if (safeNum(input.hdl) < 40 && input.hdl !== '') flags.push({ field: 'hdl', status: 'danger', message: `HDL critically low at ${input.hdl} mg/dL` })
+    else if (safeNum(input.hdl) < 60 && input.hdl !== '') flags.push({ field: 'hdl', status: 'warning', message: `HDL below optimal at ${input.hdl} mg/dL` })
+    else if (safeNum(input.hdl) >= 60) flags.push({ field: 'hdl', status: 'protective', message: `HDL protective at ${input.hdl} mg/dL` })
+
+    if (safeNum(input.triglycerides) >= 200) flags.push({ field: 'triglycerides', status: 'danger', message: `Triglycerides critically elevated at ${input.triglycerides} mg/dL` })
+    else if (safeNum(input.triglycerides) >= 150) flags.push({ field: 'triglycerides', status: 'warning', message: `Triglycerides above normal at ${input.triglycerides} mg/dL` })
+
+    if (safeNum(input.bmi) >= 30) flags.push({ field: 'bmi', status: 'danger', message: `BMI indicates obesity: ${input.bmi} kg/m²` })
+    else if (safeNum(input.bmi) >= 25) flags.push({ field: 'bmi', status: 'warning', message: `BMI indicates overweight: ${input.bmi} kg/m²` })
+
+    if (input.smoker === 'Yes' || input.smoker === 'Regular Smoker') flags.push({ field: 'smoker', status: 'danger', message: `Smoking significantly increases risk` })
+    else if (input.smoker === 'Former' || input.smoker === 'Former Smoker') flags.push({ field: 'smoker', status: 'warning', message: 'Former smoker — residual risk remains' })
+
+    if (input.physical_activity_level === 'Sedentary') flags.push({ field: 'physical_activity_level', status: 'danger', message: 'Sedentary lifestyle is a major independent risk factor' })
+    else if (input.physical_activity_level === 'Light') flags.push({ field: 'physical_activity_level', status: 'warning', message: 'Low physical activity — exercise recommended' })
+    else if (input.physical_activity_level === 'Active' || input.physical_activity_level === 'Very Active') flags.push({ field: 'physical_activity_level', status: 'protective', message: `${input.physical_activity_level} lifestyle is protective` })
+
+    return flags
+}
+
+// Helper to beautify ML feature names for display
+function formatFeatureName(feature: string): string {
+    const nameMap: Record<string, string> = {
+        'systolic_bp': 'Systolic BP',
+        'diastolic_bp': 'Diastolic BP',
+        'pulse_pressure': 'Pulse Pressure',
+        'heart_rate': 'Heart Rate',
+        'total_cholesterol': 'Total Cholesterol',
+        'ldl': 'LDL Cholesterol',
+        'hdl': 'HDL Cholesterol',
+        'triglycerides': 'Triglycerides',
+        'fasting_glucose': 'Fasting Glucose',
+        'hba1c': 'HbA1c',
+        'bmi': 'BMI',
+        'waist': 'Waist Circumference',
+        'age': 'Age',
+        'sex': 'Sex',
+        'smoking': 'Smoking Status',
+        'activity': 'Physical Activity',
+        'stress': 'Stress Level',
+        'salt_intake': 'Salt Intake',
+        'history': 'Medical History',
+        'chol_hdl_ratio': 'Cholesterol/HDL Ratio',
+        'glucose_bmi_index': 'Glucose-BMI Index'
+    }
+    return nameMap[feature] || feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
 
 export default function AICheckupPage() {
     const [loading, setLoading] = useState(false)
@@ -45,6 +118,9 @@ export default function AICheckupPage() {
         heart_disease: false,
         hypertension: false
     })
+
+    const flags = getClinicalFlags(formData)
+    const getFieldFlag = (field: string) => flags.find(f => f.field === field)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value
@@ -285,6 +361,33 @@ export default function AICheckupPage() {
                                 )}
                             </div>
 
+                            {/* Live Clinical Flags Feed */}
+                            {flags.length > 0 && currentStep > 1 && (
+                                <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 space-y-2">
+                                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-500 font-bold text-xs uppercase tracking-wider">
+                                        <AlertTriangle className="w-4 h-4" />
+                                        Clinical Observations
+                                    </div>
+                                    <div className="space-y-1">
+                                        {flags.slice(0, 3).map((flag, i) => (
+                                            <div key={i} className={cn(
+                                                "text-[11px] font-medium leading-tight flex items-start gap-1.5",
+                                                flag.status === 'danger' ? "text-red-600 dark:text-red-400" :
+                                                flag.status === 'warning' ? "text-amber-600 dark:text-amber-400" :
+                                                "text-emerald-600 dark:text-emerald-400"
+                                            )}>
+                                                • {flag.message}
+                                            </div>
+                                        ))}
+                                        {flags.length > 3 && (
+                                            <div className="text-[10px] text-amber-500/70 font-bold ml-3">
+                                                + {flags.length - 3} more markers detected
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="flex gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
                                 {currentStep > 1 && (
                                     <Button type="button" variant="ghost" onClick={prevStep} className="flex-1 h-14 rounded-2xl border-2 border-slate-100 dark:border-slate-800">
@@ -337,6 +440,27 @@ export default function AICheckupPage() {
                         </div>
                     ) : (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                            {/* Health Score Card */}
+                            {result.healthScore > 0 && (
+                                <section className="bg-gradient-to-br from-primary/10 via-purple-500/10 to-primary/5 dark:from-primary/20 dark:via-purple-500/20 dark:to-primary/10 rounded-3xl p-8 border border-primary/20 relative overflow-hidden">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Overall Health Score</h3>
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-6xl font-black text-primary">{result.healthScore}</span>
+                                                <span className="text-2xl font-bold text-slate-400">/100</span>
+                                            </div>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                                {result.healthScore >= 70 ? 'Good health indicators' : result.healthScore >= 50 ? 'Moderate risk factors detected' : 'Multiple risk factors require attention'}
+                                            </p>
+                                        </div>
+                                        <div className="w-24 h-24 rounded-full border-8 border-primary/20 flex items-center justify-center">
+                                            <Zap className={cn("w-10 h-10", result.healthScore >= 70 ? "text-emerald-500" : result.healthScore >= 50 ? "text-amber-500" : "text-red-500")} />
+                                        </div>
+                                    </div>
+                                </section>
+                            )}
+
                             {/* Overall Assessment */}
                             <section className="bg-white dark:bg-neutral-surface-dark rounded-3xl p-8 md:p-10 border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden group">
                                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-purple-500 to-primary bg-[length:200%_auto] animate-gradient"></div>
@@ -349,12 +473,20 @@ export default function AICheckupPage() {
                                 </p>
                             </section>
 
-                            {/* Predictions */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Predictions with SHAP Drivers */}
+                            <div className="space-y-4">
                                 {result.predictions.map((pred: any, idx: number) => (
                                     <div key={idx} className="bg-white dark:bg-neutral-surface-dark p-6 rounded-3xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 group">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h4 className="font-bold text-slate-900 dark:text-white tracking-tight">{pred.disease}</h4>
+                                            <div>
+                                                <h4 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">{pred.disease}</h4>
+                                                {pred.confidence > 0 && (
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <BarChart3 className="w-3 h-3 text-slate-400" />
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Model Agreement: {pred.confidence.toFixed(0)}%</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <span className={cn(
                                                 "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest",
                                                 pred.riskLevel === 'High' ? "bg-red-500 text-white" :
@@ -364,19 +496,87 @@ export default function AICheckupPage() {
                                                 {pred.riskLevel}
                                             </span>
                                         </div>
+
                                         <div className="flex items-baseline gap-2 mb-4">
                                             <span className="text-4xl font-black text-primary leading-none">{pred.probability}</span>
                                             <span className="text-[10px] font-bold text-slate-400 uppercase">Risk Level</span>
                                         </div>
+
                                         <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full mb-4 overflow-hidden">
                                             <div className={cn(
                                                 "h-full rounded-full transition-all duration-1000",
                                                 pred.riskLevel === 'High' ? "bg-red-500" : pred.riskLevel === 'Medium' ? "bg-amber-500" : "bg-emerald-500"
                                             )} style={{ width: pred.probability }}></div>
                                         </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed italic">
-                                            "{pred.reasoning}"
-                                        </p>
+
+                                        {/* ML Summary */}
+                                        {pred.summaryParagraph && (
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4 border-l-2 border-primary/30 pl-3">
+                                                {pred.summaryParagraph}
+                                            </p>
+                                        )}
+
+                                        {/* SHAP Drivers Grid */}
+                                        <div className="grid grid-cols-2 gap-3 mt-4">
+                                            {/* Risk Drivers */}
+                                            {pred.topRiskDrivers && pred.topRiskDrivers.length > 0 && (
+                                                <div className="bg-red-50 dark:bg-red-900/10 rounded-2xl p-4 border border-red-100 dark:border-red-900/20">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <TrendingUp className="w-4 h-4 text-red-500" />
+                                                        <span className="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-wider">Risk Drivers</span>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {pred.topRiskDrivers.slice(0, 4).map((driver: any, i: number) => (
+                                                            <div key={i} className="flex items-center justify-between">
+                                                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{formatFeatureName(driver.feature)}</span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-12 h-1.5 bg-red-200 dark:bg-red-900/30 rounded-full overflow-hidden">
+                                                                        <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(driver.shap * 100, 100)}%` }}></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Protective Factors */}
+                                            {pred.protectiveFactors && pred.protectiveFactors.length > 0 && (
+                                                <div className="bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl p-4 border border-emerald-100 dark:border-emerald-900/20">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Shield className="w-4 h-4 text-emerald-500" />
+                                                        <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Protective</span>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {pred.protectiveFactors.slice(0, 4).map((factor: any, i: number) => (
+                                                            <div key={i} className="flex items-center justify-between">
+                                                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{formatFeatureName(factor.feature)}</span>
+                                                                <div className="flex items-center gap-1">
+                                                                    <div className="w-12 h-1.5 bg-emerald-200 dark:bg-emerald-900/30 rounded-full overflow-hidden">
+                                                                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(factor.shap * 100, 100)}%` }}></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Individual Model Predictions */}
+                                        {pred.individualModels && Object.keys(pred.individualModels).length > 0 && (
+                                            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Ensemble Model Breakdown</span>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {Object.entries(pred.individualModels).map(([model, prob]: [string, any]) => (
+                                                        <div key={model} className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                            <span className="text-[10px] font-bold text-slate-500 uppercase">{model.toUpperCase()}</span>
+                                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">{prob.toFixed(1)}%</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

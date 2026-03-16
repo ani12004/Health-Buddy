@@ -1,44 +1,53 @@
-'use server'
-
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-export async function chatWithAI(message: string, history: { role: string, parts: { text: string }[] }[] = []) {
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
-        return { error: 'Gemini API Key is not configured.' }
-    }
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-    try {
-        const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-        
-        const chat = model.startChat({
-            history: history,
-            generationConfig: {
-                maxOutputTokens: 1000,
-            },
-        })
+export async function chatWithAI(
+  userMessage: string,
+  checkupResults?: any,
+  history: {role: string, parts: { text: string }[]}[] = []
+) {
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
-        const prompt = `
-        Act as a friendly and knowledgeable medical AI assistant named "Health Buddy".
-        User message: "${message}"
+  // Build system prompt — inject ML results if available
+  let systemPrompt = `You are HealthBuddy's AI health assistant. 
+You help users understand their health and answer general health questions.
+Never provide a medical diagnosis. Always recommend consulting a qualified doctor.
+Keep responses friendly, clear, and under 200 words unless detail is needed.`
 
-        Detect the language of the user's message and respond in that same language.
-        Provide a helpful, empathetic, and medically sound response. 
-        Keep it concise (under 100 words) unless a detailed explanation is necessary.
-        Always advise consulting a doctor for serious concerns.
-        `
+  if (checkupResults) {
+    const hd  = checkupResults['Heart Disease']
+    const hyp = checkupResults['Hypertension']
+    const dia = checkupResults['Diabetes']
 
-        const result = await chat.sendMessage(message)
-        const response = await result.response
-        return { data: response.text() }
+    systemPrompt += `
 
-    } catch (error: any) {
-        console.error('Gemini Chat Error:', error)
-        let message = 'Failed to get response from AI.'
-        if (error?.message?.includes('429')) message = 'Rate limit exceeded.'
-        if (error?.message?.includes('404')) message = 'AI model not found. Check API key permissions.'
-        
-        return { error: message }
-    }
+The user has just completed a health checkup. Their ML-predicted risk results are:
+
+Heart Disease:  ${hd.risk_percent}% risk (${hd.risk_level})
+  Top drivers: ${hd.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+
+Hypertension:  ${hyp.risk_percent}% risk (${hyp.risk_level})
+  Top drivers: ${hyp.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+
+Diabetes:      ${dia.risk_percent}% risk (${dia.risk_level})
+  Top drivers: ${dia.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+
+When answering, reference THEIR specific numbers and risk drivers.
+Example: "Your Heart Disease risk is ${hd.risk_percent}%, driven mainly by ${hd.top_risk_drivers?.[0]?.feature}..."
+Do not make up new numbers — only use the figures above.`
+  }
+
+  try {
+    const chat = model.startChat({
+      systemInstruction: systemPrompt,
+      history: history as any,
+    })
+
+    const result = await chat.sendMessage(userMessage)
+    return { data: result.response.text() }
+  } catch (error: any) {
+    console.error('Gemini Chat Error:', error)
+    return { error: error.message || 'Failed to generate response' }
+  }
 }

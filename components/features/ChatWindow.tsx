@@ -5,7 +5,7 @@ import { Send, User, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 // import { createClient } from '@/lib/supabase/client' // Removed
 import { chatWithAI } from '@/lib/actions/gemini/chat'
-import { saveMessage, getChatMessages } from '@/lib/actions/chat'
+import { saveMessage, getChatMessages, getLatestCheckupResult } from '@/lib/actions/chat'
 import { cn } from '@/lib/utils/cn'
 import { toast } from 'sonner'
 
@@ -22,6 +22,7 @@ export function ChatWindow() {
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [cooldown, setCooldown] = useState(0)
+    const [checkupResults, setCheckupResults] = useState<any>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [sessionId] = useState(() => crypto.randomUUID())
 
@@ -40,6 +41,12 @@ export function ChatWindow() {
             setIsLoading(false)
         }
         loadHistory()
+        
+        const loadCheckup = async () => {
+            const results = await getLatestCheckupResult()
+            if (results) setCheckupResults(results)
+        }
+        loadCheckup()
     }, [sessionId])
 
     useEffect(() => {
@@ -72,7 +79,7 @@ export function ChatWindow() {
                 parts: [{ text: msg.content }]
             }))
             
-            const result = await chatWithAI(userMessageContent, formattedHistory)
+            const result = await chatWithAI(userMessageContent, checkupResults, formattedHistory)
 
             if (result.error || !result.data) {
                 toast.error(result.error || 'Failed to get response.')

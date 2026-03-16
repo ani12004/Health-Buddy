@@ -43,5 +43,22 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# AI/ML
-# /ml/ unignored for v8 deployment
+# AI/ML Exclusions
+/HealthBuddy_Models_v7/
+/HealthBuddy_Models_v9/
+/ml/
+/ml_deployment/
+/requirements-ml.txt
+/ML_*.md
+/COMPLETE_SYSTEM_EXPLANATION.md
+/HealthBuddy_v9_Gemini_Brief.md
+/test_ml.py
+/test_ml_integration.py
+/test_model_local.py
+/test_form_mapping.js
+/test_v9_full.mjs
+/test_output.txt
+
+# Tools/IDEs
+.claude/
+.venv_wsl/
