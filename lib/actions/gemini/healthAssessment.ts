@@ -1,9 +1,9 @@
 'use server'
 
-import { MLInput } from '@/lib/actions/ml/bridge'
 import { generateWithModelFallback } from './modelFallback'
+import { HealthInput } from './types'
 
-export async function analyzeHealthWithGemini(input: MLInput, language: string = 'English') {
+export async function analyzeHealthWithGemini(input: HealthInput, language: string = 'English') {
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
         return { error: 'Gemini API Key is not configured.' }

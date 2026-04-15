@@ -1,9 +1,10 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { runMLBridge, MLInput } from '@/lib/actions/ml/bridge'
+import { runMLBridge } from '@/lib/actions/ml/bridge'
 import { analyzeHealthWithGemini } from './healthAssessment'
 import { explainMLWithGemini } from './explainResults'
+import { HealthInput } from './types'
 
 type SupportedRiskLevel = 'LOW' | 'MODERATE' | 'HIGH'
 
@@ -353,7 +354,7 @@ export async function analyzeHealthData(data: any, language: string = 'English')
 
     try {
         // Map form field names to ML input field names
-        const mlInput: MLInput = {
+        const mlInput: HealthInput = {
             age: Number(data.age) || 40,
             sex: (data.sex === 'Female' ? 'Female' : 'Male'),
             bmi: Number(data.bmi) || 25,
