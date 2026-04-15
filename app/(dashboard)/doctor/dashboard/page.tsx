@@ -13,14 +13,27 @@ export default async function DoctorDashboard() {
         redirect('/login')
     }
 
-    let doctorName = 'Doctor'
-    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
-    if (profile?.full_name) doctorName = profile.full_name
+    const todayIso = new Date().toISOString()
+    const [
+        { data: profile },
+        { count: patientCount },
+        { count: criticalCount },
+        { count: appointmentCount },
+    ] = await Promise.all([
+        supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+        supabase.from('patients').select('*', { count: 'exact', head: true }),
+        supabase
+            .from('reports')
+            .select('*', { count: 'exact', head: true })
+            .eq('severity', 'critical'),
+        supabase
+            .from('appointments')
+            .select('*', { count: 'exact', head: true })
+            .eq('doctor_id', user.id)
+            .gte('appointment_date', todayIso),
+    ])
 
-    // Fetch Stats
-    const { count: patientCount } = await supabase.from('patients').select('*', { count: 'exact', head: true })
-    const { count: criticalCount } = await supabase.from('reports').select('*', { count: 'exact', head: true }).eq('severity', 'critical')
-    const { count: appointmentCount } = await supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('doctor_id', user.id).gte('appointment_date', new Date().toISOString())
+    const doctorName = profile?.full_name || 'Doctor'
 
     return (
         <div className="space-y-8">

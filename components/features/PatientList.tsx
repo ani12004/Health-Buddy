@@ -1,4 +1,4 @@
-import { Search, Filter, MoreHorizontal, MessageSquare, FileText, User } from 'lucide-react'
+import { MoreHorizontal, MessageSquare, FileText, User } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils/cn'
 import { createClient } from '@/lib/supabase/server'
@@ -19,13 +19,6 @@ export async function PatientList() {
     // Joining profiles to get names.
     // Fetch profiles that have either shared a report with this doctor OR are generally role patient
     // Priority: Patients who have shared reports
-    const { data: reportShares, error: shareError } = await supabase
-        .from('reports')
-        .select('patient_id')
-        .eq('doctor_id', user.id)
-
-    const sharedPatientIds = reportShares?.map(r => r.patient_id) || []
-
     const { data: patients, error } = await supabase
         .from('profiles')
         .select(`
@@ -53,16 +46,34 @@ export async function PatientList() {
 
     const formattedPatients = patients?.map(p => {
         const patientData = p.patients && Array.isArray(p.patients) ? p.patients[0] : p.patients;
-        const hasCritical = (p.reports as any[])?.some(r => r.severity === 'critical' && r.doctor_id === user.id);
-        const hasShared = (p.reports as any[])?.some(r => r.doctor_id === user.id);
+        const reports = ((p.reports as any[]) || []).slice().sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        const latestReport = reports[0]
+        const hasCritical = reports.some(r => r.severity === 'critical')
+        const hasAnyReport = reports.length > 0
+
+        let lastVisit = 'No visits yet'
+        if (latestReport?.created_at) {
+            const createdAt = new Date(latestReport.created_at)
+            const now = new Date()
+            const diffMs = now.getTime() - createdAt.getTime()
+            const dayMs = 24 * 60 * 60 * 1000
+            const days = Math.floor(diffMs / dayMs)
+
+            if (days <= 0) lastVisit = 'Today'
+            else if (days === 1) lastVisit = 'Yesterday'
+            else if (days < 7) lastVisit = `${days} days ago`
+            else lastVisit = createdAt.toLocaleDateString()
+        }
 
         return {
             id: p.id,
             name: p.full_name || 'Unknown',
             age: patientData?.dob ? new Date().getFullYear() - new Date(patientData.dob).getFullYear() : 'N/A',
             condition: patientData?.conditions?.[0] || 'Checkup pending',
-            status: hasCritical ? 'Critical' : hasShared ? 'Stable' : 'Unknown',
-            lastVisit: 'Recent',
+            status: hasCritical ? 'Critical' : hasAnyReport ? 'Stable' : 'Pending',
+            lastVisit,
             avatar: ''
         }
     }) || []
@@ -71,7 +82,9 @@ export async function PatientList() {
         <div className="bg-white dark:bg-neutral-surface-dark rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white">Recent Patients</h3>
-                <Button variant="ghost" size="sm">View All</Button>
+                <Link href="/doctor/patients">
+                    <Button variant="ghost" size="sm">View All</Button>
+                </Link>
             </div>
 
             <div className="overflow-x-auto">
@@ -105,7 +118,7 @@ export async function PatientList() {
                                             "px-2.5 py-1 rounded-full text-xs font-bold border",
                                             patient.status === 'Stable' ? "bg-green-50 text-green-700 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30" :
                                                 patient.status === 'Critical' ? "bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30" :
-                                                    "bg-slate-50 text-slate-700 border-slate-100 dark:bg-white/5 dark:text-slate-400 dark:border-white/10"
+                                                    "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30"
                                         )}>
                                             {patient.status}
                                         </span>
