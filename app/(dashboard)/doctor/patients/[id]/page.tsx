@@ -22,25 +22,22 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils/cn'
 
 interface PatientDetailProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export default async function PatientDetailPage({ params }: PatientDetailProps) {
     const supabase = await createClient()
-    const { id } = params
+    const { id } = await params
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    // Fetch patient profile and data
+    // Fetch profile first; do not fail the whole page if optional relations are missing.
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select(`
-            *,
-            patients (*)
-        `)
+        .select('*')
         .eq('id', id)
         .single()
 
@@ -48,7 +45,12 @@ export default async function PatientDetailPage({ params }: PatientDetailProps) 
         return notFound()
     }
 
-    const patientData = Array.isArray(profile.patients) ? profile.patients[0] : profile.patients
+    // Patient row can be absent for legacy users; handle gracefully instead of 404.
+    const { data: patientData } = await supabase
+        .from('patients')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
 
     // Fetch medical history (reports)
     const { data: reports } = await supabase
