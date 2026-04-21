@@ -1,13 +1,14 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+import { generateChatWithModelFallback } from './modelFallback'
 
 export async function chatWithAI(
   userMessage: string,
   checkupResults?: any,
   history: {role: string, parts: { text: string }[]}[] = []
 ) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    return { error: 'Gemini API Key is not configured.' }
+  }
 
   // Build system prompt — inject Gemini assessment results if available
   let systemPrompt = `You are HealthBuddy's AI health assistant. 
@@ -39,13 +40,14 @@ Do not make up new numbers — only use the figures above.`
   }
 
   try {
-    const chat = model.startChat({
-      systemInstruction: systemPrompt,
-      history: history as any,
-    })
-
-    const result = await chat.sendMessage(userMessage)
-    return { data: result.response.text() }
+    const { text, modelName } = await generateChatWithModelFallback(
+      apiKey,
+      systemPrompt,
+      userMessage,
+      history
+    )
+    console.log('Chat model used:', modelName)
+    return { data: text }
   } catch (error: any) {
     console.error('Gemini Chat Error:', error)
     return { error: error.message || 'Failed to generate response' }
