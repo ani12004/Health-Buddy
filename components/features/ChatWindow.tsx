@@ -17,6 +17,21 @@ interface Message {
     created_at: string
 }
 
+type CheckupDisease = {
+    risk_percent?: number
+    risk_level?: 'LOW' | 'MODERATE' | 'HIGH' | string
+}
+
+function riskBadgeStyles(level?: string) {
+    if (level === 'HIGH') {
+        return 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-500/30'
+    }
+    if (level === 'MODERATE') {
+        return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30'
+    }
+    return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30'
+}
+
 export function ChatWindow() {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
@@ -25,6 +40,12 @@ export function ChatWindow() {
     const [checkupResults, setCheckupResults] = useState<any>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [sessionId] = useState(() => crypto.randomUUID())
+
+    const checkupSnapshot: Array<{ key: string; label: string; data: CheckupDisease | null }> = [
+        { key: 'Heart Disease', label: 'Heart', data: checkupResults?.['Heart Disease'] ?? null },
+        { key: 'Hypertension', label: 'Blood Pressure', data: checkupResults?.['Hypertension'] ?? null },
+        { key: 'Diabetes', label: 'Diabetes', data: checkupResults?.['Diabetes'] ?? null },
+    ]
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -137,6 +158,42 @@ export function ChatWindow() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                {checkupResults && (
+                    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-indigo-500/5 to-transparent p-4">
+                        <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-primary via-indigo-500 to-cyan-400" />
+                        <div className="pl-3 space-y-3">
+                            <div className="flex items-center justify-between gap-3">
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-primary">Embedded Checkup Snapshot</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-300">Latest AI checkup context used for chat responses</p>
+                                </div>
+                                <span className="rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary dark:bg-black/30">
+                                    Live Context
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                {checkupSnapshot.map((item) => {
+                                    const level = item.data?.risk_level || 'LOW'
+                                    const risk = typeof item.data?.risk_percent === 'number' ? item.data.risk_percent : 0
+
+                                    return (
+                                        <div key={item.key} className="rounded-xl border border-slate-200/70 bg-white/80 p-3 dark:border-white/10 dark:bg-black/20">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-xs font-bold text-slate-700 dark:text-slate-100">{item.label}</p>
+                                                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${riskBadgeStyles(level)}`}>
+                                                    {level}
+                                                </span>
+                                            </div>
+                                            <p className="mt-2 text-lg font-black text-slate-900 dark:text-white">{risk}%</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-full text-center p-8 opacity-50">
                         <Sparkles className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
