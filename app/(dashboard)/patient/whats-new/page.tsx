@@ -18,29 +18,29 @@ import Link from 'next/link'
 export default function WhatsNewPage() {
     const changes = [
         {
-            title: "V7 Multi-Model Ensemble",
-            description: "We've upgraded our core intelligence to use a 4-model soft-voting ensemble (Neural Networks, XGBoost, HistGradientBoosting, and Logistic Regression).",
+            title: "V10 Hosted ML Engine",
+            description: "Core inference now runs on a production FastAPI service hosted on Hugging Face Spaces for reliable, remotely managed predictions.",
             icon: Cpu,
             color: "text-blue-500",
             bg: "bg-blue-500/10"
         },
         {
-            title: "Explainable AI (SHAP)",
-            description: "Understand the 'why' behind every risk score. Our new SHAP attribution charts show exactly which biomarkers are driving your results.",
+            title: "Better Explainability Pipeline",
+            description: "Risk attribution is now more robust with clearer feature drivers and safer fallback behavior when explainer artifacts are unavailable.",
             icon: BarChart3,
             color: "text-indigo-500",
             bg: "bg-indigo-500/10"
         },
         {
-            title: "Rules-Based Clinical Reasoning",
-            description: "Moving beyond generic AI text, we've implemented a deterministic clinical interpretation engine that links metrics directly to medical guidelines.",
+            title: "Gemini + ML Hybrid Analysis",
+            description: "ML scores and Gemini interpretation now work together with stronger fallback routing for stable results across multilingual patient flows.",
             icon: ShieldCheck,
             color: "text-emerald-500",
             bg: "bg-emerald-500/10"
         },
         {
-            title: "Zero-Latency Performance",
-            description: "All ML logic now runs locally on our optimized backend, removing dependency on external APIs and providing near-instant results.",
+            title: "Reliability and Security Hardening",
+            description: "Credential handling and deployment docs were cleaned up, and the v10 inference path was hardened for safer production operations.",
             icon: Zap,
             color: "text-amber-500",
             bg: "bg-amber-500/10"
@@ -57,14 +57,14 @@ export default function WhatsNewPage() {
                     className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider"
                 >
                     <Sparkles className="w-3 h-3" />
-                    System Update v8.0.0
+                    System Update v10.0.0
                 </motion.div>
                 
                 <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-                    Next-Gen ML Integration
+                    V10 Intelligence Upgrade
                 </h1>
                 <p className="text-slate-500 text-lg max-w-2xl mx-auto">
-                    We've rebuilt our health intelligence from the ground up to provide clinical-grade accuracy and transparent reasoning.
+                    HealthBuddy now runs on the latest v10 inference stack with stronger explainability, safer deployment, and resilient AI fallback logic.
                 </p>
             </div>
 
@@ -101,43 +101,43 @@ export default function WhatsNewPage() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div className="space-y-6 opacity-60">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">Previous (v7.x)</h4>
+                            <h4 className="text-xs font-black uppercase tracking-widest text-slate-500">Previous (v9)</h4>
                             <ul className="space-y-4">
                                 <li className="flex gap-3 text-sm italic">
                                     <div className="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center shrink-0">
                                         <div className="w-1.5 h-1.5 bg-slate-700 rounded-full" />
                                     </div>
-                                    Dependent on Gemini Cloud interpreted text
+                                    Less resilient inference flow during ML service disruptions
                                 </li>
                                 <li className="flex gap-3 text-sm italic">
                                     <div className="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center shrink-0">
                                         <div className="w-1.5 h-1.5 bg-slate-700 rounded-full" />
                                     </div>
-                                    Standard results with simple probability
+                                    Explainability path depended heavily on local artifacts
                                 </li>
                                 <li className="flex gap-3 text-sm italic">
                                     <div className="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center shrink-0">
                                         <div className="w-1.5 h-1.5 bg-slate-700 rounded-full" />
                                     </div>
-                                    3-5 second latency per request
+                                    Deployment hygiene gaps in docs and token handling
                                 </li>
                             </ul>
                         </div>
 
                         <div className="space-y-6">
-                            <h4 className="text-xs font-black uppercase tracking-widest text-primary">Current (v8.0.0)</h4>
+                            <h4 className="text-xs font-black uppercase tracking-widest text-primary">Current (v10.0.0)</h4>
                             <ul className="space-y-4">
                                 <li className="flex gap-3 text-sm font-medium">
                                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                                    Autonomous Local Reasoning (No Cloud dependency)
+                                    Hosted FastAPI inference service for stable remote predictions
                                 </li>
                                 <li className="flex gap-3 text-sm font-medium">
                                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                                    4-Model Mathematical Ensemble Consensus
+                                    Stronger ML and Gemini fallback orchestration
                                 </li>
                                 <li className="flex gap-3 text-sm font-medium">
                                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                                    Sub-second result generation
+                                    Improved explainability continuity and production safety
                                 </li>
                             </ul>
                         </div>
@@ -148,7 +148,7 @@ export default function WhatsNewPage() {
             {/* CTA */}
             <div className="flex flex-col items-center gap-6">
                 <Link href="/patient/ai-checkup" className="group flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-full font-bold shadow-lg shadow-primary/25 hover:bg-primary-dark transition-all">
-                    Test the New Engine
+                    Try V10 Checkup
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <p className="text-slate-400 text-xs font-medium uppercase tracking-widest">
