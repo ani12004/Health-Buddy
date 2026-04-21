@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Send, User, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 // import { createClient } from '@/lib/supabase/client' // Removed
 import { chatWithAI } from '@/lib/actions/gemini/chat'
 import { saveMessage, getChatMessages, getLatestCheckupResult } from '@/lib/actions/chat'
@@ -30,6 +29,12 @@ function riskBadgeStyles(level?: string) {
         return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30'
     }
     return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30'
+}
+
+function riskBarStyles(level?: string) {
+    if (level === 'HIGH') return 'bg-rose-500'
+    if (level === 'MODERATE') return 'bg-amber-500'
+    return 'bg-emerald-500'
 }
 
 export function ChatWindow() {
@@ -157,39 +162,44 @@ export function ChatWindow() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {checkupResults && (
-                    <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-indigo-500/5 to-transparent p-4">
-                        <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-primary via-indigo-500 to-cyan-400" />
-                        <div className="pl-3 space-y-3">
-                            <div className="flex items-center justify-between gap-3">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-primary">Embedded Checkup Snapshot</p>
-                                    <p className="text-xs text-slate-500 dark:text-slate-300">Latest AI checkup context used for chat responses</p>
-                                </div>
-                                <span className="rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary dark:bg-black/30">
-                                    Live Context
-                                </span>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-white/[0.03]">
+                        <div className="mb-2 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                                    Latest Checkup Snapshot
+                                </p>
                             </div>
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                Chat Context
+                            </span>
+                        </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                {checkupSnapshot.map((item) => {
-                                    const level = item.data?.risk_level || 'LOW'
-                                    const risk = typeof item.data?.risk_percent === 'number' ? item.data.risk_percent : 0
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                            {checkupSnapshot.map((item) => {
+                                const level = item.data?.risk_level || 'LOW'
+                                const risk = typeof item.data?.risk_percent === 'number' ? item.data.risk_percent : 0
 
-                                    return (
-                                        <div key={item.key} className="rounded-xl border border-slate-200/70 bg-white/80 p-3 dark:border-white/10 dark:bg-black/20">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-xs font-bold text-slate-700 dark:text-slate-100">{item.label}</p>
-                                                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${riskBadgeStyles(level)}`}>
-                                                    {level}
-                                                </span>
-                                            </div>
-                                            <p className="mt-2 text-lg font-black text-slate-900 dark:text-white">{risk}%</p>
+                                return (
+                                    <div key={item.key} className="rounded-lg border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-black/20">
+                                        <div className="mb-1.5 flex items-center justify-between gap-2">
+                                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{item.label}</p>
+                                            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${riskBadgeStyles(level)}`}>
+                                                {level}
+                                            </span>
                                         </div>
-                                    )
-                                })}
-                            </div>
+                                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                                            <div
+                                                className={`h-full rounded-full ${riskBarStyles(level)}`}
+                                                style={{ width: `${Math.max(4, Math.min(100, risk))}%` }}
+                                            />
+                                        </div>
+                                        <p className="mt-1.5 text-sm font-bold text-slate-900 dark:text-white">{risk}% risk</p>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </div>
                 )}
