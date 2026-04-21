@@ -22,12 +22,14 @@ export default function AssessmentPage() {
         setResult(null)
         try {
             const response = await analyzeHealth(data)
-            if (response.error) {
+            if ('error' in response) {
                 toast.error(response.error)
-            } else {
+            } else if ('data' in response) {
                 setResult(response.data)
                 setFormData(data)
                 toast.success('Professional Analysis Complete')
+            } else {
+                toast.error('Unexpected response from AI engine')
             }
         } catch (err) {
             toast.error('Failed to connect to AI engine')
