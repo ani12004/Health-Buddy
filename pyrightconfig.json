@@ -1,7 +1,0 @@
-{
-  "venvPath": "ml",
-  "venv": ".venv",
-  "extraPaths": [
-    "ml/.venv/Lib/site-packages"
-  ]
-}

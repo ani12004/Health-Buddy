@@ -4,11 +4,38 @@ import { updateSession } from '@/lib/supabase/middleware'
 export async function middleware(request: NextRequest) {
     const { supabaseResponse, user } = await updateSession(request)
 
-    const isPublicRoute = ['/login', '/register', '/'].includes(request.nextUrl.pathname) || request.nextUrl.pathname.startsWith('/api')
+    const pathname = request.nextUrl.pathname
+
+    const publicRoutes = new Set([
+        '/',
+        '/login',
+        '/register',
+        '/onboarding',
+        '/features',
+        '/how-it-works',
+        '/security',
+        '/enterprise',
+        '/customer-stories',
+        '/about',
+        '/careers',
+        '/press',
+        '/contact',
+        '/privacy',
+        '/terms',
+        '/hipaa',
+        '/docs'
+    ])
+
+    const isPublicRoute =
+        publicRoutes.has(pathname) ||
+        pathname.startsWith('/api') ||
+        pathname.startsWith('/docs/')
     
     // Allow public routes
     if (isPublicRoute) {
-        if (user && !request.nextUrl.pathname.startsWith('/api')) {
+        // Keep root landing page public for everyone, even logged-in users.
+        // Only redirect authenticated users away from auth entry pages.
+        if (user && (pathname === '/login' || pathname === '/register' || pathname === '/onboarding')) {
             const role = user.user_metadata?.role;
             if (role === 'doctor') {
                 return NextResponse.redirect(new URL('/doctor/dashboard', request.url))

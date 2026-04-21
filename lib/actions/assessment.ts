@@ -1,10 +1,7 @@
 'use server'
 
-import { spawn } from 'child_process';
-import path from 'path';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
-import { runMLBridge } from './ml/bridge';
+import { analyzeHealthWithGemini } from './gemini/healthAssessment';
 
 interface AssessmentInput {
     age: number;
@@ -34,36 +31,37 @@ export async function analyzeHealth(input: AssessmentInput) {
     if (!user) return { error: 'Authentication required' };
 
     try {
-        // 1. Run ML Bridge
-        const mlResults = await runMLBridge(input);
-        if ('error' in mlResults) return mlResults;
+        // 1. Run Gemini-based Health Assessment
+        const result = await analyzeHealthWithGemini(input);
+        if ('error' in result) return result;
+        
+        const geminiResults = result.data;
 
-        // 2. Map ML Results to DB Schema
-        // Normalize keys for internal use
+        // 2. Normalize results for DB Schema
         const normalizedProbs = {
-            heart_disease: mlResults["Heart Disease"].risk_percent / 100,
-            hypertension: mlResults["Hypertension"].risk_percent / 100,
-            diabetes: mlResults["Diabetes"].risk_percent / 100
+            heart_disease: geminiResults["Heart Disease"].risk_percent / 100,
+            hypertension: geminiResults["Hypertension"].risk_percent / 100,
+            diabetes: geminiResults["Diabetes"].risk_percent / 100
         };
 
         const normalizedConf = {
-            heart_disease: mlResults["Heart Disease"].confidence / 100,
-            hypertension: mlResults["Hypertension"].confidence / 100,
-            diabetes: mlResults["Diabetes"].confidence / 100
+            heart_disease: geminiResults["Heart Disease"].confidence / 100,
+            hypertension: geminiResults["Hypertension"].confidence / 100,
+            diabetes: geminiResults["Diabetes"].confidence / 100
         };
 
-        const normalizedShap = {
-            heart_disease: mlResults["Heart Disease"].top_risk_drivers.concat(mlResults["Heart Disease"].protective_factors),
-            hypertension: mlResults["Hypertension"].top_risk_drivers.concat(mlResults["Hypertension"].protective_factors),
-            diabetes: mlResults["Diabetes"].top_risk_drivers.concat(mlResults["Diabetes"].protective_factors)
+        const normalizedFactors = {
+            heart_disease: geminiResults["Heart Disease"].top_risk_drivers.concat(geminiResults["Heart Disease"].protective_factors),
+            hypertension: geminiResults["Hypertension"].top_risk_drivers.concat(geminiResults["Hypertension"].protective_factors),
+            diabetes: geminiResults["Diabetes"].top_risk_drivers.concat(geminiResults["Diabetes"].protective_factors)
         };
 
-        // Consolidate interpretation from ML output
+        // Consolidate interpretation from Gemini output
         const interpretation = {
-            summary: mlResults["Heart Disease"].summary_paragraph, // Using Heart Disease as primary summary
-            factors: mlResults["Heart Disease"].clinical_flags.map((f: any) => f.message),
-            recommendations: mlResults["Heart Disease"].recommendations,
-            consultation_trigger: "High risk detection in cardiovascular or metabolic screening."
+            summary: geminiResults["Heart Disease"].summary_paragraph,
+            factors: geminiResults["Heart Disease"].top_risk_drivers.map((f: any) => f.feature),
+            recommendations: geminiResults["Heart Disease"].recommendations,
+            consultation_trigger: "Elevated risk detection in cardiovascular or metabolic screening."
         };
         
         // 3. Store in Supabase
@@ -74,8 +72,8 @@ export async function analyzeHealth(input: AssessmentInput) {
                 inputs: input,
                 probabilities: normalizedProbs,
                 confidence_scores: normalizedConf,
-                health_score: mlResults.health_score,
-                shap_values: normalizedShap,
+                health_score: geminiResults.health_score,
+                shap_values: normalizedFactors,
                 explanation: interpretation,
                 severity: determineSeverity(normalizedProbs)
             })

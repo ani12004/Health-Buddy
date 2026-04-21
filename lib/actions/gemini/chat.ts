@@ -9,7 +9,7 @@ export async function chatWithAI(
 ) {
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
-  // Build system prompt — inject ML results if available
+  // Build system prompt — inject Gemini assessment results if available
   let systemPrompt = `You are HealthBuddy's AI health assistant. 
 You help users understand their health and answer general health questions.
 Never provide a medical diagnosis. Always recommend consulting a qualified doctor.
@@ -22,7 +22,7 @@ Keep responses friendly, clear, and under 200 words unless detail is needed.`
 
     systemPrompt += `
 
-The user has just completed a health checkup. Their ML-predicted risk results are:
+The user has just completed a health checkup. Their Gemini AI-assessed risk results are:
 
 Heart Disease:  ${hd.risk_percent}% risk (${hd.risk_level})
   Top drivers: ${hd.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
