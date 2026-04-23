@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/components/providers'
-import { Toaster } from 'sonner' // Assuming Toaster import from sonner, UI code didn't specify but plan did. 
+import { Toaster } from 'sonner' // Assuming Toaster import from sonner, UI code didn't specify but plan did.
+import { Analytics } from '@vercel/analytics/next' 
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' })
 
@@ -26,6 +27,7 @@ export default function RootLayout({
           {children}
           <Toaster position="top-center" />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   )
