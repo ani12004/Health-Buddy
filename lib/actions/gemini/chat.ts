@@ -1,15 +1,17 @@
 "use server"
 
 import { generateGroqChatWithModelFallback } from './groqModelFallback'
-import { generateChatWithModelFallback } from './modelFallback'
 
 export async function chatWithAI(
   userMessage: string,
   checkupResults?: any,
   history: {role: string, parts: { text: string }[]}[] = []
 ) {
-  const geminiApiKey = process.env.GEMINI_API_KEY
   const groqApiKey = process.env.GROQ_API_KEY
+
+  if (!groqApiKey) {
+    return { error: 'AI chat is not configured. Please set GROQ_API_KEY.' }
+  }
 
   // Build system prompt with latest checkup context if available
   let systemPrompt = `You are HealthBuddy's AI health assistant. 
@@ -58,55 +60,23 @@ Example: "Your Heart Disease risk is ${hdRisk}%, driven mainly by ${hd?.top_risk
 Do not make up new numbers — only use the figures above.`
   }
 
-  const providerFailures: string[] = []
+  try {
+    const { text, modelName } = await generateGroqChatWithModelFallback(
+      groqApiKey,
+      systemPrompt,
+      userMessage,
+      history
+    )
 
-  // 1) Try Gemini first
-  if (geminiApiKey) {
-    try {
-      const { text, modelName } = await generateChatWithModelFallback(
-        geminiApiKey,
-        systemPrompt,
-        userMessage,
-        history
-      )
-      console.log('Gemini chat model used:', modelName)
-      if (text && text.trim()) {
-        return { data: text }
-      }
-      providerFailures.push('Gemini returned an empty response')
-    } catch (error: any) {
-      const message = error?.message || 'Unknown Gemini error'
-      console.error('Gemini Chat Error:', message)
-      providerFailures.push(`Gemini failed: ${message}`)
+    console.log('Groq chat model used:', modelName)
+
+    if (!text || !text.trim()) {
+      return { error: 'AI returned an empty response. Please try again.' }
     }
-  } else {
-    providerFailures.push('Gemini key missing (GEMINI_API_KEY not configured)')
-  }
 
-  // 2) Fallback to Groq
-  if (groqApiKey) {
-    try {
-      const { text, modelName } = await generateGroqChatWithModelFallback(
-        groqApiKey,
-        systemPrompt,
-        userMessage,
-        history
-      )
-      console.log('Groq chat model used:', modelName)
-      if (text && text.trim()) {
-        return { data: text }
-      }
-      providerFailures.push('Groq returned an empty response')
-    } catch (error: any) {
-      const message = error?.message || 'Unknown Groq error'
-      console.error('Groq Chat Error:', message)
-      providerFailures.push(`Groq failed: ${message}`)
-    }
-  } else {
-    providerFailures.push('Groq key missing (GROQ_API_KEY not configured)')
-  }
-
-  return {
-    error: `All AI providers failed. ${providerFailures.join(' | ')}`
+    return { data: text }
+  } catch (error: any) {
+    console.error('Groq Chat Error:', error?.message || error)
+    return { error: 'All Groq models failed to respond. Please try again.' }
   }
 }
