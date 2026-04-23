@@ -106,10 +106,11 @@ export function ChatWindow() {
             }))
             
             const result = await chatWithAI(userMessageContent, checkupResults, formattedHistory)
+            const errorMessage = 'error' in result ? result.error : undefined
 
-            if (result.error || !result.data) {
-                toast.error(result.error || 'Failed to get response.')
-                if (result.error?.includes('Rate limit')) {
+            if (!result.data) {
+                toast.error(errorMessage || 'Failed to get response.')
+                if (errorMessage?.includes('Rate limit')) {
                     setCooldown(30)
                     const timer = setInterval(() => {
                         setCooldown(prev => {

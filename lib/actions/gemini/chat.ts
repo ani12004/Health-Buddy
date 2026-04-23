@@ -1,41 +1,17 @@
 "use server"
 
+import { generateGroqChatWithModelFallback } from './groqModelFallback'
 import { generateChatWithModelFallback } from './modelFallback'
-
-function buildFallbackChatReply(userMessage: string, checkupResults?: any) {
-  const base = [
-    "I can still help with general wellness guidance right now.",
-    "I am currently running in fallback mode, so responses are informational and not a diagnosis.",
-  ]
-
-  if (!checkupResults) {
-    return `${base.join(' ')} For your message (\"${userMessage}\"), focus on hydration, balanced meals, light movement, stress control, and proper sleep tonight. If symptoms persist or worsen, please see a doctor.`
-  }
-
-  const hd = checkupResults['Heart Disease']
-  const hyp = checkupResults['Hypertension']
-  const dia = checkupResults['Diabetes']
-
-  const snippets = [
-    hd ? `Heart risk: ${hd.risk_percent}% (${hd.risk_level})` : null,
-    hyp ? `BP risk: ${hyp.risk_percent}% (${hyp.risk_level})` : null,
-    dia ? `Diabetes risk: ${dia.risk_percent}% (${dia.risk_level})` : null,
-  ].filter(Boolean)
-
-  return `${base.join(' ')} Based on your latest checkup, ${snippets.join(', ')}. For your question (\"${userMessage}\"), prioritize low-salt whole foods, regular walking, consistent sleep, and follow-up labs as advised by your clinician. If you notice chest pain, severe breathlessness, fainting, very high BP, or persistently high glucose symptoms, seek urgent care.`
-}
 
 export async function chatWithAI(
   userMessage: string,
   checkupResults?: any,
   history: {role: string, parts: { text: string }[]}[] = []
 ) {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) {
-    return { data: buildFallbackChatReply(userMessage, checkupResults) }
-  }
+  const geminiApiKey = process.env.GEMINI_API_KEY
+  const groqApiKey = process.env.GROQ_API_KEY
 
-  // Build system prompt — inject Gemini assessment results if available
+  // Build system prompt with latest checkup context if available
   let systemPrompt = `You are HealthBuddy's AI health assistant. 
 You help users understand their health and answer general health questions.
 Never provide a medical diagnosis. Always recommend consulting a qualified doctor.
@@ -66,7 +42,7 @@ Keep responses friendly, clear, and under 200 words unless detail is needed.`
 
     systemPrompt += `
 
-The user has just completed a health checkup. Their Gemini AI-assessed risk results are:
+The user has just completed a health checkup. Their latest risk results are:
 
 Heart Disease:  ${hdRisk}% risk (${hdLevel})
   Top drivers: ${hdDrivers}
@@ -82,20 +58,55 @@ Example: "Your Heart Disease risk is ${hdRisk}%, driven mainly by ${hd?.top_risk
 Do not make up new numbers — only use the figures above.`
   }
 
-  try {
-    const { text, modelName } = await generateChatWithModelFallback(
-      apiKey,
-      systemPrompt,
-      userMessage,
-      history
-    )
-    console.log('Chat model used:', modelName)
-    if (!text || !text.trim()) {
-      return { data: buildFallbackChatReply(userMessage, checkupResults) }
+  const providerFailures: string[] = []
+
+  // 1) Try Gemini first
+  if (geminiApiKey) {
+    try {
+      const { text, modelName } = await generateChatWithModelFallback(
+        geminiApiKey,
+        systemPrompt,
+        userMessage,
+        history
+      )
+      console.log('Gemini chat model used:', modelName)
+      if (text && text.trim()) {
+        return { data: text }
+      }
+      providerFailures.push('Gemini returned an empty response')
+    } catch (error: any) {
+      const message = error?.message || 'Unknown Gemini error'
+      console.error('Gemini Chat Error:', message)
+      providerFailures.push(`Gemini failed: ${message}`)
     }
-    return { data: text }
-  } catch (error: any) {
-    console.error('Gemini Chat Error:', error)
-    return { data: buildFallbackChatReply(userMessage, checkupResults) }
+  } else {
+    providerFailures.push('Gemini key missing (GEMINI_API_KEY not configured)')
+  }
+
+  // 2) Fallback to Groq
+  if (groqApiKey) {
+    try {
+      const { text, modelName } = await generateGroqChatWithModelFallback(
+        groqApiKey,
+        systemPrompt,
+        userMessage,
+        history
+      )
+      console.log('Groq chat model used:', modelName)
+      if (text && text.trim()) {
+        return { data: text }
+      }
+      providerFailures.push('Groq returned an empty response')
+    } catch (error: any) {
+      const message = error?.message || 'Unknown Groq error'
+      console.error('Groq Chat Error:', message)
+      providerFailures.push(`Groq failed: ${message}`)
+    }
+  } else {
+    providerFailures.push('Groq key missing (GROQ_API_KEY not configured)')
+  }
+
+  return {
+    error: `All AI providers failed. ${providerFailures.join(' | ')}`
   }
 }
