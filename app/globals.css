@@ -24,6 +24,139 @@
   .dark .hero-gradient-bg {
     background: radial-gradient(circle at 50% 0%, rgba(140, 43, 238, 0.25) 0%, rgba(25, 16, 34, 0) 70%);
   }
+
+  .loader-grid {
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.2) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.2) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+  }
+
+  .loader-ping {
+    animation: loader-ping 1.7s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .loader-orbit-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgb(140 43 238), rgb(56 189 248));
+    box-shadow: 0 0 0 0 rgba(140, 43, 238, 0.5);
+    animation: loader-orbit 1.35s ease-in-out infinite;
+  }
+
+  .loader-orbit-dot-a {
+    animation-delay: 0s;
+  }
+
+  .loader-orbit-dot-b {
+    animation-delay: 0.18s;
+  }
+
+  .loader-orbit-dot-c {
+    animation-delay: 0.36s;
+  }
+
+  .loader-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loader-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    animation: loader-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .dark .loader-shimmer::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+
+  .loader-shimmer-delay::after {
+    animation-delay: 0.25s;
+  }
+
+  .loader-ecg-track {
+    position: relative;
+    height: 44px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(241, 245, 249, 0.9), rgba(226, 232, 240, 0.6));
+  }
+
+  .dark .loader-ecg-track {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.45));
+  }
+
+  .loader-ecg-line {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-repeat: repeat-x;
+    background-size: 180px 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='44' viewBox='0 0 180 44'%3E%3Cpath d='M0 24 L24 24 L36 24 L42 10 L48 34 L56 24 L80 24 L92 24 L98 16 L104 30 L112 24 L180 24' fill='none' stroke='%238c2bee' stroke-width='2.7' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    animation: loader-ecg-slide 1.9s linear infinite;
+    opacity: 0.9;
+  }
+
+  .loader-ecg-sweep {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 56px;
+    transform: translateX(-110%);
+    background: linear-gradient(90deg, transparent, rgba(140, 43, 238, 0.2), transparent);
+    animation: loader-ecg-sweep 1.9s linear infinite;
+  }
+}
+
+@keyframes loader-ping {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+
+  75%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes loader-orbit {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 rgba(140, 43, 238, 0.45);
+  }
+
+  50% {
+    transform: translateY(-8px);
+    box-shadow: 0 9px 18px -6px rgba(140, 43, 238, 0.55);
+  }
+}
+
+@keyframes loader-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes loader-ecg-slide {
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes loader-ecg-sweep {
+  100% {
+    transform: translateX(820%);
+  }
 }
 
 /* Custom Scrollbar */
