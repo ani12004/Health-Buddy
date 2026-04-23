@@ -3,14 +3,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const DEFAULT_MODEL_CANDIDATES = [
-    'gemini-3.1-pro',
-    'gemini-3.1-flash',
-    'gemini-3-pro',
-    'gemini-3-flash',
     'gemini-2.5-pro',
     'gemini-2.5-flash',
     'gemini-2.5-flash-lite',
-    'gemini-2.4-flash'
+    'gemini-1.5-pro',
+    'gemini-1.5-flash'
 ]
 
 function getConfiguredModelCandidates() {
@@ -59,13 +56,22 @@ export async function generateChatWithModelFallback(
     const genAI = new GoogleGenerativeAI(apiKey)
     const modelCandidates = getConfiguredModelCandidates()
     const failures: string[] = []
+    const normalizedHistory = history
+        .filter((h) => Array.isArray(h.parts) && h.parts.length > 0)
+        .map((h) => ({
+            role: h.role === 'model' ? 'model' : 'user',
+            parts: h.parts
+                .filter((p) => typeof p?.text === 'string' && p.text.trim().length > 0)
+                .map((p) => ({ text: p.text.trim() })),
+        }))
+        .filter((h) => h.parts.length > 0)
 
     for (const modelName of modelCandidates) {
         try {
             const model = genAI.getGenerativeModel({ model: modelName })
             const chat = model.startChat({
                 systemInstruction,
-                history: history as any,
+                history: normalizedHistory as any,
             })
 
             const result = await chat.sendMessage(userMessage)

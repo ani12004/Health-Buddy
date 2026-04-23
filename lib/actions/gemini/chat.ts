@@ -1,3 +1,5 @@
+"use server"
+
 import { generateChatWithModelFallback } from './modelFallback'
 
 function buildFallbackChatReply(userMessage: string, checkupResults?: any) {
@@ -40,25 +42,43 @@ Never provide a medical diagnosis. Always recommend consulting a qualified docto
 Keep responses friendly, clear, and under 200 words unless detail is needed.`
 
   if (checkupResults) {
-    const hd  = checkupResults['Heart Disease']
-    const hyp = checkupResults['Hypertension']
-    const dia = checkupResults['Diabetes']
+    const hd  = checkupResults['Heart Disease'] || {}
+    const hyp = checkupResults['Hypertension'] || {}
+    const dia = checkupResults['Diabetes'] || {}
+
+    const hdRisk = hd?.risk_percent ?? 'N/A'
+    const hdLevel = hd?.risk_level ?? 'N/A'
+    const hdDrivers = Array.isArray(hd?.top_risk_drivers)
+      ? hd.top_risk_drivers.slice(0, 3).map((d: any) => d?.feature).filter(Boolean).join(', ') || 'N/A'
+      : 'N/A'
+
+    const hypRisk = hyp?.risk_percent ?? 'N/A'
+    const hypLevel = hyp?.risk_level ?? 'N/A'
+    const hypDrivers = Array.isArray(hyp?.top_risk_drivers)
+      ? hyp.top_risk_drivers.slice(0, 3).map((d: any) => d?.feature).filter(Boolean).join(', ') || 'N/A'
+      : 'N/A'
+
+    const diaRisk = dia?.risk_percent ?? 'N/A'
+    const diaLevel = dia?.risk_level ?? 'N/A'
+    const diaDrivers = Array.isArray(dia?.top_risk_drivers)
+      ? dia.top_risk_drivers.slice(0, 3).map((d: any) => d?.feature).filter(Boolean).join(', ') || 'N/A'
+      : 'N/A'
 
     systemPrompt += `
 
 The user has just completed a health checkup. Their Gemini AI-assessed risk results are:
 
-Heart Disease:  ${hd.risk_percent}% risk (${hd.risk_level})
-  Top drivers: ${hd.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+Heart Disease:  ${hdRisk}% risk (${hdLevel})
+  Top drivers: ${hdDrivers}
 
-Hypertension:  ${hyp.risk_percent}% risk (${hyp.risk_level})
-  Top drivers: ${hyp.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+Hypertension:  ${hypRisk}% risk (${hypLevel})
+  Top drivers: ${hypDrivers}
 
-Diabetes:      ${dia.risk_percent}% risk (${dia.risk_level})
-  Top drivers: ${dia.top_risk_drivers?.slice(0,3).map((d:any) => d.feature).join(', ')}
+Diabetes:      ${diaRisk}% risk (${diaLevel})
+  Top drivers: ${diaDrivers}
 
 When answering, reference THEIR specific numbers and risk drivers.
-Example: "Your Heart Disease risk is ${hd.risk_percent}%, driven mainly by ${hd.top_risk_drivers?.[0]?.feature}..."
+Example: "Your Heart Disease risk is ${hdRisk}%, driven mainly by ${hd?.top_risk_drivers?.[0]?.feature || 'key metabolic factors'}..."
 Do not make up new numbers — only use the figures above.`
   }
 
@@ -70,9 +90,12 @@ Do not make up new numbers — only use the figures above.`
       history
     )
     console.log('Chat model used:', modelName)
+    if (!text || !text.trim()) {
+      return { data: buildFallbackChatReply(userMessage, checkupResults) }
+    }
     return { data: text }
   } catch (error: any) {
     console.error('Gemini Chat Error:', error)
-    return { error: error.message || 'Failed to generate response' }
+    return { data: buildFallbackChatReply(userMessage, checkupResults) }
   }
 }
