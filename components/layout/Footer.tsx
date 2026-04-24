@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Shield, Instagram, Twitter, Facebook } from 'lucide-react'
+import { Instagram, Twitter, Facebook } from 'lucide-react'
 
 export function Footer() {
     return (
@@ -8,9 +8,7 @@ export function Footer() {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
                     <div className="col-span-2 lg:col-span-2">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-                                <Shield className="w-5 h-5" />
-                            </div>
+                            <img src="/logo_health_buddy.png" alt="Health Buddy" className="h-8 w-8 rounded-lg object-cover" />
                             <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Health Buddy</span>
                         </div>
                         <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs leading-relaxed">

@@ -11,7 +11,9 @@ export const metadata: Metadata = {
   title: 'Health Buddy - AI Health Companion',
   description: 'Instant symptom analysis and personalized health insights powered by advanced medical AI.',
   icons: {
-    icon: '/logo_health_buddy.png',
+    icon: '/logo_health_buddy.png?v=3',
+    shortcut: '/logo_health_buddy.png?v=3',
+    apple: '/logo_health_buddy.png?v=3',
   },
 }
 

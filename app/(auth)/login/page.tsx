@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Shield, Mail, Eye, EyeOff, Quote } from 'lucide-react'
+import { Mail, Eye, EyeOff, Quote } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 
@@ -64,9 +64,7 @@ export default function LoginPage() {
 
                 {/* Branding */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                        <Shield className="text-white w-6 h-6" />
-                    </div>
+                    <img src="/logo_health_buddy.png" alt="Health Buddy" className="h-10 w-10 rounded-xl object-cover border border-white/20" />
                     <span className="text-white font-bold text-xl tracking-wide">Health Buddy AI</span>
                 </div>
 
@@ -99,9 +97,7 @@ export default function LoginPage() {
                 <div className="w-full max-w-md space-y-8">
                     {/* Mobile Logo */}
                     <div className="md:hidden flex items-center gap-2 mb-8 justify-center">
-                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                            <Shield className="text-white w-5 h-5" />
-                        </div>
+                        <img src="/logo_health_buddy.png" alt="Health Buddy" className="h-8 w-8 rounded-lg object-cover" />
                         <span className="text-slate-900 dark:text-white font-bold text-lg">Health Buddy AI</span>
                     </div>
 
