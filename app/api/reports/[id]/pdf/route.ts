@@ -243,8 +243,9 @@ export async function GET(
 
     const lines = buildLines(normalizedReport)
     const pdfBuffer = createPdfBuffer(lines)
+    const pdfBody = new Uint8Array(pdfBuffer)
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBody, {
         status: 200,
         headers: {
             'Content-Type': 'application/pdf',
