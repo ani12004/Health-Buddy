@@ -58,16 +58,25 @@ export async function createAppointment(data: {
     }
 }
 
-export async function updateAppointmentStatus(id: string, status: 'scheduled' | 'completed' | 'cancelled') {
+export async function updateAppointmentStatus(id: string, status: 'scheduled' | 'completed' | 'cancelled', meetingLink?: string) {
     const supabase = await createClient()
     const adminSupabase = await createServiceRoleClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
     try {
+        const updateData: any = { 
+            status, 
+            updated_at: new Date().toISOString() 
+        }
+        
+        if (meetingLink) {
+            updateData.meeting_link = meetingLink
+        }
+
         const { data: appointment, error } = await supabase
             .from('appointments')
-            .update({ status, updated_at: new Date().toISOString() })
+            .update(updateData)
             .eq('id', id)
             .select('*, patient_id')
             .single()
@@ -75,9 +84,14 @@ export async function updateAppointmentStatus(id: string, status: 'scheduled' | 
         if (error) throw error
 
         // Notify patient
+        let message = `Your appointment status has been updated to ${status}`
+        if (status === 'scheduled' && meetingLink) {
+            message += `. Meeting Link: ${meetingLink}`
+        }
+
         await adminSupabase.from('notifications').insert({
             user_id: appointment.patient_id,
-            message: `Your appointment status has been updated to ${status}`,
+            message,
             type: status === 'cancelled' ? 'alert' : 'success'
         })
 

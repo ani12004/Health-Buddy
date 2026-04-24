@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { PatientList } from '@/components/features/PatientList'
 import { CriticalAlerts } from '@/components/features/CriticalAlerts'
 import { PendingAppointments } from '@/components/features/PendingAppointments'
+import { PhoneVerificationPopup } from '@/components/features/PhoneVerificationPopup'
 import { Users, UserPlus, Search, Activity, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { redirect } from 'next/navigation'
@@ -22,7 +23,7 @@ export default async function DoctorDashboard() {
         { count: criticalCount },
         { count: appointmentCount },
     ] = await Promise.all([
-        supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+        supabase.from('profiles').select('full_name, phone').eq('id', user.id).single(),
         supabase.from('patients').select('*', { count: 'exact', head: true }),
         supabase
             .from('reports')
@@ -36,9 +37,11 @@ export default async function DoctorDashboard() {
     ])
 
     const doctorName = profile?.full_name || 'Doctor'
+    const doctorPhone = profile?.phone
 
     return (
         <div className="space-y-8">
+            <PhoneVerificationPopup currentPhone={doctorPhone} />
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>

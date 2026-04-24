@@ -38,8 +38,11 @@ export function PendingAppointments() {
         setLoading(false)
     }
 
+    const [meetingLinks, setMeetingLinks] = useState<Record<string, string>>({})
+
     const handleUpdate = async (id: string, newStatus: 'scheduled' | 'cancelled') => {
-        const res = await updateAppointmentStatus(id, newStatus)
+        const link = meetingLinks[id]
+        const res = await updateAppointmentStatus(id, newStatus, link)
         if (res.success) {
             toast.success(`Appointment ${newStatus === 'scheduled' ? 'confirmed' : 'declined'}`)
             fetchPending()
@@ -74,13 +77,23 @@ export function PendingAppointments() {
                             </div>
                             <span className="shrink-0 px-2 py-0.5 bg-slate-100 text-slate-600 dark:bg-slate-800 text-[10px] font-bold rounded uppercase">{app.type}</span>
                         </div>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1 h-8 text-red-500 text-[11px]" onClick={() => handleUpdate(app.id, 'cancelled')}>
-                                <XCircle className="w-3.5 h-3.5 mr-1" /> Decline
-                            </Button>
-                            <Button size="sm" className="flex-1 h-8 text-[11px]" onClick={() => handleUpdate(app.id, 'scheduled')}>
-                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
-                            </Button>
+                        
+                        <div className="space-y-2">
+                            <input
+                                type="text"
+                                placeholder="Meeting Link (Zoom, Meet, WA...)"
+                                className="w-full px-3 py-1.5 text-[11px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-primary/30"
+                                value={meetingLinks[app.id] || ''}
+                                onChange={(e) => setMeetingLinks(prev => ({ ...prev, [app.id]: e.target.value }))}
+                            />
+                            <div className="flex gap-2">
+                                <Button variant="outline" size="sm" className="flex-1 h-8 text-red-500 text-[11px]" onClick={() => handleUpdate(app.id, 'cancelled')}>
+                                    <XCircle className="w-3.5 h-3.5 mr-1" /> Decline
+                                </Button>
+                                <Button size="sm" className="flex-1 h-8 text-[11px]" onClick={() => handleUpdate(app.id, 'scheduled')}>
+                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 ))}
