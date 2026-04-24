@@ -543,6 +543,17 @@ export async function analyzeHealthData(data: any, language: string = 'English')
             disclaimer: `HealthBuddy's health assessment powered by ${analysisSource === 'ml' ? '6-model ML ensemble' : 'Gemini AI'} provides risk estimation, not medical diagnosis. Always consult a physician.`
         };
 
+        // Call Groq for detailed interpretation
+        let groqAnalysisText = null;
+        try {
+            groqAnalysisText = await generateGroqDetailedAnalysis(analysisResults, analysisResults.health_score || 0);
+            if (groqAnalysisText) {
+                uiOutput.groq_analysis = groqAnalysisText;
+            }
+        } catch (e) {
+            console.error('Groq analysis failed:', e);
+        }
+
         // Persist Full Report for History
         if (user) {
             const severity = (
@@ -599,7 +610,7 @@ export async function analyzeHealthData(data: any, language: string = 'English')
                         assessment_id: assessment.id,
                         title: 'AI Health Risk Assessment',
                         type: 'ai-checkup',
-                        summary: heartRes.summary_paragraph || `${analysisSource === 'ml' ? 'ML v10' : 'Gemini AI'} assessment complete.`,
+                        summary: groqAnalysisText || heartRes.summary_paragraph || 'Clinical assessment completed.',
                         content: {
                             ...uiOutput,
                             ml_raw: analysisResults,

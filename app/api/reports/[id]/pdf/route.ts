@@ -152,6 +152,13 @@ function buildLines(report: ReportRecord): string[] {
     lines.push(...splitLongLine(String(summary), 85))
     lines.push('')
 
+    // Groq Detailed Analysis
+    if (content.groq_analysis) {
+        lines.push('H: Deep Clinical Analysis (Groq AI)')
+        lines.push(...splitLongLine(String(content.groq_analysis), 85))
+        lines.push('')
+    }
+
     lines.push('H: Recommendations')
     const recItems = Array.isArray(recommendations) ? recommendations.slice(0, 4) : []
     if (recItems.length === 0) {
@@ -187,30 +194,25 @@ function createPdfBuffer(lines: string[]): Buffer {
     ]
 
     const textCommands: string[] = ['BT']
-    let currentY = 745;
     
     safeLines.forEach((line) => {
         const escaped = escapePdfText(line)
         
         if (line.startsWith('TITLE:')) {
             const title = escaped.replace('TITLE: ', '')
-            textCommands.push(`/F2 14 Tf 1 1 1 rg 50 ${currentY} Td (${title}) Tj`)
+            textCommands.push(`/F2 14 Tf 1 1 1 rg 50 758 Td (${title}) Tj 0 g`)
         } else if (line.startsWith('H:')) {
             const header = escaped.replace('H: ', '')
             textCommands.push(`0 -24 Td /F2 11 Tf 0.13 0.27 0.48 rg (${header}) Tj 0 g /F1 10 Tf`)
-            currentY -= 24
         } else if (line.startsWith('Severity:')) {
             const isCritical = line.includes('CRITICAL')
             const color = isCritical ? '0.8 0 0 rg' : '0.13 0.27 0.48 rg'
             textCommands.push(`0 -16 Td /F1 10 Tf (Severity: ) Tj /F2 10 Tf ${color} (${escaped.split(': ')[1]}) Tj 0 g /F1 10 Tf`)
-            currentY -= 16
         } else if (line.startsWith('D:')) {
             const disclaimer = escaped.replace('D: ', '')
             textCommands.push(`0 -30 Td /F1 8 Tf 0.4 0.4 0.4 rg (${disclaimer}) Tj 0 g`)
-            currentY -= 30
         } else {
             textCommands.push(`0 -16 Td (${escaped}) Tj`)
-            currentY -= 16
         }
     })
 
