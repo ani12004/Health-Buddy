@@ -77,6 +77,7 @@ export async function RecentReportsList() {
 
             <div className="space-y-4">
                 {reports && reports.length > 0 ? (
+                    reports.map((report: any) => (
                         <Link href={`/api/reports/${report.id}/pdf`} target="_blank" key={report.id} className="group p-4 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-primary/30 transition-all flex items-center gap-4 cursor-pointer bg-white dark:bg-neutral-surface-dark shadow-sm hover:shadow-md">
                             <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                 <FileText className="w-6 h-6" />
@@ -99,6 +100,7 @@ export async function RecentReportsList() {
                                 {report.severity || 'Normal'}
                             </div>
                         </Link>
+                    ))
                 ) : (
                     <div className="text-center py-8 text-slate-500 text-sm">
                         No medical reports found.
