@@ -27,6 +27,11 @@ type ReportRecord = {
     } | null
 }
 
+function firstOrNull<T>(value: T | T[] | null | undefined): T | null {
+    if (Array.isArray(value)) return value[0] ?? null
+    return value ?? null
+}
+
 function scaleProb(v: unknown): number {
     const value = Number(v)
     if (!Number.isFinite(value)) return 0
@@ -222,7 +227,21 @@ export async function GET(
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const lines = buildLines(report as ReportRecord)
+    const normalizedReport: ReportRecord = {
+        id: report.id,
+        patient_id: report.patient_id,
+        doctor_id: report.doctor_id,
+        title: report.title,
+        summary: report.summary,
+        severity: report.severity,
+        health_score: report.health_score,
+        created_at: report.created_at,
+        content: report.content,
+        patient: firstOrNull(report.patient),
+        assessment: firstOrNull(report.assessment),
+    }
+
+    const lines = buildLines(normalizedReport)
     const pdfBuffer = createPdfBuffer(lines)
 
     return new NextResponse(pdfBuffer, {
