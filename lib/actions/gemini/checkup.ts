@@ -565,9 +565,19 @@ export async function analyzeHealthData(data: any, language: string = 'English')
                     patient_id: user.id,
                     inputs: mlInput,
                     probabilities: {
-                        heart_disease: (heartRes.risk_percent || 0) / 100,
-                        hypertension: (hyperRes.risk_percent || 0) / 100,
-                        diabetes: (diabRes.risk_percent || 0) / 100
+                        heart_disease: (parseFloat(heartRes.risk_percent) || 0) / 100,
+                        hypertension: (parseFloat(hyperRes.risk_percent) || 0) / 100,
+                        diabetes: (parseFloat(diabRes.risk_percent) || 0) / 100
+                    },
+                    confidence_scores: {
+                        heart_disease: (parseFloat(heartRes.confidence) || 95) / 100,
+                        hypertension: (parseFloat(hyperRes.confidence) || 95) / 100,
+                        diabetes: (parseFloat(diabRes.confidence) || 95) / 100
+                    },
+                    shap_values: {
+                        heart_disease: heartRes.top_risk_drivers || [],
+                        hypertension: hyperRes.top_risk_drivers || [],
+                        diabetes: diabRes.top_risk_drivers || []
                     },
                     health_score: healthScore,
                     explanation: {

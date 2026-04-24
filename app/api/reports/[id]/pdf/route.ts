@@ -20,9 +20,13 @@ type ReportRecord = {
     } | null
     assessment: {
         probabilities: Record<string, number> | null
+        confidence_scores: Record<string, number> | null
+        shap_values: Record<string, any[]> | null
+        inputs: any | null
         explanation: {
             recommendations?: string[]
             summary?: string
+            factors?: any[]
         } | null
     } | null
 }
@@ -80,6 +84,7 @@ function buildLines(report: ReportRecord): string[] {
     const probs = report.assessment?.probabilities || {}
     const content = report.content || {}
     const mlRaw = content.ml_raw || {}
+    const inputs = report.assessment?.inputs || content.inputs || {}
 
     const heart = scaleProb(probs.heart_disease ?? mlRaw['Heart Disease']?.risk_percent)
     const hyper = scaleProb(probs.hypertension ?? mlRaw['Hypertension']?.risk_percent)
@@ -105,42 +110,62 @@ function buildLines(report: ReportRecord): string[] {
     })
 
     const lines: string[] = [
-        'Health Buddy - Clinical Report',
-        `Report ID: ${report.id.slice(0, 8).toUpperCase()}`,
-        `Created: ${dateText}`,
+        'Health Buddy - Clinical Assessment Report',
+        '========================================',
+        `Report ID: ${report.id.slice(0, 8).toUpperCase()} | Date: ${dateText}`,
         `Patient: ${report.patient?.full_name || content.patient_name || 'Patient'}`,
-        `Email: ${report.patient?.email || 'N/A'}`,
-        `Severity: ${(report.severity || 'normal').toUpperCase()}`,
-        `Health Score: ${Math.round(Number(report.health_score || 0))}`,
+        `Severity: ${(report.severity || 'normal').toUpperCase()} | Health Score: ${Math.round(Number(report.health_score || 0))}/100`,
         '',
-        'Risk Probabilities',
+        '--- Clinical Vitals ---',
+        `Age: ${inputs.age || 'N/A'}y | BMI: ${inputs.bmi || 'N/A'} | BP: ${inputs.systolic_bp || 'N/A'}/${inputs.diastolic_bp || 'N/A'} mmHg`,
+        `Glucose: ${inputs.fasting_glucose || 'N/A'} mg/dL | HbA1c: ${inputs.hba1c || 'N/A'}% | HR: ${inputs.heart_rate || 'N/A'} bpm`,
+        `Cholesterol (T/L/H): ${inputs.total_cholesterol || 'N/A'}/${inputs.ldl || 'N/A'}/${inputs.hdl || 'N/A'} mg/dL`,
+        '',
+        '--- Risk Analysis ---',
         `Heart Disease: ${heart.toFixed(1)}%`,
-        `Hypertension: ${hyper.toFixed(1)}%`,
-        `Diabetes: ${diabetes.toFixed(1)}%`,
+        `Hypertension:  ${hyper.toFixed(1)}%`,
+        `Diabetes:      ${diabetes.toFixed(1)}%`,
         '',
-        'Summary',
-        ...splitLongLine(String(summary), 90),
-        '',
-        'Top Recommendations',
     ]
 
-    const recItems = Array.isArray(recommendations) ? recommendations.slice(0, 6) : []
+    // Add Risk Drivers if available
+    const shap = report.assessment?.shap_values || {}
+    const hasDrivers = Object.values(shap).some(v => Array.isArray(v) && v.length > 0)
+    
+    if (hasDrivers) {
+        lines.push('--- Key Risk Drivers ---')
+        const diseases = [
+            { key: 'heart_disease', name: 'Heart' },
+            { key: 'hypertension', name: 'BP' },
+            { key: 'diabetes', name: 'Diabetes' }
+        ]
+        diseases.forEach(d => {
+            const drivers = shap[d.key] || []
+            if (drivers.length > 0) {
+                const driverLabels = drivers.slice(0, 2).map((dr: any) => dr.label || dr.feature)
+                lines.push(`${d.name}: ${driverLabels.join(', ')}`)
+            }
+        })
+        lines.push('')
+    }
+
+    lines.push('--- Clinical Summary ---')
+    lines.push(...splitLongLine(String(summary), 90))
+    lines.push('')
+
+    lines.push('--- Recommendations ---')
+    const recItems = Array.isArray(recommendations) ? recommendations.slice(0, 4) : []
     if (recItems.length === 0) {
-        lines.push('- Maintain regular health checkups and follow your physician guidance.')
+        lines.push('- Maintain regular health checkups.')
     } else {
         for (const item of recItems) {
-            if (typeof item === 'string') {
-                lines.push(...splitLongLine(`- ${item}`, 90))
-            } else if (item && typeof item === 'object') {
-                const text = `${item.title || 'Recommendation'}${item.body ? `: ${item.body}` : ''}`
-                lines.push(...splitLongLine(`- ${text}`, 90))
-            }
+            const text = typeof item === 'string' ? item : `${item.title || 'Note'}: ${item.body || ''}`
+            lines.push(...splitLongLine(`- ${text}`, 90))
         }
     }
 
     lines.push('')
-    lines.push('Disclaimer: This report is AI-assisted prediction support and not a final medical diagnosis.')
-    lines.push('For accurate diagnosis and treatment decisions, consult a licensed in-person doctor.')
+    lines.push('Disclaimer: AI-assisted support. Consult a licensed doctor for diagnosis.')
 
     return lines
 }
@@ -276,7 +301,7 @@ export async function GET(
         baseReport.assessment_id
             ? supabase
                   .from('health_assessments')
-                  .select('probabilities,explanation')
+                  .select('probabilities,confidence_scores,shap_values,inputs,explanation')
                   .eq('id', baseReport.assessment_id)
                   .maybeSingle()
             : Promise.resolve({ data: null }),
