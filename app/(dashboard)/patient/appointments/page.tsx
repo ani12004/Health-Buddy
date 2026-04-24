@@ -213,9 +213,14 @@ export default function AppointmentsPage() {
                             onChange={(e) => setFormData({...formData, doctor_id: e.target.value})}
                         >
                             <option value="">Choose a specialist...</option>
-                            {doctors.map(dr => (
-                                <option key={dr.id} value={dr.id}>{dr.full_name} ({dr.doctors?.[0]?.specialty || 'General'})</option>
-                            ))}
+                            {doctors.map(dr => {
+                                const drData = Array.isArray(dr.doctors) ? dr.doctors[0] : dr.doctors;
+                                return (
+                                    <option key={dr.id} value={dr.id}>
+                                        {dr.full_name} ({drData?.specialty || 'General'})
+                                    </option>
+                                );
+                            })}
                         </select>
                     </div>
 

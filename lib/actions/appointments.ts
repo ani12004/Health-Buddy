@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 export async function createAppointment(data: {
@@ -11,6 +11,7 @@ export async function createAppointment(data: {
     notes?: string;
 }) {
     const supabase = await createClient()
+    const adminSupabase = await createServiceRoleClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
@@ -40,7 +41,7 @@ export async function createAppointment(data: {
             ? `A new appointment has been scheduled for you: ${data.type}`
             : `New appointment request for ${data.type}`
 
-        await supabase.from('notifications').insert({
+        await adminSupabase.from('notifications').insert({
             user_id: notificationTarget,
             message,
             type: 'info'
@@ -48,6 +49,7 @@ export async function createAppointment(data: {
 
         revalidatePath('/patient/appointments')
         revalidatePath('/doctor/dashboard')
+        revalidatePath('/doctor/appointments')
         
         return { success: true, data: appointment }
     } catch (error: any) {
@@ -72,7 +74,7 @@ export async function updateAppointmentStatus(id: string, status: 'scheduled' | 
         if (error) throw error
 
         // Notify patient
-        await supabase.from('notifications').insert({
+        await adminSupabase.from('notifications').insert({
             user_id: appointment.patient_id,
             message: `Your appointment status has been updated to ${status}`,
             type: status === 'cancelled' ? 'alert' : 'success'

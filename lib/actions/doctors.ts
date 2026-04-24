@@ -1,9 +1,9 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function getDoctors() {
-    const supabase = await createClient()
+    const supabase = await createServiceRoleClient()
     
     // Fetch profiles that have the role 'doctor' join with doctor details
     const { data, error } = await supabase

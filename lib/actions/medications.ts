@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 export async function issuePrescription(data: {
@@ -12,6 +12,7 @@ export async function issuePrescription(data: {
     end_date?: string;
 }) {
     const supabase = await createClient()
+    const adminSupabase = await createServiceRoleClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
@@ -32,7 +33,7 @@ export async function issuePrescription(data: {
         if (error) throw error
 
         // Notify patient
-        await supabase.from('notifications').insert({
+        await adminSupabase.from('notifications').insert({
             user_id: data.patient_id,
             message: `New prescription issued: ${data.medication_name}`,
             type: 'success'
@@ -40,6 +41,7 @@ export async function issuePrescription(data: {
 
         revalidatePath('/patient/medications')
         revalidatePath('/doctor/dashboard')
+        revalidatePath(`/doctor/patients/${data.patient_id}`)
 
         return { success: true }
     } catch (error: any) {
