@@ -38,15 +38,22 @@ export default function AppointmentsPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        // Fetch appointments
+        // Fetch appointments with doctor profile
         const { data: apps } = await supabase
             .from('appointments')
             .select(`
                 *,
-                doctor:doctor_id(full_name, specialty)
+                doctor:profiles!doctor_id(
+                    full_name,
+                    doctors(specialty)
+                )
             `)
             .eq('patient_id', user.id)
             .order('appointment_date', { ascending: true })
+
+        // Since specialty is in a different table, we'll keep the join simple for now
+        // or join through the profiles -> doctors link if possible.
+        // For now, let's just make sure the basic data is visible.
 
         // Fetch doctors for the list
         const doctorsRes = await getDoctors()
@@ -80,9 +87,19 @@ export default function AppointmentsPage() {
         setBooking(false)
     }
 
-    const now = new Date()
-    const upcomingAppointments = appointments.filter(app => new Date(app.appointment_date) >= now && app.status !== 'cancelled' && app.status !== 'completed')
-    const pastAppointments = appointments.filter(app => new Date(app.appointment_date) < now || app.status === 'cancelled' || app.status === 'completed')
+    // Use a more lenient 'now' to include today's appointments
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    
+    const upcomingAppointments = appointments.filter(app => {
+        const appDate = new Date(app.appointment_date)
+        return appDate >= startOfToday && app.status !== 'cancelled' && app.status !== 'completed'
+    })
+    
+    const pastAppointments = appointments.filter(app => {
+        const appDate = new Date(app.appointment_date)
+        return appDate < startOfToday || app.status === 'cancelled' || app.status === 'completed'
+    })
 
     if (loading) {
         return (
@@ -159,7 +176,7 @@ export default function AppointmentsPage() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <UserIcon className="w-4 h-4 text-slate-400" />
-                                            <span>{app.doctor?.full_name || 'Assessing...'} • {app.doctor?.specialty || 'General'}</span>
+                                            <span>{app.doctor?.full_name || 'Assessing...'} • {app.doctor?.doctors?.[0]?.specialty || 'General'}</span>
                                         </div>
                                     </div>
                                 </div>

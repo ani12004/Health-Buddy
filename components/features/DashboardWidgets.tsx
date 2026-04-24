@@ -114,21 +114,21 @@ export async function UpcomingAppointments() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Fetch upcoming appointments
+    // Fetch upcoming appointments with doctor details
     const { data: appointments } = await supabase
         .from('appointments')
         .select(`
             *,
-            doctor:doctor_id (
-                specialty,
-                profiles (
-                    full_name,
-                    avatar_url
+            doctor:profiles!doctor_id (
+                full_name,
+                avatar_url,
+                doctors (
+                    specialty
                 )
             )
         `)
         .eq('patient_id', user?.id)
-        .gte('appointment_date', new Date().toISOString())
+        .gte('appointment_date', new Date(new Date().setHours(0,0,0,0)).toISOString())
         .order('appointment_date', { ascending: true })
         .limit(2)
 
@@ -154,10 +154,10 @@ export async function UpcomingAppointments() {
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                {apt.doctor?.profiles?.full_name || 'Medical Specialist'}
+                                                {apt.doctor?.full_name || 'Medical Specialist'}
                                             </h4>
                                             <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">
-                                                {apt.doctor?.specialty || 'General Practitioner'}
+                                                {apt.doctor?.doctors?.[0]?.specialty || 'General Practitioner'}
                                             </p>
                                         </div>
                                     </div>
