@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { DoctorActions } from '@/components/features/DoctorActions'
+import { AppointmentStatusActions } from '@/components/features/AppointmentStatusActions'
 import Link from 'next/link'
 import { cn } from '@/lib/utils/cn'
 
@@ -66,11 +67,12 @@ export default async function PatientDetailPage({ params }: PatientDetailProps) 
         .eq('patient_id', id)
         .order('created_at', { ascending: false })
 
-    // Fetch upcoming appointments
+    // Fetch upcoming appointments for THIS doctor
     const { data: appointments } = await supabase
         .from('appointments')
         .select('*')
         .eq('patient_id', id)
+        .eq('doctor_id', user.id)
         .gte('appointment_date', new Date().toISOString())
         .order('appointment_date', { ascending: true })
 
@@ -276,15 +278,28 @@ export default async function PatientDetailPage({ params }: PatientDetailProps) 
                                 <p className="text-sm text-slate-500 text-center py-4">No upcoming appointments.</p>
                             ) : (
                                 appointments?.map((app) => (
-                                    <div key={app.id} className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-slate-700/50 flex items-center gap-4">
-                                        <div className="flex flex-col items-center justify-center w-10 text-xs shrink-0 border-r border-slate-200 dark:border-slate-700 pr-3">
-                                            <span className="font-bold text-slate-900 dark:text-white">{new Date(app.appointment_date).getDate()}</span>
-                                            <span className="text-[10px] text-slate-400 uppercase">{new Date(app.appointment_date).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                    <div key={app.id} className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex flex-col items-center justify-center w-10 text-xs shrink-0 border-r border-slate-200 dark:border-slate-700 pr-3">
+                                                <span className="font-bold text-slate-900 dark:text-white">{new Date(app.appointment_date).getDate()}</span>
+                                                <span className="text-[10px] text-slate-400 uppercase">{new Date(app.appointment_date).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{app.type}</p>
+                                                    <span className={cn(
+                                                        "text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider",
+                                                        app.status === 'pending' ? "bg-amber-50 text-amber-600" :
+                                                        app.status === 'scheduled' ? "bg-emerald-50 text-emerald-600" :
+                                                        "bg-slate-100 text-slate-600"
+                                                    )}>
+                                                        {app.status}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-500">{new Date(app.appointment_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                            </div>
                                         </div>
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{app.type}</p>
-                                            <p className="text-[10px] text-slate-500">{new Date(app.appointment_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                        </div>
+                                        <AppointmentStatusActions appointmentId={app.id} status={app.status} />
                                     </div>
                                 ))
                             )}

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { PatientList } from '@/components/features/PatientList'
 import { CriticalAlerts } from '@/components/features/CriticalAlerts'
+import { PendingAppointments } from '@/components/features/PendingAppointments'
 import { Users, UserPlus, Search, Activity, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { redirect } from 'next/navigation'
@@ -104,7 +105,8 @@ export default async function DoctorDashboard() {
                 <div className="lg:col-span-2 xl:col-span-3">
                     <PatientList />
                 </div>
-                <div className="lg:col-span-1 xl:col-span-1">
+                <div className="lg:col-span-1 xl:col-span-1 space-y-6">
+                    <PendingAppointments />
                     <CriticalAlerts />
                 </div>
             </div>
