@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils/cn'
 import { Notifications } from '@/components/layout/Notifications'
 import Link from 'next/link'
+import { Loader3D } from '@/components/ui/Loader3D'
 
 export default function MedicalReportsPage() {
     const [reports, setReports] = useState<any[]>([])
@@ -54,9 +55,11 @@ export default function MedicalReportsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+            <Loader3D
+                compact
+                title="Loading Medical Reports"
+                subtitle="Preparing assessments, report metadata, and doctor sharing status..."
+            />
         )
     }
 

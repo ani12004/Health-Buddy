@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Notifications } from '@/components/layout/Notifications'
 import { AvatarUpload } from '@/components/features/AvatarUpload'
 import HealthReport from '@/components/features/HealthReport'
+import { Loader3D } from '@/components/ui/Loader3D'
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState('overview')
@@ -158,9 +159,11 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+                <Loader3D
+                    compact
+                    title="Loading Patient Profile"
+                    subtitle="Collecting profile details, medical history, and latest reports..."
+                />
         )
     }
 

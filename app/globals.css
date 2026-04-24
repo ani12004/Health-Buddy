@@ -80,6 +80,64 @@
     animation-delay: 0.25s;
   }
 
+  .loader-crystal-shell {
+    transform: perspective(1200px) rotateX(5deg);
+    transform-style: preserve-3d;
+  }
+
+  .loader-orbit-3d {
+    position: relative;
+    width: 148px;
+    height: 148px;
+    transform-style: preserve-3d;
+  }
+
+  .loader-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1.5px solid rgba(99, 102, 241, 0.35);
+    box-shadow: inset 0 0 24px rgba(99, 102, 241, 0.14), 0 0 24px rgba(56, 189, 248, 0.12);
+  }
+
+  .loader-ring-a {
+    animation: loader-ring-spin 2.8s linear infinite;
+  }
+
+  .loader-ring-b {
+    transform: rotateX(65deg);
+    border-color: rgba(14, 165, 233, 0.35);
+    animation: loader-ring-spin-rev 3.4s linear infinite;
+  }
+
+  .loader-ring-c {
+    transform: rotateY(72deg);
+    border-color: rgba(16, 185, 129, 0.36);
+    animation: loader-ring-spin 4.1s linear infinite;
+  }
+
+  .loader-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 34px;
+    height: 34px;
+    margin-top: -17px;
+    margin-left: -17px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1, #10b981);
+    box-shadow: 0 0 26px rgba(99, 102, 241, 0.45);
+    animation: loader-core-pulse 2.1s ease-in-out infinite;
+  }
+
+  .loader-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #06b6d4, #10b981);
+    animation: loader-dot-pulse 1.2s ease-in-out infinite;
+  }
+
   .loader-3d-card {
     transform: perspective(1100px) rotateX(3deg);
     transform-style: preserve-3d;
@@ -208,13 +266,66 @@
   }
 }
 
+@keyframes loader-ring-spin {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+@keyframes loader-ring-spin-rev {
+  0% {
+    transform: rotateX(65deg) rotateZ(0deg);
+  }
+
+  100% {
+    transform: rotateX(65deg) rotateZ(-360deg);
+  }
+}
+
+@keyframes loader-core-pulse {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.16) rotate(45deg);
+  }
+}
+
+@keyframes loader-dot-pulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .loader-3d-card {
     transform: none;
   }
 
+  .loader-crystal-shell {
+    transform: none;
+  }
+
   .loader-ecg-line,
-  .loader-ecg-sweep {
+  .loader-ecg-sweep,
+  .loader-ring-a,
+  .loader-ring-b,
+  .loader-ring-c,
+  .loader-core,
+  .loader-pulse-dot {
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
   }

@@ -483,9 +483,10 @@ Data Layer
         </h2>
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            API route <code className="font-mono">GET /api/reports/[id]/pdf</code> currently validates auth and returns
-            a temporary 503 response while PDF generation is disabled. The data pre-shaping method
-            <code className="font-mono"> getReportPDFData(reportId)</code> remains available for template pipelines.
+            API route <code className="font-mono">GET /api/reports/[id]/pdf</code> validates auth and serves a generated
+            PDF for authorized users. Access is restricted to the owning patient or the assigned doctor. The data
+            pre-shaping method <code className="font-mono">getReportPDFData(reportId)</code> remains available for
+            template pipelines.
           </p>
         </div>
       </section>

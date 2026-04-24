@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Notifications } from '@/components/layout/Notifications'
+import { Loader3D } from '@/components/ui/Loader3D'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { User, Phone, Ruler, Weight, Shield, Save, Loader2, Lock } from 'lucide-react'
@@ -122,9 +123,11 @@ export default function SettingsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+            <Loader3D
+                compact
+                title="Loading Settings"
+                subtitle="Fetching your profile preferences, account controls, and health configuration..."
+            />
         )
     }
 

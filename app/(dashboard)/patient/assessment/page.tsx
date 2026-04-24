@@ -11,6 +11,7 @@ import { Loader2, Plus, Download, ShieldCheck, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitMLFeedback } from '@/lib/actions/feedback'
 import { Star, MessageSquare as MsgIcon, Send } from 'lucide-react'
+import { Loader3D } from '@/components/ui/Loader3D'
 
 export default function AssessmentPage() {
     const [loading, setLoading] = useState(false)
@@ -77,11 +78,13 @@ export default function AssessmentPage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="flex flex-col items-center justify-center p-20 bg-white rounded-[32px] border-2 border-dashed border-blue-100"
+                        className="bg-white rounded-[32px] border border-slate-200/70 dark:border-slate-700/60 overflow-hidden"
                     >
-                        <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-                        <h3 className="text-xl font-bold text-slate-800">Interrogating AI Models...</h3>
-                        <p className="text-slate-500 text-sm mt-2">Computing ensemble risks & SHAP attributions</p>
+                        <Loader3D
+                            compact
+                            title="Computing Assessment"
+                            subtitle="Running risk models, confidence estimation, and explainability synthesis..."
+                        />
                     </motion.div>
                 )}
             </AnimatePresence>

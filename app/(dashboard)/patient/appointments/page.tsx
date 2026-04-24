@@ -7,6 +7,7 @@ import { Notifications } from '@/components/layout/Notifications'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Loader3D } from '@/components/ui/Loader3D'
 import { createAppointment } from '@/lib/actions/appointments'
 import { getDoctors } from '@/lib/actions/doctors'
 import { toast } from 'sonner'
@@ -83,7 +84,15 @@ export default function AppointmentsPage() {
     const upcomingAppointments = appointments.filter(app => new Date(app.appointment_date) >= now && app.status !== 'cancelled' && app.status !== 'completed')
     const pastAppointments = appointments.filter(app => new Date(app.appointment_date) < now || app.status === 'cancelled' || app.status === 'completed')
 
-    if (loading) return <div className="flex h-[60vh] items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+    if (loading) {
+        return (
+            <Loader3D
+                compact
+                title="Loading Appointments"
+                subtitle="Syncing doctor availability, visit history, and upcoming slots..."
+            />
+        )
+    }
 
     return (
         <div className="space-y-8">

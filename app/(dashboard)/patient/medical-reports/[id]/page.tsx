@@ -10,7 +10,6 @@ import {
     Activity, 
     AlertCircle, 
     ShieldCheck, 
-    Loader2,
     CheckCircle2,
     User
 } from 'lucide-react'
@@ -23,6 +22,7 @@ import { ShapXaiChart } from '@/components/dashboard/ShapXaiChart'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils/cn'
+import { Loader3D } from '@/components/ui/Loader3D'
 
 export default function ReportDetailPage() {
     const params = useParams()
@@ -50,9 +50,11 @@ export default function ReportDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex h-[80vh] items-center justify-center">
-                <Loader2 className="w-10 h-10 animate-spin text-primary" />
-            </div>
+            <Loader3D
+                compact
+                title="Loading Report Details"
+                subtitle="Rendering report visuals, calibrated scores, and explainability panels..."
+            />
         )
     }
 

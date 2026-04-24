@@ -9,6 +9,7 @@ import { User, Phone, Save, Loader2, Award, Building2, Lock } from 'lucide-react
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { AvatarUpload } from '@/components/features/AvatarUpload'
+import { Loader3D } from '@/components/ui/Loader3D'
 
 export default function DoctorSettingsPage() {
     const supabase = createClient()
@@ -110,9 +111,11 @@ export default function DoctorSettingsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
+            <Loader3D
+                compact
+                title="Loading Professional Settings"
+                subtitle="Preparing profile credentials, clinic metadata, and account preferences..."
+            />
         )
     }
 
