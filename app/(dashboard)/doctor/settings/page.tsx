@@ -51,11 +51,11 @@ export default function DoctorSettingsPage() {
             .eq('id', user.id)
             .single()
 
-        if (profile) {
+        if (profileData) {
             setFormData({
-                full_name: profile.full_name || '',
-                email: profile.email || '',
-                phone: profile.phone || '',
+                full_name: profileData.full_name || '',
+                email: profileData.email || '',
+                phone: profileData.phone || '',
                 specialty: doctor?.specialty || '',
                 license_number: doctor?.license_number || '',
                 hospital_affiliation: doctor?.hospital_affiliation || ''
@@ -87,15 +87,15 @@ export default function DoctorSettingsPage() {
 
             if (profileError) throw profileError
 
-            // Update Doctor
+            // Upsert Doctor (using upsert instead of update for new doctors)
             const { error: doctorError } = await supabase
                 .from('doctors')
-                .update({
+                .upsert({
+                    id: user.id,
                     specialty: formData.specialty,
                     license_number: formData.license_number,
                     hospital_affiliation: formData.hospital_affiliation
                 })
-                .eq('id', user.id)
 
             if (doctorError) throw doctorError
 

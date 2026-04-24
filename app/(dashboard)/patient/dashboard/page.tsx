@@ -1,6 +1,6 @@
 import { SymptomChecker } from '@/components/features/SymptomChecker'
 import { VitalCard } from '@/components/features/VitalCard'
-import { DailyTipCard, RecentReportsList } from '@/components/features/DashboardWidgets'
+import { DailyTipCard, RecentReportsList, UpcomingAppointments } from '@/components/features/DashboardWidgets'
 import {
     Heart,
     Activity,
@@ -61,6 +61,8 @@ export default async function PatientDashboard() {
 
                 {/* Side Widgets (Right 4 cols) */}
                 <div className="lg:col-span-4 space-y-8">
+                    <UpcomingAppointments />
+                    
                     {/* Vitals Quick View */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">

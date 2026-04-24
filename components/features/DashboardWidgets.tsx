@@ -1,4 +1,4 @@
-import { Quote, Activity } from 'lucide-react'
+import { Quote, Activity, Calendar, Clock, MapPin, User } from 'lucide-react'
 
 // This would connect to Supabase 'tips' table if it existed, or 'reports'
 // For now, adhering to the plan to make it dynamic but simulated via RSC if DB is empty
@@ -103,6 +103,89 @@ export async function RecentReportsList() {
                 ) : (
                     <div className="text-center py-8 text-slate-500 text-sm">
                         No medical reports found.
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
+
+export async function UpcomingAppointments() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Fetch upcoming appointments
+    const { data: appointments } = await supabase
+        .from('appointments')
+        .select(`
+            *,
+            doctor:doctor_id (
+                specialty,
+                profiles (
+                    full_name,
+                    avatar_url
+                )
+            )
+        `)
+        .eq('patient_id', user?.id)
+        .gte('appointment_date', new Date().toISOString())
+        .order('appointment_date', { ascending: true })
+        .limit(2)
+
+    return (
+        <div className="bg-white dark:bg-neutral-surface-dark rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    Upcoming Visits
+                </h3>
+                <button className="text-sm font-semibold text-primary hover:text-primary-dark">View Schedule</button>
+            </div>
+
+            <div className="space-y-4">
+                {appointments && appointments.length > 0 ? (
+                    appointments.map((apt: any) => (
+                        <div key={apt.id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex gap-4">
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <User className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                {apt.doctor?.profiles?.full_name || 'Medical Specialist'}
+                                            </h4>
+                                            <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">
+                                                {apt.doctor?.specialty || 'General Practitioner'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                                        apt.status === 'scheduled' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30' :
+                                        apt.status === 'pending' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' :
+                                        'bg-slate-100 text-slate-600 dark:bg-slate-800'
+                                    }`}>
+                                        {apt.status}
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                                        <Clock className="w-3.5 h-3.5 text-primary/60" />
+                                        {new Date(apt.appointment_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                                        <Calendar className="w-3.5 h-3.5 text-primary/60" />
+                                        {new Date(apt.appointment_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-6">
+                        <p className="text-sm text-slate-500 mb-4">No upcoming appointments.</p>
+                        <button className="text-xs font-bold text-primary hover:underline">Book a new appointment</button>
                     </div>
                 )}
             </div>

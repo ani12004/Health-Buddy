@@ -55,18 +55,18 @@ export default function SettingsPage() {
             .eq('id', user.id)
             .single()
 
-        if (profile && patient) {
+        if (profile) {
             setFormData({
                 full_name: profile.full_name || '',
                 email: profile.email || '',
                 phone: profile.phone || '',
-                dob: patient.dob || '',
-                blood_type: patient.blood_type || '',
-                height: patient.height || '',
-                weight: patient.weight || '',
-                insurance_provider: patient.insurance_provider || '',
-                insurance_member_id: patient.insurance_member_id || '',
-                insurance_plan: patient.insurance_plan || ''
+                dob: patient?.dob || '',
+                blood_type: patient?.blood_type || '',
+                height: patient?.height || '',
+                weight: patient?.weight || '',
+                insurance_provider: patient?.insurance_provider || '',
+                insurance_member_id: patient?.insurance_member_id || '',
+                insurance_plan: patient?.insurance_plan || ''
             })
         }
         setLoading(false)
@@ -95,10 +95,11 @@ export default function SettingsPage() {
 
             if (profileError) throw profileError
 
-            // Update Patient
+            // Upsert Patient
             const { error: patientError } = await supabase
                 .from('patients')
-                .update({
+                .upsert({
+                    id: user.id,
                     dob: formData.dob || null,
                     blood_type: formData.blood_type,
                     height: formData.height,
@@ -107,7 +108,6 @@ export default function SettingsPage() {
                     insurance_member_id: formData.insurance_member_id,
                     insurance_plan: formData.insurance_plan
                 })
-                .eq('id', user.id)
 
             if (patientError) throw patientError
 
