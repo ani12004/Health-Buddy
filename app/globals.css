@@ -80,28 +80,67 @@
     animation-delay: 0.25s;
   }
 
+  .loader-3d-card {
+    transform: perspective(1100px) rotateX(3deg);
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .loader-ecg-stage {
+    position: relative;
+    border-radius: 12px;
+    padding: 6px;
+    background: linear-gradient(160deg, rgba(15, 23, 42, 0.05), rgba(148, 163, 184, 0.18));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 10px 22px -16px rgba(15, 23, 42, 0.45);
+    transform: translateZ(12px);
+  }
+
+  .dark .loader-ecg-stage {
+    background: linear-gradient(160deg, rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.45));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 22px -14px rgba(2, 6, 23, 0.85);
+  }
+
+  .loader-ecg-grid {
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    opacity: 0.35;
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.22) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+    background-size: 18px 18px;
+    pointer-events: none;
+  }
+
+  .dark .loader-ecg-grid {
+    opacity: 0.25;
+  }
+
   .loader-ecg-track {
     position: relative;
     height: 44px;
     width: 100%;
     overflow: hidden;
     border-radius: 12px;
-    background: linear-gradient(180deg, rgba(241, 245, 249, 0.9), rgba(226, 232, 240, 0.6));
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.72));
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
   }
 
   .dark .loader-ecg-track {
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.45));
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.58));
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
   }
 
   .loader-ecg-line {
     position: absolute;
     inset: 0;
-    transform: translateX(-100%);
+    transform: translateX(-180px);
     background-repeat: repeat-x;
     background-size: 180px 44px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='44' viewBox='0 0 180 44'%3E%3Cpath d='M0 24 L24 24 L36 24 L42 10 L48 34 L56 24 L80 24 L92 24 L98 16 L104 30 L112 24 L180 24' fill='none' stroke='%238c2bee' stroke-width='2.7' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
-    animation: loader-ecg-slide 1.9s linear infinite;
-    opacity: 0.9;
+    animation: loader-ecg-slide 2.3s linear infinite;
+    opacity: 0.92;
+    will-change: transform;
   }
 
   .loader-ecg-sweep {
@@ -109,9 +148,11 @@
     top: 0;
     bottom: 0;
     width: 56px;
-    transform: translateX(-110%);
-    background: linear-gradient(90deg, transparent, rgba(140, 43, 238, 0.2), transparent);
-    animation: loader-ecg-sweep 1.9s linear infinite;
+    transform: translateX(-120%);
+    background: linear-gradient(90deg, transparent, rgba(140, 43, 238, 0.24), rgba(56, 189, 248, 0.14), transparent);
+    filter: blur(1px);
+    animation: loader-ecg-sweep 2.3s linear infinite;
+    will-change: transform;
   }
 }
 
@@ -148,14 +189,34 @@
 }
 
 @keyframes loader-ecg-slide {
+  0% {
+    transform: translateX(-180px);
+  }
+
   100% {
     transform: translateX(0);
   }
 }
 
 @keyframes loader-ecg-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+
   100% {
     transform: translateX(820%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-3d-card {
+    transform: none;
+  }
+
+  .loader-ecg-line,
+  .loader-ecg-sweep {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
   }
 }
 

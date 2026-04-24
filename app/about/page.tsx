@@ -1,6 +1,7 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { MissionAwarenessContent } from '@/components/landing/MissionAwarenessContent'
+import Link from 'next/link'
 
 export default function AboutPage() {
   return (
@@ -42,6 +43,19 @@ export default function AboutPage() {
               <li>Support clinical teams with clearer summaries and better triage readiness.</li>
               <li>Maintain strong privacy and security fundamentals as the platform scales.</li>
             </ul>
+          </section>
+
+          <section className="mt-6 rounded-2xl bg-white dark:bg-neutral-surface-dark border border-slate-200/70 dark:border-slate-800 p-6 md:p-8">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">About Our ML System</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+              Explore how our ML pipeline works, what is happening behind predictions, and how live ping monitoring keeps the model warm while tracking latency and uptime.
+            </p>
+            <Link
+              href="/about/ml"
+              className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-95 transition-opacity"
+            >
+              Open About ML
+            </Link>
           </section>
         </section>
       </main>

@@ -8,7 +8,7 @@ export function AppLoadingScreen() {
             </div>
 
             <div className="relative z-10 w-full max-w-md px-6">
-                <div className="rounded-3xl border border-slate-200/70 bg-white/85 p-8 shadow-2xl shadow-primary/10 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/65">
+                <div className="loader-3d-card rounded-3xl border border-slate-200/70 bg-white/85 p-8 shadow-2xl shadow-primary/10 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/65">
                     <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/20">
                         <div className="relative flex h-10 w-10 items-center justify-center">
                             <span className="loader-ping absolute inline-flex h-full w-full rounded-full bg-primary/35" />
@@ -23,9 +23,12 @@ export function AppLoadingScreen() {
 
                     <div className="mb-6 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 dark:border-slate-700/60 dark:bg-slate-800/45" aria-hidden>
                         <p className="mb-2 text-[11px] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">Live Monitor</p>
-                        <div className="loader-ecg-track">
-                            <div className="loader-ecg-line" />
-                            <div className="loader-ecg-sweep" />
+                        <div className="loader-ecg-stage">
+                            <div className="loader-ecg-grid" />
+                            <div className="loader-ecg-track">
+                                <div className="loader-ecg-line" />
+                                <div className="loader-ecg-sweep" />
+                            </div>
                         </div>
                     </div>
 
