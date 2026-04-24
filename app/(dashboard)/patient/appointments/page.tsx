@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { DirectMessageModal } from '@/components/features/DirectMessageModal'
 import { MessageSquare } from 'lucide-react'
+import { cn } from '@/lib/utils/cn'
 
 export default function AppointmentsPage() {
     const supabase = createClient()
@@ -41,7 +42,6 @@ export default function AppointmentsPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        // Fetch appointments with doctor profile
         const { data: apps } = await supabase
             .from('appointments')
             .select(`
@@ -54,11 +54,6 @@ export default function AppointmentsPage() {
             .eq('patient_id', user.id)
             .order('appointment_date', { ascending: true })
 
-        // Since specialty is in a different table, we'll keep the join simple for now
-        // or join through the profiles -> doctors link if possible.
-        // For now, let's just make sure the basic data is visible.
-
-        // Fetch doctors for the list
         const doctorsRes = await getDoctors()
         
         if (apps) setAppointments(apps)
@@ -90,7 +85,6 @@ export default function AppointmentsPage() {
         setBooking(false)
     }
 
-    // Use a more lenient 'now' to include today's appointments
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     
@@ -130,7 +124,6 @@ export default function AppointmentsPage() {
                 </div>
             </div>
 
-            {/* Upcoming Appointments */}
             <section className="space-y-4">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-primary" />
@@ -164,11 +157,12 @@ export default function AppointmentsPage() {
                                                 {app.status === 'pending' ? 'Pending Confirmation' : 'Confirmed'}
                                             </p>
                                         </div>
-                                        <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${
+                                        <span className={cn(
+                                            "px-2.5 py-1 text-xs font-bold rounded-lg border",
                                             app.status === 'pending' 
-                                            ? 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30' 
-                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30'
-                                        }`}>
+                                                ? "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30" 
+                                                : "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/30"
+                                        )}>
                                             {app.status.toUpperCase()}
                                         </span>
                                     </div>
@@ -177,32 +171,33 @@ export default function AppointmentsPage() {
                                             <Clock className="w-4 h-4 text-slate-400" />
                                             <span>{new Date(app.appointment_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                         </div>
+                                        <div className="flex items-center gap-2">
                                             <UserIcon className="w-4 h-4 text-slate-400" />
                                             <span>{app.doctor?.full_name || 'Assessing...'} • {app.doctor?.doctors?.[0]?.specialty || 'General'}</span>
                                         </div>
-                                        <div className="flex flex-wrap gap-2 pt-2">
-                                            {app.meeting_link && (
-                                                <a 
-                                                    href={app.meeting_link.startsWith('http') ? app.meeting_link : `https://${app.meeting_link}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl text-xs font-bold hover:bg-primary/20 transition-all w-fit"
-                                                >
-                                                    <Video className="w-3.5 h-3.5" />
-                                                    Join Meeting
-                                                    <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
-                                                </a>
-                                            )}
-                                            {app.doctor_id && (
-                                                <button
-                                                    onClick={() => setSelectedDoctor({ id: app.doctor_id, name: app.doctor?.full_name || 'Doctor' })}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/20 transition-all w-fit"
-                                                >
-                                                    <MessageSquare className="w-3.5 h-3.5" />
-                                                    Message Doctor
-                                                </button>
-                                            )}
-                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 pt-2">
+                                        {app.meeting_link && (
+                                            <a 
+                                                href={app.meeting_link.startsWith('http') ? app.meeting_link : `https://${app.meeting_link}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl text-xs font-bold hover:bg-primary/20 transition-all w-fit"
+                                            >
+                                                <Video className="w-3.5 h-3.5" />
+                                                Join Meeting
+                                                <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
+                                            </a>
+                                        )}
+                                        {app.doctor_id && (
+                                            <button
+                                                onClick={() => setSelectedDoctor({ id: app.doctor_id, name: app.doctor?.full_name || 'Doctor' })}
+                                                className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/20 transition-all w-fit"
+                                            >
+                                                <MessageSquare className="w-3.5 h-3.5" />
+                                                Message Doctor
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +206,6 @@ export default function AppointmentsPage() {
                 )}
             </section>
 
-            {/* Past Appointments */}
             {pastAppointments.length > 0 && (
                 <section className="space-y-4 pt-8 border-t border-slate-100 dark:border-slate-800">
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 opacity-60">
@@ -223,9 +217,10 @@ export default function AppointmentsPage() {
                             <div key={app.id} className="p-6 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-slate-800 opacity-70 grayscale-50 hover:opacity-100 hover:grayscale-0 transition-all">
                                 <div className="flex justify-between items-start mb-3">
                                     <h4 className="font-bold text-slate-800 dark:text-slate-200">{app.type}</h4>
-                                    <span className={`text-[10px] uppercase tracking-wider font-heavy px-2 py-0.5 rounded ${
-                                        app.status === 'completed' ? 'bg-slate-200 text-slate-700' : 'bg-red-50 text-red-600'
-                                    }`}>
+                                    <span className={cn(
+                                        "text-[10px] uppercase tracking-wider font-heavy px-2 py-0.5 rounded",
+                                        app.status === 'completed' ? "bg-slate-200 text-slate-700" : "bg-red-50 text-red-600"
+                                    )}>
                                         {app.status}
                                     </span>
                                 </div>
@@ -239,7 +234,6 @@ export default function AppointmentsPage() {
                 </section>
             )}
 
-            {/* Book Appointment Modal */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

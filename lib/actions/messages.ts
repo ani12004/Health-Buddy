@@ -9,6 +9,13 @@ export async function sendMessage(receiverId: string, content: string) {
     
     if (!user) return { success: false, error: 'Not authenticated' }
 
+    // Fetch sender name for notification
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+
     const { error } = await supabase
         .from('messages')
         .insert({
@@ -21,6 +28,15 @@ export async function sendMessage(receiverId: string, content: string) {
         console.error('Error sending message:', error)
         return { success: false, error: error.message }
     }
+
+    // Create notification for receiver (async, don't wait to speed up response)
+    supabase.from('notifications').insert({
+        user_id: receiverId,
+        message: `New message from ${profile?.full_name || 'Health Buddy Contact'}`,
+        type: 'info'
+    }).then(({ error: nError }) => {
+        if (nError) console.error('Failed to create notification:', nError)
+    })
 
     revalidatePath('/messages')
     revalidatePath('/doctor/dashboard')
