@@ -5,6 +5,7 @@ import { runMLBridge } from '@/lib/actions/ml/bridge'
 import { analyzeHealthWithGemini } from './healthAssessment'
 import { explainMLWithGemini } from './explainResults'
 import { HealthInput } from './types'
+import { generateGroqDetailedAnalysis } from './groqAnalysis'
 
 type SupportedRiskLevel = 'LOW' | 'MODERATE' | 'HIGH'
 
@@ -548,7 +549,7 @@ export async function analyzeHealthData(data: any, language: string = 'English')
         try {
             groqAnalysisText = await generateGroqDetailedAnalysis(analysisResults, analysisResults.health_score || 0);
             if (groqAnalysisText) {
-                uiOutput.groq_analysis = groqAnalysisText;
+                (uiOutput as any).groq_analysis = groqAnalysisText;
             }
         } catch (e) {
             console.error('Groq analysis failed:', e);
