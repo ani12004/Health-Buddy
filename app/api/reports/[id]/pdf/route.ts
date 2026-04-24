@@ -109,18 +109,18 @@ function buildLines(report: ReportRecord): string[] {
     })
 
     const lines: string[] = [
-        'Health Buddy - Clinical Assessment Report',
-        '========================================',
-        `Report ID: ${report.id.slice(0, 8).toUpperCase()} | Date: ${dateText}`,
+        'TITLE: Health Buddy - Clinical Report',
+        `ID: ${report.id.slice(0, 8).toUpperCase()} | Date: ${dateText}`,
         `Patient: ${report.patient?.full_name || content.patient_name || 'Patient'}`,
-        `Severity: ${(report.severity || 'normal').toUpperCase()} | Health Score: ${Math.round(Number(report.health_score || 0))}/100`,
+        `Severity: ${(report.severity || 'normal').toUpperCase()}`,
+        `Health Score: ${Math.round(Number(report.health_score || 0))}/100`,
         '',
-        '--- Clinical Vitals ---',
+        'H: Clinical Vitals',
         `Age: ${inputs.age || 'N/A'}y | BMI: ${inputs.bmi || 'N/A'} | BP: ${inputs.systolic_bp || 'N/A'}/${inputs.diastolic_bp || 'N/A'} mmHg`,
         `Glucose: ${inputs.fasting_glucose || 'N/A'} mg/dL | HbA1c: ${inputs.hba1c || 'N/A'}% | HR: ${inputs.heart_rate || 'N/A'} bpm`,
         `Cholesterol (T/L/H): ${inputs.total_cholesterol || 'N/A'}/${inputs.ldl || 'N/A'}/${inputs.hdl || 'N/A'} mg/dL`,
         '',
-        '--- Risk Analysis ---',
+        'H: Risk Analysis',
         `Heart Disease: ${heart.toFixed(1)}%`,
         `Hypertension:  ${hyper.toFixed(1)}%`,
         `Diabetes:      ${diabetes.toFixed(1)}%`,
@@ -132,7 +132,7 @@ function buildLines(report: ReportRecord): string[] {
     const hasDrivers = Object.values(shap).some(v => Array.isArray(v) && v.length > 0)
     
     if (hasDrivers) {
-        lines.push('--- Key Risk Drivers ---')
+        lines.push('H: Key Risk Drivers')
         const diseases = [
             { key: 'heart_disease', name: 'Heart' },
             { key: 'hypertension', name: 'BP' },
@@ -141,63 +141,89 @@ function buildLines(report: ReportRecord): string[] {
         diseases.forEach(d => {
             const drivers = shap[d.key] || []
             if (drivers.length > 0) {
-                const driverLabels = drivers.slice(0, 2).map((dr: any) => dr.label || dr.feature)
+                const driverLabels = drivers.slice(0, 3).map((dr: any) => dr.label || dr.feature)
                 lines.push(`${d.name}: ${driverLabels.join(', ')}`)
             }
         })
         lines.push('')
     }
 
-    lines.push('--- Clinical Summary ---')
-    lines.push(...splitLongLine(String(summary), 90))
+    lines.push('H: Clinical Summary')
+    lines.push(...splitLongLine(String(summary), 85))
     lines.push('')
 
-    lines.push('--- Recommendations ---')
+    lines.push('H: Recommendations')
     const recItems = Array.isArray(recommendations) ? recommendations.slice(0, 4) : []
     if (recItems.length === 0) {
         lines.push('- Maintain regular health checkups.')
     } else {
         for (const item of recItems) {
             const text = typeof item === 'string' ? item : `${item.title || 'Note'}: ${item.body || ''}`
-            lines.push(...splitLongLine(`- ${text}`, 90))
+            lines.push(...splitLongLine(`- ${text}`, 85))
         }
     }
 
     lines.push('')
-    lines.push('Disclaimer: AI-assisted support. Consult a licensed doctor for diagnosis.')
+    lines.push('D: Disclaimer: AI-assisted support. Consult a licensed doctor for diagnosis.')
 
     return lines
 }
 
 function createPdfBuffer(lines: string[]): Buffer {
-    const maxLines = 44
+    const maxLines = 45
     const safeLines = lines.slice(0, maxLines)
 
-    if (lines.length > maxLines) {
-        safeLines[maxLines - 1] = '[Output trimmed for single-page PDF.]'
-    }
+    // PDF Graphics commands
+    const graphics: string[] = [
+        'q', // save state
+        '0.13 0.27 0.48 rg', // Professional Dark Blue
+        '40 735 532 35 re f', // Header Bar
+        '0.96 0.97 0.98 rg', // Light subtle grey for vitals area
+        '40 645 532 55 re f',
+        '0.9 0.9 0.9 RG 0.5 w', // Light border
+        '40 645 532 55 re S',
+        'Q', // restore state
+        '0 g' // reset to black
+    ]
 
-    const textCommands: string[] = ['BT', '/F1 11 Tf', '50 760 Td']
-
-    safeLines.forEach((line, index) => {
+    const textCommands: string[] = ['BT']
+    let currentY = 745;
+    
+    safeLines.forEach((line) => {
         const escaped = escapePdfText(line)
-        if (index === 0) {
-            textCommands.push(`(${escaped}) Tj`)
+        
+        if (line.startsWith('TITLE:')) {
+            const title = escaped.replace('TITLE: ', '')
+            textCommands.push(`/F2 14 Tf 1 1 1 rg 50 ${currentY} Td (${title}) Tj`)
+        } else if (line.startsWith('H:')) {
+            const header = escaped.replace('H: ', '')
+            textCommands.push(`0 -24 Td /F2 11 Tf 0.13 0.27 0.48 rg (${header}) Tj 0 g /F1 10 Tf`)
+            currentY -= 24
+        } else if (line.startsWith('Severity:')) {
+            const isCritical = line.includes('CRITICAL')
+            const color = isCritical ? '0.8 0 0 rg' : '0.13 0.27 0.48 rg'
+            textCommands.push(`0 -16 Td /F1 10 Tf (Severity: ) Tj /F2 10 Tf ${color} (${escaped.split(': ')[1]}) Tj 0 g /F1 10 Tf`)
+            currentY -= 16
+        } else if (line.startsWith('D:')) {
+            const disclaimer = escaped.replace('D: ', '')
+            textCommands.push(`0 -30 Td /F1 8 Tf 0.4 0.4 0.4 rg (${disclaimer}) Tj 0 g`)
+            currentY -= 30
         } else {
-            textCommands.push('0 -16 Td')
-            textCommands.push(`(${escaped}) Tj`)
+            textCommands.push(`0 -16 Td (${escaped}) Tj`)
+            currentY -= 16
         }
     })
 
     textCommands.push('ET')
 
-    const stream = textCommands.join('\n')
+    const stream = [...graphics, ...textCommands].join('\n')
     const objects = [
         '<< /Type /Catalog /Pages 2 0 R >>',
         '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 6 0 R >> >> /Contents 5 0 R >>',
         '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
         `<< /Length ${Buffer.byteLength(stream, 'utf8')} >>\nstream\n${stream}\nendstream`,
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
     ]
 
     let pdf = '%PDF-1.4\n'
