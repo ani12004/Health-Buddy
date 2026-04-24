@@ -60,6 +60,7 @@ export async function createAppointment(data: {
 
 export async function updateAppointmentStatus(id: string, status: 'scheduled' | 'completed' | 'cancelled') {
     const supabase = await createClient()
+    const adminSupabase = await createServiceRoleClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
