@@ -10,7 +10,7 @@ export function Loader3D({
   compact = false,
 }: Loader3DProps) {
   return (
-    <div className={`relative flex w-full items-center justify-center px-6 ${compact ? 'min-h-[44vh]' : 'min-h-screen'}`}>
+    <div className={`relative flex w-full items-center justify-center px-6 ${compact ? 'min-h-[72vh]' : 'min-h-screen'}`}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(14,165,233,0.12),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(16,185,129,0.1),transparent_34%),radial-gradient(circle_at_50%_120%,rgba(99,102,241,0.12),transparent_45%)]" />
 
       <div className={`loader-crystal-shell relative z-10 w-full ${compact ? 'max-w-xl' : 'max-w-2xl'} rounded-3xl border border-slate-200/70 bg-white/80 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/70 ${compact ? 'md:p-8' : 'md:p-10'}`}>

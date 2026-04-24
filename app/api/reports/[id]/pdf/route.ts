@@ -27,6 +27,19 @@ type ReportRecord = {
     } | null
 }
 
+type ReportBaseRow = {
+    id: string
+    patient_id: string
+    doctor_id: string | null
+    assessment_id?: string | null
+    title: string | null
+    summary: string | null
+    severity: string | null
+    health_score: number | null
+    created_at: string
+    content: any
+}
+
 function firstOrNull<T>(value: T | T[] | null | undefined): T | null {
     if (Array.isArray(value)) return value[0] ?? null
     return value ?? null
@@ -198,47 +211,89 @@ export async function GET(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: report, error } = await supabase
+    const { data: reportById, error: byIdError } = await supabase
         .from('reports')
         .select(
             `
             id,
             patient_id,
             doctor_id,
+            assessment_id,
             title,
             summary,
             severity,
             health_score,
             created_at,
-            content,
-            patient:patient_id(full_name,email),
-            assessment:assessment_id(probabilities,explanation)
+            content
         `,
         )
         .eq('id', id)
-        .single()
+        .maybeSingle()
 
-    if (error || !report) {
+    let baseReport = reportById as ReportBaseRow | null
+    let lookupError = byIdError
+
+    // Support legacy links that accidentally pass assessment IDs instead of report IDs.
+    if (!baseReport) {
+        const { data: reportByAssessment, error: byAssessmentError } = await supabase
+            .from('reports')
+            .select(
+                `
+                id,
+                patient_id,
+                doctor_id,
+                assessment_id,
+                title,
+                summary,
+                severity,
+                health_score,
+                created_at,
+                content
+            `,
+            )
+            .eq('assessment_id', id)
+            .maybeSingle()
+
+        baseReport = reportByAssessment as ReportBaseRow | null
+        lookupError = byAssessmentError
+    }
+
+    if (lookupError || !baseReport) {
         return NextResponse.json({ error: 'Report not found' }, { status: 404 })
     }
 
-    const canAccess = report.patient_id === user.id || report.doctor_id === user.id
+    const canAccess = baseReport.patient_id === user.id || baseReport.doctor_id === user.id
     if (!canAccess) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    const [{ data: patient }, { data: assessment }] = await Promise.all([
+        supabase
+            .from('profiles')
+            .select('full_name,email')
+            .eq('id', baseReport.patient_id)
+            .maybeSingle(),
+        baseReport.assessment_id
+            ? supabase
+                  .from('health_assessments')
+                  .select('probabilities,explanation')
+                  .eq('id', baseReport.assessment_id)
+                  .maybeSingle()
+            : Promise.resolve({ data: null }),
+    ])
+
     const normalizedReport: ReportRecord = {
-        id: report.id,
-        patient_id: report.patient_id,
-        doctor_id: report.doctor_id,
-        title: report.title,
-        summary: report.summary,
-        severity: report.severity,
-        health_score: report.health_score,
-        created_at: report.created_at,
-        content: report.content,
-        patient: firstOrNull(report.patient),
-        assessment: firstOrNull(report.assessment),
+        id: baseReport.id,
+        patient_id: baseReport.patient_id,
+        doctor_id: baseReport.doctor_id,
+        title: baseReport.title,
+        summary: baseReport.summary,
+        severity: baseReport.severity,
+        health_score: baseReport.health_score,
+        created_at: baseReport.created_at,
+        content: baseReport.content,
+        patient: firstOrNull(patient),
+        assessment: firstOrNull(assessment),
     }
 
     const lines = buildLines(normalizedReport)
