@@ -39,7 +39,6 @@ type ReportBaseRow = {
     title: string | null
     summary: string | null
     severity: string | null
-    health_score: number | null
     created_at: string
     content: any
 }
@@ -247,7 +246,6 @@ export async function GET(
             title,
             summary,
             severity,
-            health_score,
             created_at,
             content
         `,
@@ -271,7 +269,6 @@ export async function GET(
                 title,
                 summary,
                 severity,
-                health_score,
                 created_at,
                 content
             `,
@@ -301,7 +298,7 @@ export async function GET(
         baseReport.assessment_id
             ? supabase
                   .from('health_assessments')
-                  .select('probabilities,confidence_scores,shap_values,inputs,explanation')
+                  .select('probabilities,confidence_scores,shap_values,inputs,explanation,health_score')
                   .eq('id', baseReport.assessment_id)
                   .maybeSingle()
             : Promise.resolve({ data: null }),
@@ -314,7 +311,7 @@ export async function GET(
         title: baseReport.title,
         summary: baseReport.summary,
         severity: baseReport.severity,
-        health_score: baseReport.health_score,
+        health_score: firstOrNull(assessment)?.health_score || baseReport.content?.health_score || 0,
         created_at: baseReport.created_at,
         content: baseReport.content,
         patient: firstOrNull(patient),
