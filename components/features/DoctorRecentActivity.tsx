@@ -38,32 +38,41 @@ export function DoctorRecentActivity() {
 
             const items: ActivityItem[] = []
 
-            messages?.forEach(m => items.push({
-                id: m.id,
-                type: 'message',
-                title: `Message from ${m.sender?.full_name}`,
-                description: m.content.length > 40 ? m.content.substring(0, 40) + '...' : m.content,
-                time: m.created_at,
-                link: '/doctor/patients' // Link to chat or patient details
-            }))
+            messages?.forEach(m => {
+                const sender = Array.isArray(m.sender) ? m.sender[0] : m.sender;
+                items.push({
+                    id: m.id,
+                    type: 'message',
+                    title: `Message from ${sender?.full_name || 'Patient'}`,
+                    description: m.content.length > 40 ? m.content.substring(0, 40) + '...' : m.content,
+                    time: m.created_at,
+                    link: '/doctor/patients'
+                });
+            });
 
-            reports?.forEach(r => items.push({
-                id: r.id,
-                type: 'report',
-                title: `New Report: ${r.patient?.full_name}`,
-                description: r.title,
-                time: r.created_at,
-                link: `/doctor/patients`
-            }))
+            reports?.forEach(r => {
+                const patient = Array.isArray(r.patient) ? r.patient[0] : r.patient;
+                items.push({
+                    id: r.id,
+                    type: 'report',
+                    title: `New Report: ${patient?.full_name || 'Patient'}`,
+                    description: r.title,
+                    time: r.created_at,
+                    link: `/doctor/patients`
+                });
+            });
 
-            appointments?.forEach(a => items.push({
-                id: a.id,
-                type: 'appointment',
-                title: `Booking: ${a.patient?.full_name}`,
-                description: `${a.type} on ${new Date(a.appointment_date).toLocaleDateString()}`,
-                time: a.appointment_date,
-                link: '/doctor/appointments'
-            }))
+            appointments?.forEach(a => {
+                const patient = Array.isArray(a.patient) ? a.patient[0] : a.patient;
+                items.push({
+                    id: a.id,
+                    type: 'appointment',
+                    title: `Booking: ${patient?.full_name || 'Patient'}`,
+                    description: `${a.type} on ${new Date(a.appointment_date).toLocaleDateString()}`,
+                    time: a.appointment_date,
+                    link: '/doctor/appointments'
+                });
+            });
 
             setActivities(items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5))
             setLoading(false)
