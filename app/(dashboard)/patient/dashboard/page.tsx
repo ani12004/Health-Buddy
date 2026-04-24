@@ -12,6 +12,8 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import { Notifications } from '@/components/layout/Notifications'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@/components/ui/Button'
 
 export default async function PatientDashboard() {
     const supabase = await createClient()
@@ -41,7 +43,13 @@ export default async function PatientDashboard() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                    <Link href="/patient/health-update">
+                        <Button variant="outline" className="hidden sm:flex rounded-xl">
+                            <Activity className="w-4 h-4 mr-2" />
+                            Daily Update
+                        </Button>
+                    </Link>
                     <Notifications />
                 </div>
             </header>
@@ -65,17 +73,21 @@ export default async function PatientDashboard() {
                     
                     {/* Vitals Quick View */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                            My Vitals
-                            <span className="text-xs font-normal text-slate-400">Last updated: 10m ago</span>
-                        </h3>
-                        <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <Activity className="w-5 h-5 text-primary" />
+                                My Vitals
+                            </h3>
+                            <Link href="/patient/ai-checkup" className="text-xs font-bold text-primary hover:underline">Update</Link>
+                        </div>
+                        <Link href="/patient/ai-checkup" className="block space-y-3 group">
                             <VitalCard
                                 label="Heart Rate"
                                 value="72"
                                 unit="bpm"
                                 icon={Heart}
-                                color="red" // Using Tailwind color names logic in VitalCard
+                                color="red"
+                                className="group-hover:border-red-500/30 transition-all"
                             />
                             <VitalCard
                                 label="Blood Pressure"
@@ -83,6 +95,7 @@ export default async function PatientDashboard() {
                                 unit="mmHg"
                                 icon={Activity}
                                 color="blue"
+                                className="group-hover:border-blue-500/30 transition-all"
                             />
                             <VitalCard
                                 label="Glucose"
@@ -90,6 +103,7 @@ export default async function PatientDashboard() {
                                 unit="mg/dL"
                                 icon={Droplet}
                                 color="purple"
+                                className="group-hover:border-purple-500/30 transition-all"
                             />
                             <VitalCard
                                 label="Temperature"
@@ -97,8 +111,9 @@ export default async function PatientDashboard() {
                                 unit="°F"
                                 icon={Thermometer}
                                 color="orange"
+                                className="group-hover:border-orange-500/30 transition-all"
                             />
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>

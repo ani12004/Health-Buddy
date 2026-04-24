@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { AlertTriangle, Clock, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 function getTimeAgo(date: string) {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000)
@@ -77,9 +78,9 @@ export function CriticalAlerts() {
                     <p className="text-center py-8 text-slate-400 text-sm">No critical alerts at this time.</p>
                 ) : (
                     alerts.map((alert) => (
-                        <div key={alert.id} className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors group">
+                        <Link href={`/doctor/patients/${alert.patient_id || ''}`} key={alert.id} className="block p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors group">
                             <div className="flex justify-between items-start mb-2">
-                                <span className="font-bold text-slate-900 dark:text-white text-sm">{alert.patient?.full_name || 'James Rodriguez'}</span>
+                                <span className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-primary transition-colors">{alert.patient?.full_name || 'James Rodriguez'}</span>
                                 <span className="text-[10px] text-red-500 font-bold bg-white dark:bg-black/20 px-1.5 py-0.5 rounded uppercase">{alert.severity} PRIORITY</span>
                             </div>
                             <p className="text-xs text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
@@ -89,14 +90,16 @@ export function CriticalAlerts() {
                                 <Clock className="w-3 h-3" />
                                 <span>{getTimeAgo(alert.created_at)} ago</span>
                             </div>
-                        </div>
+                        </Link>
                     ))
                 )}
             </div>
 
-            <button className="w-full mt-6 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                View All Alerts
-            </button>
+            <Link href="/doctor/patients" className="block w-full">
+                <button className="w-full mt-6 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                    View All Alerts
+                </button>
+            </Link>
         </div>
     )
 }

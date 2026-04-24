@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Bell, Check, Info, AlertTriangle, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
+import { useRouter } from 'next/navigation'
 
 type Notification = {
     id: string
@@ -19,9 +20,21 @@ export function Notifications() {
     const [unreadCount, setUnreadCount] = useState(0)
     const containerRef = useRef<HTMLDivElement>(null)
     const supabase = createClient()
+    const router = useRouter()
+    const [userRole, setUserRole] = useState<string | null>(null)
 
     useEffect(() => {
         fetchNotifications()
+
+        // Get user role
+        const getRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+                setUserRole(data?.role || null)
+            }
+        }
+        getRole()
 
         // Subscribe to real-time changes
         const channel = supabase
@@ -89,6 +102,14 @@ export function Notifications() {
         }
     }
 
+    const getNotificationLink = (message: string) => {
+        const msg = message.toLowerCase()
+        if (msg.includes('appointment')) return userRole === 'doctor' ? '/doctor/appointments' : '/patient/appointments'
+        if (msg.includes('prescription') || msg.includes('medication')) return '/patient/medications'
+        if (msg.includes('report') || msg.includes('checkup')) return userRole === 'doctor' ? '/doctor/patients' : '/patient/medical-reports'
+        return null
+    }
+
     return (
         <div className="relative" ref={containerRef}>
             <button
@@ -123,37 +144,46 @@ export function Notifications() {
                             </div>
                         ) : (
                             <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {notifications.map((notification) => (
-                                    <div
-                                        key={notification.id}
-                                        onClick={() => !notification.is_read && markAsRead(notification.id)}
-                                        className={cn(
-                                            "p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer flex gap-3",
-                                            !notification.is_read && "bg-blue-50/30 dark:bg-blue-900/10"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center",
-                                            "bg-white dark:bg-neutral-surface-dark border border-slate-100 dark:border-slate-700 shadow-sm"
-                                        )}>
-                                            {getIcon(notification.type)}
-                                        </div>
-                                        <div className="flex-1 space-y-1">
-                                            <p className={cn(
-                                                "text-sm text-slate-800 dark:text-slate-200 leading-snug",
-                                                !notification.is_read && "font-semibold"
+                                {notifications.map((notification) => {
+                                    const link = getNotificationLink(notification.message)
+                                    return (
+                                        <div
+                                            key={notification.id}
+                                            onClick={() => {
+                                                if (!notification.is_read) markAsRead(notification.id)
+                                                if (link) {
+                                                    setIsOpen(false)
+                                                    router.push(link)
+                                                }
+                                            }}
+                                            className={cn(
+                                                "p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer flex gap-3",
+                                                !notification.is_read && "bg-blue-50/30 dark:bg-blue-900/10"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center",
+                                                "bg-white dark:bg-neutral-surface-dark border border-slate-100 dark:border-slate-700 shadow-sm"
                                             )}>
-                                                {notification.message}
-                                            </p>
-                                            <p className="text-xs text-slate-400">
-                                                {new Date(notification.created_at).toLocaleDateString()} • {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </p>
+                                                {getIcon(notification.type)}
+                                            </div>
+                                            <div className="flex-1 space-y-1">
+                                                <p className={cn(
+                                                    "text-sm text-slate-800 dark:text-slate-200 leading-snug",
+                                                    !notification.is_read && "font-semibold"
+                                                )}>
+                                                    {notification.message}
+                                                </p>
+                                                <p className="text-xs text-slate-400">
+                                                    {new Date(notification.created_at).toLocaleDateString()} • {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                            {!notification.is_read && (
+                                                <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                                            )}
                                         </div>
-                                        {!notification.is_read && (
-                                            <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
-                                        )}
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
                         )}
                     </div>

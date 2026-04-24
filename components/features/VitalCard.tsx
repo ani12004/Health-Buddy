@@ -9,11 +9,12 @@ interface VitalCardProps {
     icon: LucideIcon
     trend?: 'up' | 'down' | 'neutral'
     color: string // Tailwind color class prefix e.g 'red', 'blue'
+    className?: string
 }
 
-export function VitalCard({ label, value, unit, icon: Icon, trend, color }: VitalCardProps) {
+export function VitalCard({ label, value, unit, icon: Icon, trend, color, className }: VitalCardProps) {
     return (
-        <Card className="p-5 flex items-center justify-between hover:shadow-md transition-shadow">
+        <Card className={cn("p-5 flex items-center justify-between hover:shadow-md transition-shadow", className)}>
             <div className="flex items-center gap-4">
                 <div className={cn(
                     "w-12 h-12 rounded-xl flex items-center justify-center",

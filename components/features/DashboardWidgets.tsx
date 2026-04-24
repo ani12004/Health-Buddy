@@ -1,4 +1,5 @@
-import { Quote, Activity, Calendar, Clock, MapPin, User } from 'lucide-react'
+import { Quote, Activity, Calendar, Clock, MapPin, User, FileText } from 'lucide-react'
+import Link from 'next/link'
 
 // This would connect to Supabase 'tips' table if it existed, or 'reports'
 // For now, adhering to the plan to make it dynamic but simulated via RSC if DB is empty
@@ -71,18 +72,17 @@ export async function RecentReportsList() {
         <div className="bg-white dark:bg-neutral-surface-dark rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm space-y-6">
             <div className="flex items-center justify-between">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recent Reports</h3>
-                <button className="text-sm font-semibold text-primary hover:text-primary-dark">View All</button>
+                <Link href="/patient/medical-reports" className="text-sm font-semibold text-primary hover:text-primary-dark">View All</Link>
             </div>
 
             <div className="space-y-4">
                 {reports && reports.length > 0 ? (
-                    reports.map((report: any) => (
-                        <div key={report.id} className="group p-4 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-primary/30 transition-all flex items-center gap-4 cursor-pointer">
-                            <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                <Activity className="w-6 h-6" />
+                        <Link href={`/api/reports/${report.id}/pdf`} target="_blank" key={report.id} className="group p-4 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-primary/30 transition-all flex items-center gap-4 cursor-pointer bg-white dark:bg-neutral-surface-dark shadow-sm hover:shadow-md">
+                            <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                                <FileText className="w-6 h-6" />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-bold text-slate-900 dark:text-white">{report.title}</h4>
+                                <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{report.title}</h4>
                                 <div className="flex items-center gap-2 mt-1">
                                     <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(report.created_at).toLocaleDateString()}</p>
                                     {report.severity && (
@@ -95,11 +95,10 @@ export async function RecentReportsList() {
                                     )}
                                 </div>
                             </div>
-                            <div className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
-                                {report.type}
+                            <div className="px-3 py-1 bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-tighter rounded-lg border border-slate-100 dark:bg-white/5 dark:text-slate-400 dark:border-slate-700">
+                                {report.severity || 'Normal'}
                             </div>
-                        </div>
-                    ))
+                        </Link>
                 ) : (
                     <div className="text-center py-8 text-slate-500 text-sm">
                         No medical reports found.
@@ -139,7 +138,7 @@ export async function UpcomingAppointments() {
                     <Calendar className="w-5 h-5 text-primary" />
                     Upcoming Visits
                 </h3>
-                <button className="text-sm font-semibold text-primary hover:text-primary-dark">View Schedule</button>
+                <Link href="/patient/appointments" className="text-sm font-semibold text-primary hover:text-primary-dark">View Schedule</Link>
             </div>
 
             <div className="space-y-4">
@@ -185,7 +184,7 @@ export async function UpcomingAppointments() {
                 ) : (
                     <div className="text-center py-6">
                         <p className="text-sm text-slate-500 mb-4">No upcoming appointments.</p>
-                        <button className="text-xs font-bold text-primary hover:underline">Book a new appointment</button>
+                        <Link href="/patient/appointments" className="text-xs font-bold text-primary hover:underline">Book a new appointment</Link>
                     </div>
                 )}
             </div>
