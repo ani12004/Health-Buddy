@@ -14,7 +14,12 @@ export default async function MedicationsPage() {
         .from('prescriptions')
         .select(`
             *,
-            doctor:doctor_id(full_name, specialty)
+            doctor:profiles!doctor_id (
+                full_name,
+                doctors (
+                    specialty
+                )
+            )
         `)
         .eq('patient_id', user.id)
         .order('status', { ascending: true }) // Active first (assuming 'active' < 'completed' alphabetically? No, 'active' comes first)
